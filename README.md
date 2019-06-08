@@ -5,4 +5,4 @@ United Kingdom. 'Canny' means nice, or good. Tudor is a crisp (chip, in
 American) manufacturer.
 
 This pack comprises various unrelated predicates that may, or may not, be
-useful; like crisps in a bag.
+tasty; like crisps in a bag.
