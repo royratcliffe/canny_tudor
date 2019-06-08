@@ -1,6 +1,20 @@
 :- module(canny_random_names,
-          [   random_name/2             % ?LHS, ?RHS
+          [   random_name/1,            % -Name
+              random_name/2             % ?LHS, ?RHS
           ]).
+
+%!  random_name(-Name:atom) is det.
+%
+%   Generates a random Name.
+%
+%   Only ever fails if Name is bound and fails to match the next random
+%   Name, without testing for an unbound argument. That makes little
+%   sense, so fails unless Name is a variable.
+
+random_name(Name) :-
+    var(Name),
+    random_name(LHS, RHS),
+    atomic_list_concat([LHS, RHS], '_', Name).
 
 %!  random_name(?LHS:atom, ?RHS:atom) is semidet.
 %
