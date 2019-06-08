@@ -1,8 +1,8 @@
 :- module(canny_random_names,
-          [   random_name/2             % -LHS, -RHS
+          [   random_name/2             % ?LHS, ?RHS
           ]).
 
-%!  random_name(-LHS:atom, -RHS:atom) is det.
+%!  random_name(?LHS:atom, ?RHS:atom) is semidet.
 %
 %   Unifies LHS-RHS with one random name, a randomised selection from
 %   all possible names.
@@ -11,7 +11,9 @@
 %   modes, even if required. Predicate random_member/2 fails
 %   semi-deterministically if the given atom fails to match the
 %   randomised selection. Unifies semi-deterministically for ground
-%   atoms in order to work correctly for non-variable arguments.
+%   atoms in order to work correctly for non-variable arguments. It
+%   collapses to failure if the argument cannot unify with random-name
+%   possibilities.
 
 random_name(LHS, RHS) :-
     random_name_(LHS0, lhs(LHS0), LHS),
