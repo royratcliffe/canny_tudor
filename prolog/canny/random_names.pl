@@ -7,17 +7,23 @@
 %   Unifies LHS-RHS with one random name, a randomised selection from
 %   all possible names.
 %
-%   Note, this does *not* work in (+, ?) or (?, +) or (+, +) modes, even
-%   if required. Predicate random_member/2 fails semi-deterministically
-%   if the given atom fails to match the randomised selection.
+%   Note, this does *not* naturally work in (+, ?) or (?, +) or (+, +)
+%   modes, even if required. Predicate random_member/2 fails
+%   semi-deterministically if the given atom fails to match the
+%   randomised selection. Unifies semi-deterministically for ground
+%   atoms in order to work correctly for non-variable arguments.
 
 random_name(LHS, RHS) :-
     random_name_(LHS0, lhs(LHS0), LHS),
     random_name_(RHS0, rhs(RHS0), RHS).
 
 random_name_(Template, Goal, Member) :-
+    var(Member),
+    !,
     findall(Template, Goal, Members),
     random_member(Member, Members).
+random_name_(Member, Goal, Member) :-
+    Goal.
 
 :- public
     lhs/1,
