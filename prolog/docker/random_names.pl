@@ -1,4 +1,4 @@
-:- module(canny_random_names,
+:- module(docker_random_names,
           [   random_name/1,            % -Name
               random_name/2             % ?LHS, ?RHS
           ]).
