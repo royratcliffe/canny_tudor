@@ -1,4 +1,4 @@
-:- module(operating_system_search_path,
+:- module(operating_system_search_paths,
           [   search_path_add/2,        % +Name:atom, +Directory:atom
               search_path/2,            % +Name:atom, ?Directories:list(atom)
               search_path_separator/1   % ?Separator:atom
