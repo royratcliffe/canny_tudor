@@ -11,3 +11,4 @@ own pack.
 The pack currently includes:
 
 * `library(docker/random_names)` for Docker-style random names
+* `library(operating_system/search_path)` for search_path/2 and friends
