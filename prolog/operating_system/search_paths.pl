@@ -7,7 +7,8 @@
 %!  search_path_prepend(+Name:atom, +Directory:atom) is det.
 %
 %   Adds Directory to a search-path environment variable. Note, this is
-%   not an atomic operation and therefore not thread safe.
+%   not naturally an atomic operation but the prepend makes it thread
+%   safe by wrapping the fetching and storing within a mutex.
 %
 %   Prepends Directory to the environment search path by Name, unless
 %   already present. Uses semi-colon as the search-path separator on
@@ -19,16 +20,21 @@
 %   path because non-Prolog software needs to search using the included
 %   directory paths. Automatically converts incoming directory paths to
 %   operating-system compatible paths.
+%
+%   Note also, the environment variable Name is case insensitive on
+%   Windows, but not so on Unix-based operating systems.
 
 search_path_prepend(Name, Directory0) :-
     prolog_to_os_filename(Directory0, Directory),
-    (   search_path(Name, Directories)
-    ->  (   memberchk(Directory, Directories)
-        ->  true
-        ;   search_path(Name, [Directory|Directories])
-        )
-    ;   setenv(Name, Directory)
-    ).
+    with_mutex(
+        search_path_prepend,
+        (   search_path(Name, Directories)
+        ->  (   memberchk(Directory, Directories)
+            ->  true
+            ;   search_path(Name, [Directory|Directories])
+            )
+        ;   setenv(Name, Directory)
+        )).
 
 %!  search_path(+Name:atom, -Directories:list(atom)) is semidet.
 %!  search_path(+Name:atom, +Directories:list(atom)) is det.
