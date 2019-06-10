@@ -1,10 +1,10 @@
 :- module(operating_system_search_paths,
-          [   search_path_add/2,        % +Name:atom, +Directory:atom
+          [   search_path_prepend/2,    % +Name:atom, +Directory:atom
               search_path/2,            % +Name:atom, ?Directories:list(atom)
               search_path_separator/1   % ?Separator:atom
           ]).
 
-%!  search_path_add(+Name:atom, +Directory:atom) is det.
+%!  search_path_prepend(+Name:atom, +Directory:atom) is det.
 %
 %   Adds Directory to a search-path environment variable. Note, this is
 %   not an atomic operation and therefore not thread safe.
@@ -20,7 +20,7 @@
 %   directory paths. Automatically converts incoming directory paths to
 %   operating-system compatible paths.
 
-search_path_add(Name, Directory0) :-
+search_path_prepend(Name, Directory0) :-
     prolog_to_os_filename(Directory0, Directory),
     (   search_path(Name, Directories)
     ->  (   memberchk(Directory, Directories)
