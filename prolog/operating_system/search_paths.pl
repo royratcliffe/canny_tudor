@@ -45,8 +45,8 @@ search_path(Name, Directories) :-
     atomic_list_concat(Directories, Separator, Value).
 search_path(Name, Directories) :-
     search_path_separator(Separator),
-    atomic_list_concat(Directories, Separator, SearchPath),
-    setenv(Name, SearchPath).
+    atomic_list_concat(Directories, Separator, Value),
+    setenv(Name, Value).
 
 %!  search_path_separator(?Separator:atom) is semidet.
 %

@@ -1,5 +1,13 @@
 :- module(operating_system_file_searches, []).
 
+/** <module> File searches
+ *
+ * By design, the following extensions for Windows avoid underscores
+ * in order not to clash with existing standard paths, e.g. =app_path=
+ * which Prolog defines by default.
+ *
+ */
+
 :- multifile
     user:file_search_path/2.
 
@@ -13,6 +21,7 @@ name(userprofile).
 name(programfiles).
 name(temp).
 
+user:file_search_path(documents, userprofile('Documents')).
 user:file_search_path(savedgames, userprofile('Saved Games')).
 user:file_search_path(appdata, userprofile('AppData')).
 user:file_search_path(applocal, appdata('Local')).
