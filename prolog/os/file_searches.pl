@@ -1,4 +1,4 @@
-:- module(operating_system_file_searches, []).
+:- module(os_file_searches, []).
 
 /** <module> File searches
  *
@@ -18,6 +18,9 @@ user:file_search_path(Name, Path) :-
     exists_directory(Path).
 
 name(userprofile).
+name(onedrive).
+name(onedrivecommercial).
+name(onedrivepersonal).
 name(programfiles).
 name(temp).
 

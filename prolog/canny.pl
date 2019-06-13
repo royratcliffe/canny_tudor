@@ -1,6 +1,7 @@
 :- module(canny, []).
 
 :- load_files([   docker/random_names,
-                  operating_system/search_paths,
-                  operating_system/file_searches
+                  os/search_paths,
+                  os/file_searches,
+                  os/apps
               ], [if(not_loaded)]).
