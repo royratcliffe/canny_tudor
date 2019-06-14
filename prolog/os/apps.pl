@@ -8,42 +8,42 @@
 
 /** <module> Operation system apps
  *
- * What is an app? In an operating-system context, simply something you
- * can start and stop using a process. It has no standard input, and
- * typically none or minimal standard output and error. Processes have
- * four distinct inputs: a path specification, a list of arguments,
- * possibly some execution options along with some optional encoding and
- * other run-time related options. Call this the application's
- * configuration. This may seem like an unusual definition of "app" and
- * maybe too technical, but English limits the alternatives: process, no
- * because that means something that loads an app; program, no because
- * that generally refers the app's image including its resources.
+ * What is an app? In an operating-system =os_apps= module context,
+ * simply something you can start and stop using a process. It has no
+ * standard input, and typically none or minimal standard output and
+ * error. Apps start by creating a process. Processes have four distinct
+ * inputs: a path specification, a list of arguments, possibly some
+ * execution options along with some optional encoding and other
+ * run-time related options. Call this the application's configuration.
+ * This may seem like an unusual definition of "app" and maybe too
+ * technical, but English limits the alternatives: process, no because
+ * that means something that loads an app; program, no because that
+ * generally refers the app's image including its resources.
+ *
+ * There is an important distinction between apps and processes. These
+ * predicates use processes to launch apps. An application typically has
+ * one instance; else if not has differing arguments to distinguish one
+ * running instance of the app from another. Hence for the same reason,
+ * the app model here ignores standard input. Apps have no standard
+ * input, conceptually speaking.
+ *
+ * For the same reason, the predicates rely on multi-file
+ * os:app_property/2 to configure the app launch path, arguments and
+ * options.
  *
  * For all the above reasons, the special multi-file predicate
  * os:app_property/2 supplies an app's configuration deterministically
  * using four sub-terms for the second argument, as follows.
  *
- * - os:app_property(App, path(Path))
- * - os:app_property(App, argument(Argument))
- * - os:app_property(App, option(Option))
+ *   - os:app_property(App, path(Path))
+ *   - os:app_property(App, argument(Argument))
+ *   - os:app_property(App, option(Option))
  *
  * Two things to note about these predicate calls; (1) App is a compound
- * describing the app and its configuration information; (2) the second
- * argument collates arguments and options non-deterministically.
- * Predicate start_program/1 finds all the argument- and
- * option-solutions in the order defined.
- *
- * There is an important distinction between programs and processes.
- * These predicates use processes to launch programs. Programs in this
- * sense is more akin to an application, where one application has
- * typically one instance; else if not has differing arguments to
- * distinguish one from another. Hence for the same reason, the model
- * ignores standard input. Programs as apps have no standard input,
- * conceptually speaking.
- *
- * For the same reason, the predicates rely on multi-file
- * os:app_property/2 to configure the program launch
- * path, arguments and options.
+ * describing the app and its app-specific configuration information;
+ * (2) the second Property argument collates arguments and options
+ * non-deterministically. Predicate start_app/1 finds all the argument-
+ * and option-solutions in the order defined.
  *
  */
 
@@ -60,7 +60,8 @@ os:app_property(App, pid(PID)) :-
 
 %!  start_app(?App:compound) is nondet.
 %
-%   Starts an App if not already running.
+%   Starts an App if not already running. Starts more than one apps
+%   non-deterministically if App binds with more than one specifier.
 %
 %   An app's argument and option properties execute
 %   non-deterministically.
