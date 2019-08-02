@@ -3,21 +3,28 @@
               put_dict/5,
 
               merge_dict/3,             % +Pair, +Dict0:dict, -Dict:dict
-              dict_member/2             % ?Dict:dict, ?Member
+              merge_dicts/2,            % +Dicts:list(dict), -Dict:dict
+
+              dict_member/2,            % ?Dict:dict, ?Member
+
+              % ?Tag, ?Template, :Goal, -Dicts:list(dict)
+              findall_dict/4
           ]).
 
 :- use_module(compounds).
 
 :- meta_predicate
-    put_dict(+, +, 3, +, -).
+    put_dict(+, +, 3, +, -),
+    findall_dict(?, ?, 0, -).
 
 %!  put_dict(+Key, +Dict0:dict, +OnNotEmpty:callable, +Value,
 %!  -Dict:dict) is det.
 %
-%   Updates Dict0 to Dict  with  Key-Value,   combining  Value  with any
-%   existing value by calling OnNotEmpty/3. The   callable can merge its
-%   first two arguments in some  way,  or   replace  the  first with the
-%   second, or even reject the second.
+%   Updates dictionary pair calling for  merge   if  not  empty. Updates
+%   Dict0 to Dict with Key-Value,  combining   Value  with  any existing
+%   value by calling OnNotEmpty/3. The callable  can merge its first two
+%   arguments in some way, or replace the first with the second, or even
+%   reject the second.
 %
 %   The implementation puts Key and Value  in Dict0, unifying the result
 %   at Dict. However, if the dictionary   Dict0 already contains another
@@ -34,13 +41,14 @@ put_dict(Key, Dict0, _, Value, Dict) :-
     put_dict(Key, Dict0, Value, Dict).
 
 %!  merge_dict(+Pair:pair, +Dict0:dict, -Dict:dict) is det.
-%!  merge_dict(+Value:dict, +Dict0:dict, -Dict:dict) is semidet.
+%!  merge_dict(+Dict0:dict, +Pair:pair, -Dict:dict) is det.
+%!  merge_dict(+Pairs:dict, +Dict0:dict, -Dict:dict) is semidet.
 %
-%   Merges a key-value Pair, or multiple  pairs from a dictionary Value,
-%   into dictionary Dict0, unifying the results   at  Dict. Iterates the
-%   pairs for the Value dictionary,  using   them  to recursively update
-%   Dict0 key-by-key. Discards the tag from Value; Dict carries the same
-%   tag as Dict0.
+%   Merges Pair or Pairs dictionary with  dictionary. Merges a key-value
+%   Pair, or multiple pairs from  a   dictionary  Pairs, into dictionary
+%   Dict0, unifying the results at  Dict.   Iterates  the  pairs for the
+%   Pairs dictionary, using them to recursively update Dict0 key-by-key.
+%   Discards the tag from Pairs; Dict carries the same tag as Dict0.
 %
 %   Merges non-dictionaries according to type.   Appends  lists when the
 %   value in a key-value pair  has   list  type.  Only replaces existing
@@ -48,13 +56,23 @@ put_dict(Key, Dict0, _, Value, Dict) :-
 %   neither existing nor incoming is   a list. Predicate `merge_dict_/3`
 %   is the value merging predicate; given   the  original Value0 and the
 %   incoming Value, it merges the two values at Value_.
+%
+%   Which side of the input arguments should  the incoming pair or pairs
+%   occupy? Should it be the first or the   second? This is a design and
+%   semantics issue. The implementation allows for  either style. If the
+%   first argument is a pair, the second   must be a dictionary; else if
+%   the first is *not* a pair but the  second is, then the first must be
+%   the dictionary.
 
 merge_dict(Key-Value, Dict0, Dict) :-
     !,
     put_dict(Key, Dict0, merge_dict_, Value, Dict).
-merge_dict(Value, Dict0, Dict) :-
-    is_dict(Value),
-    dict_pairs(Value, _, Pairs),
+merge_dict(Dict0, Key-Value, Dict) :-
+    !,
+    put_dict(Key, Dict0, merge_dict_, Value, Dict).
+merge_dict(Pairs0, Dict0, Dict) :-
+    is_dict(Pairs0),
+    dict_pairs(Pairs0, _, Pairs),
     foldl(merge_dict, Pairs, Dict0, Dict).
 
 %!  merge_dict_(+Value0, +Value, -Value_) is semidet.
@@ -83,10 +101,26 @@ merge_list_(Value0, Values0, Values) :-
 merge_list_(Value0, Values0, Values) :-
     append([Value0], Values0, Values).
 
+%!  merge_dicts(+Dicts:list(dict), -Dict:dict) is semidet.
+%
+%   Merges one or more dictionaries. You cannot merge an empty list of
+%   dictionaries. Fails in such cases. It does *not* unify Dict with a
+%   tagless empty dictionary. The implementation merges two consecutive
+%   dictionaries before tail recursion until eventually one remains.
+%
+%   Merging ignores tags.
+
+merge_dicts([Dict], Dict) :-
+    !.
+merge_dicts([Dict0, Dict1|Dicts], Dict) :-
+    merge_dict(Dict0, Dict1, Dict_),
+    merge_dicts([Dict_|Dicts], Dict).
+
 %!  dict_member(?Dict:dict, ?Member) is nondet.
 %
-%   Unifies Member with all dictionary  members,   where  Member  is any
-%   non-dictionary leaf including list elements.
+%   Unifies  with  members  of  dictionary.   Unifies  Member  with  all
+%   dictionary  members,  where  Member  is    any  non-dictionary  leaf
+%   including list elements.
 %
 %   Keys become tagged keys of the   form  `Tag^Key`. The caret operator
 %   neatly fits by operator  precedence   in-between  the  pair operator
@@ -99,8 +133,8 @@ merge_list_(Value0, Values0, Values) :-
 %   term.
 %
 %   This is a non-standard approach to  dictionary unification. It turns
-%   nested sub-dictionary hierarchies into flatten   lists of tagged-key
-%   paths and their leaf values.
+%   nested  sub-dictionary  hierarchies  into    flatten  pair-lists  of
+%   tagged-key paths and their leaf values.
 
 dict_member(Dict, Member) :-
     var(Dict),
@@ -135,3 +169,20 @@ member_dict_(Tag0^Key/Tag, Tag0{}.put(Key, Dict)) :-
     member_dict_(Tag, Dict).
 member_dict_(Tag, Tag{}) :-
     atom(Tag).
+
+%!  findall_dict(?Tag, ?Template, :Goal, -Dicts:list(dict)) is det.
+%
+%   Finds all dictionary-only solutions  to   Template  within Goal. Tag
+%   selects which tags to select. What happens  when Tag is variable? In
+%   such cases, unites with the  first   bound  tag  then all subsequent
+%   matching tags.
+
+findall_dict(Tag, Template, Goal, Dicts) :-
+    findall(Template, Goal, Bag),
+    convlist(findall_dict_(Tag), Bag, Dicts).
+
+:- public
+    findall_dict_/3.
+
+findall_dict_(Tag, Dict, Dict) :-
+    is_dict(Dict, Tag).
