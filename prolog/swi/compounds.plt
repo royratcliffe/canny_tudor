@@ -1,5 +1,7 @@
 :- begin_tests(swi_compounds).
 
+:- public test/2.
+
 :- use_module(compounds).
 
 test(flatten_slashes, [true(A==a/b/c)]) :-

@@ -1,5 +1,7 @@
 :- begin_tests(swi_dicts).
 
+:- public test/2.
+
 :- use_module(dicts).
 
 %   There are no leaf nodes in the dictionary. Asking for a member
