@@ -3,6 +3,7 @@
 :- public test/1, test/2.
 
 :- use_module(library(http/http_open)).
+:- use_module(library(uri)).
 :- use_module(dl).
 
 test(dilbert) :-
@@ -12,12 +13,14 @@ test(dilbert) :-
 %   sub-elements carrying their namespace prefixes.
 
     url(URL),
-    http_open(URL, Stream, []),
-    load_structure(Stream, [Definitions], [dialect(xmlns), space(remove)]),
+    load_structure(URL, [Definitions], [dialect(xmlns), space(remove)]),
     xml_is_dom(Definitions),
     element(_:definitions, _, _) = Definitions,
     forall(element(Element), xpath(Definitions, _:Element, _)),
-    debugging(wsdl) -> xml_write(user_error, Definitions, []).
+    (   debugging(ws_dl)
+    ->  xml_write(user_error, Definitions, [])
+    ;   true
+    ).
 
 url('http://www.gcomputer.net/webservices/dilbert.asmx?WSDL').
 
