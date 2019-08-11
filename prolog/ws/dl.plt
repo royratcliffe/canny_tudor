@@ -17,6 +17,7 @@ test(dilbert) :-
     xml_is_dom(Definitions),
     element(_:definitions, _, _) = Definitions,
     forall(element(Element), xpath(Definitions, _:Element, _)),
+    forall(local_uri(Local, URI), element_xmlns(Definitions, Local=URI)),
     (   debugging(ws_dl)
     ->  xml_write(user_error, Definitions, [])
     ;   true
@@ -29,5 +30,15 @@ element(message).
 element(portType).
 element(binding).
 element(service).
+
+local_uri(tm,'http://microsoft.com/wsdl/mime/textMatching/').
+local_uri(soapenc,'http://schemas.xmlsoap.org/soap/encoding/').
+local_uri(mime,'http://schemas.xmlsoap.org/wsdl/mime/').
+local_uri(tns,'http://gcomputer.net/webservices/').
+local_uri(soap,'http://schemas.xmlsoap.org/wsdl/soap/').
+local_uri(s,'http://www.w3.org/2001/XMLSchema').
+local_uri(soap12,'http://schemas.xmlsoap.org/wsdl/soap12/').
+local_uri(http,'http://schemas.xmlsoap.org/wsdl/http/').
+local_uri(wsdl,'http://schemas.xmlsoap.org/wsdl/').
 
 :- end_tests(ws_dl).
