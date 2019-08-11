@@ -2,7 +2,7 @@
 
 ns(wsdl, 'http://schemas.xmlsoap.org/wsdl/').
 
-%!  element_xmlns(?Element, ?NameURI) is nondet.
+%!  element_xmlns(+Element, ?NameURI) is nondet.
 %
 %   Extracts =xmlns= attributes from the   entire  definitions DOM. They
 %   can exist anywhere,  not  just  in   the  root  element.  Any nested
