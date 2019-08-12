@@ -1,10 +1,10 @@
 :- begin_tests(ws_dl).
 
-:- public test/1, test/2.
-
-:- use_module(library(http/http_open)).
-:- use_module(library(uri)).
+:- use_module(library(xpath)).
+:- use_module(library(xml/ns)).
 :- use_module(dl).
+
+:- public test/1, test/2.
 
 test(dilbert) :-
 
@@ -13,11 +13,9 @@ test(dilbert) :-
 %   sub-elements carrying their namespace prefixes.
 
     url(URL),
-    load_structure(URL, [Definitions], [dialect(xmlns), space(remove)]),
-    xml_is_dom(Definitions),
-    element(_:definitions, _, _) = Definitions,
+    wsdl_load_definitions(URL, Definitions),
     forall(element(Element), xpath(Definitions, _:Element, _)),
-    forall(name_uri(Name, URI), element_xmlns(Definitions, Name=URI)),
+    forall(name_uri(Name, URI), xml_element_ns(Definitions, Name=URI)),
     (   debugging(ws_dl)
     ->  xml_write(user_error, Definitions, [])
     ;   true
