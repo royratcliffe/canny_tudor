@@ -147,8 +147,8 @@ dict_member(Dict, Member) :-
 
 dict_member_(Tag0^Key0-Dict, TaggedKeys-Value) :-
     is_dict(Dict),
-    !,
     dict_member(Dict, TaggedKeys0-Value),
+    !,
     flatten_slashes(Tag0^Key0/TaggedKeys0, TaggedKeys).
 dict_member_(Member, Member).
 

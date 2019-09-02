@@ -4,11 +4,13 @@
 
 :- use_module(dicts).
 
-%   There are no leaf nodes in the dictionary. Asking for a member
-%   therefore fails.
+test(dict_member, [true(A==settings^advanced-advanced{})]) :-
+    dict_member(settings{advanced:advanced{}}, A).
 
-test(dict_member, [fail]) :-
-    dict_member(settings{advanced:advanced{}}, _).
+test(dict_member, [true(A==dict{key:value{}})]) :-
+    dict_member(A, dict^key-value{}).
+test(dict_member, [true(A==dict^key-value{})]) :-
+    dict_member(dict{key:value{}}, A).
 
 test(dict_member, [true(A==settings{advanced:advanced{hello:world}}), nondet]) :-
     dict_member(A, settings^advanced/advanced^hello-world).
