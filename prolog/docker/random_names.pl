@@ -1,9 +1,9 @@
 :- module(docker_random_names,
-          [   random_name/1,            % -Name
-              random_name/2             % ?LHS, ?RHS
+          [   random_name_chk/1,        % -Name
+              random_name_chk/2         % ?LHS, ?RHS
           ]).
 
-%!  random_name(-Name:atom) is det.
+%!  random_name_chk(-Name:atom) is det.
 %
 %   Generates a random Name.
 %
@@ -11,12 +11,12 @@
 %   Name, without testing for an unbound argument. That makes little
 %   sense, so fails unless Name is a variable.
 
-random_name(Name) :-
+random_name_chk(Name) :-
     var(Name),
-    random_name(LHS, RHS),
+    random_name_chk(LHS, RHS),
     atomic_list_concat([LHS, RHS], '_', Name).
 
-%!  random_name(?LHS:atom, ?RHS:atom) is semidet.
+%!  random_name_chk(?LHS:atom, ?RHS:atom) is semidet.
 %
 %   Unifies LHS-RHS with one random name, a randomised selection from
 %   all possible names.
@@ -29,16 +29,16 @@ random_name(Name) :-
 %   collapses to failure if the argument cannot unify with random-name
 %   possibilities.
 
-random_name(LHS, RHS) :-
-    random_name_(LHS0, lhs(LHS0), LHS),
-    random_name_(RHS0, rhs(RHS0), RHS).
+random_name_chk(LHS, RHS) :-
+    random_name_chk_(LHS0, lhs(LHS0), LHS),
+    random_name_chk_(RHS0, rhs(RHS0), RHS).
 
-random_name_(Template, Goal, Member) :-
+random_name_chk_(Template, Goal, Member) :-
     var(Member),
     !,
     findall(Template, Goal, Members),
     random_member(Member, Members).
-random_name_(Member, Goal, Member) :-
+random_name_chk_(Member, Goal, Member) :-
     Goal.
 
 :- public
