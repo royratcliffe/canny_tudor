@@ -4,7 +4,7 @@ Uses [Semantic Versioning](https://semver.org/).
 
 ## [0.2.0] - 2019-09-02
 ### Fixed
-- Allow dictionary leaf values for dict_member/2
+- Allow dictionary leaf values for `dict_member/2`
 
 ## [0.1.1] - 2019-08-02
 ### Added
