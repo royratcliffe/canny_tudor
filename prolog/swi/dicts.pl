@@ -119,8 +119,8 @@ merge_dicts([Dict0, Dict1|Dicts], Dict) :-
 %!  dict_member(?Dict:dict, ?Member) is nondet.
 %
 %   Unifies  with  members  of  dictionary.   Unifies  Member  with  all
-%   dictionary  members,  where  Member  is    any  non-dictionary  leaf
-%   including list elements.
+%   dictionary  members,  where  Member  is   any  non-dictionary  leaf,
+%   including list elements, or empty leaf dictionary.
 %
 %   Keys become tagged keys of the   form  `Tag^Key`. The caret operator
 %   neatly fits by operator  precedence   in-between  the  pair operator
@@ -145,10 +145,12 @@ dict_member(Dict, Member) :-
     member(Key-Value0, Pairs),
     dict_member_(Tag^Key-Value0, Member).
 
+dict_member_(Tag0^Key0-Tag{}, Tag0^Key0-Tag{}) :-
+    !.
 dict_member_(Tag0^Key0-Dict, TaggedKeys-Value) :-
     is_dict(Dict),
-    dict_member(Dict, TaggedKeys0-Value),
     !,
+    dict_member(Dict, TaggedKeys0-Value),
     flatten_slashes(Tag0^Key0/TaggedKeys0, TaggedKeys).
 dict_member_(Member, Member).
 
