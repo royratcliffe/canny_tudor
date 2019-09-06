@@ -1,7 +1,60 @@
 :- module(docker_random_names,
-          [   random_name_chk/1,        % -Name
+          [   random_name/1,            % ?Name
+              random_name_chk/1,        % -Name
               random_name_chk/2         % ?LHS, ?RHS
           ]).
+
+%!  random_name(?Name) is nondet.
+%
+%   Non-deterministically  generates  Docker-style  random  names.  Uses
+%   random_permutation/2 and member/2, rather   than random_member/2, in
+%   order to generate all possible  random   names  by  back-tracking if
+%   necessary.
+%
+%   The engine-based implementation has  two   key  features:  generates
+%   random permutations of both left  and right sub-names independently;
+%   does not repeat until after unifying  all permutations. This implies
+%   that two consecutive names will  never  be   the  same  up until the
+%   boundary event between two consecutive   randomisations.  There is a
+%   possibility, albeit small, that  the  last   random  name  from  one
+%   sequence might accidentally match the first  name in the next random
+%   sequence. There are 23,500 possible combinations.
+%
+%   The implementation is *not* the  most   efficient,  but does perform
+%   accurate randomisation over all left-right name permutations.
+
+random_name(Name) :-
+    setup_call_cleanup(
+        engine_create(_, random_name_, Engine),
+        random_name_(Name, Engine),
+        engine_destroy(Engine)
+    ).
+
+random_name_ :-
+    repeat,
+    random_name_(Name),
+    engine_yield(Name),
+    fail.
+
+random_name_(Name) :-
+    findall(LHS-RHS, (lhs(LHS), rhs(RHS)), Names0),
+    random_permutation(Names0, Names),
+    member(LHS-RHS, Names),
+    atomic_list_concat([LHS, RHS], '_', Name).
+
+random_name_(Name, Engine) :-
+    engine_next_reified(Engine, Term),
+    random_name_(Term, Name, Engine).
+
+random_name_(the(Name), Name, _).
+random_name_(the(_), Name, Engine) :-
+    !,
+    engine_next_reified(Engine, Term),
+    random_name_(Term, Name, Engine).
+random_name_(exception(Catcher), _, _) :-
+    throw(Catcher).
+random_name_(no, _, _) :-
+    fail.
 
 %!  random_name_chk(-Name:atom) is det.
 %
