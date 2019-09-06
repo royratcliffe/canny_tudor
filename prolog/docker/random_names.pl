@@ -22,13 +22,25 @@
 %
 %   The implementation is *not* the  most   efficient,  but does perform
 %   accurate randomisation over all left-right name permutations.
+%
+%   Allows Name to  collapse  to   semi-determinism  with  ground  terms
+%   without continuous random-name generation since  it will never match
+%   an atom that does not belong  to   the  Docker-random  name set. The
+%   engine-based non-determinism only kicks in when Name unbound.
 
 random_name(Name) :-
+    var(Name),
+    !,
     setup_call_cleanup(
         engine_create(_, random_name_, Engine),
         random_name_(Name, Engine),
         engine_destroy(Engine)
     ).
+random_name(Name) :-
+    lhs(LHS),
+    rhs(RHS),
+    atomic_list_concat([LHS, RHS], '_', Name),
+    !.
 
 random_name_ :-
     repeat,
