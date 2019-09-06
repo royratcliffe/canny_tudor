@@ -2,6 +2,10 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2019-09-06
+### Added
+- `random_name_chk/1` versus non-deterministic `random_name/1`
+
 ## [0.2.1] - 2019-09-03
 ### Fixed
 - Fix the fix; `dict_member/2` unifies with empty dictionary leaf nodes
