@@ -1,9 +1,74 @@
 :- module(docker_random_names,
-          [   random_name/1,            % -Name
-              random_name/2             % ?LHS, ?RHS
+          [   random_name/1,            % ?Name
+              random_name_chk/1,        % -Name
+              random_name_chk/2         % ?LHS, ?RHS
           ]).
 
-%!  random_name(-Name:atom) is det.
+%!  random_name(?Name) is nondet.
+%
+%   Non-deterministically  generates  Docker-style  random  names.  Uses
+%   random_permutation/2 and member/2, rather   than random_member/2, in
+%   order to generate all possible  random   names  by  back-tracking if
+%   necessary.
+%
+%   The engine-based implementation has  two   key  features:  generates
+%   random permutations of both left  and right sub-names independently;
+%   does not repeat until after unifying  all permutations. This implies
+%   that two consecutive names will  never  be   the  same  up until the
+%   boundary event between two consecutive   randomisations.  There is a
+%   possibility, albeit small, that  the  last   random  name  from  one
+%   sequence might accidentally match the first  name in the next random
+%   sequence. There are 23,500 possible combinations.
+%
+%   The implementation is *not* the  most   efficient,  but does perform
+%   accurate randomisation over all left-right name permutations.
+%
+%   Allows Name to  collapse  to   semi-determinism  with  ground  terms
+%   without continuous random-name generation since  it will never match
+%   an atom that does not belong  to   the  Docker-random  name set. The
+%   engine-based non-determinism only kicks in when Name unbound.
+
+random_name(Name) :-
+    var(Name),
+    !,
+    setup_call_cleanup(
+        engine_create(_, random_name_, Engine),
+        random_name_(Name, Engine),
+        engine_destroy(Engine)
+    ).
+random_name(Name) :-
+    lhs(LHS),
+    rhs(RHS),
+    atomic_list_concat([LHS, RHS], '_', Name),
+    !.
+
+random_name_ :-
+    repeat,
+    random_name_(Name),
+    engine_yield(Name),
+    fail.
+
+random_name_(Name) :-
+    findall(LHS-RHS, (lhs(LHS), rhs(RHS)), Names0),
+    random_permutation(Names0, Names),
+    member(LHS-RHS, Names),
+    atomic_list_concat([LHS, RHS], '_', Name).
+
+random_name_(Name, Engine) :-
+    engine_next_reified(Engine, Term),
+    random_name_(Term, Name, Engine).
+
+random_name_(the(Name), Name, _).
+random_name_(the(_), Name, Engine) :-
+    !,
+    engine_next_reified(Engine, Term),
+    random_name_(Term, Name, Engine).
+random_name_(exception(Catcher), _, _) :-
+    throw(Catcher).
+random_name_(no, _, _) :-
+    fail.
+
+%!  random_name_chk(-Name:atom) is det.
 %
 %   Generates a random Name.
 %
@@ -11,12 +76,12 @@
 %   Name, without testing for an unbound argument. That makes little
 %   sense, so fails unless Name is a variable.
 
-random_name(Name) :-
+random_name_chk(Name) :-
     var(Name),
-    random_name(LHS, RHS),
+    random_name_chk(LHS, RHS),
     atomic_list_concat([LHS, RHS], '_', Name).
 
-%!  random_name(?LHS:atom, ?RHS:atom) is semidet.
+%!  random_name_chk(?LHS:atom, ?RHS:atom) is semidet.
 %
 %   Unifies LHS-RHS with one random name, a randomised selection from
 %   all possible names.
@@ -29,16 +94,16 @@ random_name(Name) :-
 %   collapses to failure if the argument cannot unify with random-name
 %   possibilities.
 
-random_name(LHS, RHS) :-
-    random_name_(LHS0, lhs(LHS0), LHS),
-    random_name_(RHS0, rhs(RHS0), RHS).
+random_name_chk(LHS, RHS) :-
+    random_name_chk_(LHS0, lhs(LHS0), LHS),
+    random_name_chk_(RHS0, rhs(RHS0), RHS).
 
-random_name_(Template, Goal, Member) :-
+random_name_chk_(Template, Goal, Member) :-
     var(Member),
     !,
     findall(Template, Goal, Members),
     random_member(Member, Members).
-random_name_(Member, Goal, Member) :-
+random_name_chk_(Member, Goal, Member) :-
     Goal.
 
 :- public
