@@ -22,7 +22,7 @@
 with_output_to(FileType, Spec, Goal) :-
     var(Spec),
     !,
-    random_name(Spec),
+    random_name_chk(Spec),
     with_output_to(FileType, Spec, Goal).
 with_output_to(FileType, Spec, Goal) :-
     absolute_file_name(Spec, File, [file_type(FileType), access(write)]),

@@ -2,6 +2,10 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2019-09-10
+### Fixed
+- `with_output_to/3` uses `random_name_chk/1`
+
 ## [0.3.0] - 2019-09-06
 ### Added
 - `random_name_chk/1` versus non-deterministic `random_name/1`
