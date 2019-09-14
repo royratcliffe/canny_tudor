@@ -8,9 +8,11 @@
 
 %!  with_output_to(+FileType, ?Spec, :Goal) is semidet.
 %
-%   Runs Goal with =current_output= pointing at a file with UTF-8
-%   encoding. In (+, -, :) mode, creates a randomly-generated file with
-%   random new name unified at Spec.
+%   Runs Goal with =current_output=  pointing  at   a  file  with  UTF-8
+%   encoding. In (+, -, :) mode,  creates a randomly-generated file with
+%   random new name unified at  Spec.   With  Spec  unbound, generates a
+%   random one-time name. Does  *not*  try   to  back-track  in order to
+%   create a unique random name. Hence overwrites any existing file.
 %
 %   This is an  arity-three  version   of  with_output_to/2;  same name,
 %   different arity. Writes the results  of   running  Goal to some file
