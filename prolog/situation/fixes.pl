@@ -62,6 +62,9 @@ fix(M, Fixes) :-
     last(Fixes, Now-At),
     fix(M, Now, At).
 
+fix(M, Now, _) :-
+    once(M:currently(Now, _)),
+    !.
 fix(M, Now, At) :-
     once(retract(M:currently(Previous, When))),
     !,
