@@ -42,40 +42,40 @@ now(Situation, Now, At) :-
            assertz(M:now(Now, At))).
 
 situation_fix(Situation) :-
-    forall(situation_property(Situation, module(M)), fix(M)).
+    forall(situation_property(Situation, module(M)), fix(Situation, M)).
 
-fix(M) :-
+fix(Situation, M) :-
     findall(Now0-At0, retract(M:now(Now0, At0)), Fixes0),
     sort(2, @=<, Fixes0, Fixes),
     forall(member(Now-At, Fixes), asserta(M:was(Now, At))),
     ignore(retract(M:previously(_, _))),
-    fix(M, Fixes).
+    fix(Situation, M, Fixes).
 
-fix(M, []) :-
+fix(Situation, M, []) :-
     once(retract(M:currently(Previous, At))),
     !,
     asserta(M:previously(Previous, At)),
-    broadcast(situation:was(Previous, At)).
-fix(_, []) :-
+    broadcast(situation:was(Situation, Previous, At)).
+fix(_, _, []) :-
     !.
-fix(M, Fixes) :-
+fix(Situation, M, Fixes) :-
     last(Fixes, Now-At),
-    fix(M, Now, At).
+    fix(Situation, M, Now, At).
 
-fix(M, Now, _) :-
+fix(_, M, Now, _) :-
     once(M:currently(Now, _)),
     !.
-fix(M, Now, At) :-
+fix(Situation, M, Now, At) :-
     once(retract(M:currently(Previous, When))),
     !,
     asserta(M:previously(Previous, When)),
     asserta(M:currently(Now, At)),
-    broadcast(situation:was(Previous, When)),
-    broadcast(situation:changed(Previous-When, Now-At)),
-    broadcast(situation:now(Now, At)).
-fix(M, Now, At) :-
+    broadcast(situation:was(Situation, Previous, When)),
+    broadcast(situation:changed(Situation, Previous-When, Now-At)),
+    broadcast(situation:now(Situation, Now, At)).
+fix(Situation, M, Now, At) :-
     asserta(M:currently(Now, At)),
-    broadcast(situation:now(Now, At)).
+    broadcast(situation:now(Situation, Now, At)).
 
 situation_fix(Situation, Options) :-
     (   option(at(At), Options),
