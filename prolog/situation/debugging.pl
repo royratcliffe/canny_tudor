@@ -1,7 +1,5 @@
 :- module(situation_debugging, []).
 
-:- public listen/0.
-
 listen :-
     unlisten,
     debug(situation),
