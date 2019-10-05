@@ -55,3 +55,5 @@ situation_options_(Situation, Options) :-
 
 canny:property_of_situation(module(M), Situation) :-
     situation_module(Situation, M).
+canny:property_of_situation(defined, Situation) :-
+    situation_module(Situation, _).

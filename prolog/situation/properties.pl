@@ -19,6 +19,12 @@
 %       clauses; upwards of 10,000 clauses for   example.  Note, you can
 %       never delete the  situation-module  association,   but  you  can
 %       retract all the dynamic clauses belonging to a situation.
+%
+%       * defined
+%
+%       Situation is defined whenever a  unique situation module already
+%       exists for the given Situation. Amounts   to  the same as asking
+%       for module(_) property.
 
 situation_property(Situation, Property) :-
     canny:property_of_situation(Property, Situation).
