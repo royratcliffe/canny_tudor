@@ -105,24 +105,39 @@ fix(Situation, M, Now, At) :-
     broadcast(situation:now(Situation, Now, At)).
 
 %!  situation_fix(?Situation:compound, +Options:list) is det.
+%
+%   Fixes Situation with optional behaviours for   asserting a final Now
+%   term; and delayed-based retractions.  Option   now(Now)  first makes
+%   Situation become Now. Option delay(Delay) retracts all was/2 clauses
+%   that pre-date At minus Delay. The  time   index  At  defaults to the
+%   latest situation time stamp, if no   at(At) option given. Pre-dating
+%   refers to less than but  not   equal.  This  implies that historical
+%   retractions can never remove  all  was/2   history  clauses  if  the
+%   delay/1 option appears without an advancing at/1 option.
 
 situation_fix(Situation, Options) :-
-    (   option(at(At), Options),
-        number(At)
-    ->  true
-    ;   get_time(At)
-    ),
-    (   option(now(Now), Options)
-    ->  situation_now(Situation, Now, At)
-    ;   true
-    ),
+    forall(prefix(Situation, Options), true),
     situation_fix(Situation),
-    (   option(delay(Delay), Options),
-        number(Delay),
-        situation_property(Situation, module(M))
-    ->  When0 is At - Delay,
-        forall((   M:was(Was, When),
-                   When < When0
-               ), once(retract(M:was(Was, When))))
-    ;   true
+    forall(suffix(Situation, Options), true).
+
+prefix(Situation, Options) :-
+    option(now(Now), Options),
+    (   option(at(At), Options)
+    ->  situation_now(Situation, Now, At)
+    ;   situation_now(Situation, Now)
     ).
+
+suffix(Situation, Options) :-
+    forall(situation_property(Situation, module(M)),
+           suffix_(M, Options)).
+
+suffix_(M, Options) :-
+    option(delay(Delay), Options),
+    (   option(at(At), Options)
+    ->  true
+    ;   once(M:was(_, At))
+    ),
+    When0 is At - Delay,
+    forall((   M:was(Was, When),
+               When < When0
+           ), once(retract(M:was(Was, When)))).
