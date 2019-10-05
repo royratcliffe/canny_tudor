@@ -66,7 +66,8 @@ fix(Situation, M) :-
     sort(2, @=<, Fixes0, Fixes),
     forall(member(Now-At, Fixes), asserta(M:was(Now, At))),
     ignore(retract(M:previously(_, _))),
-    fix(Situation, M, Fixes).
+    fix(Situation, M, Fixes),
+    broadcast(situation:fixed(Situation)).
 
 fix(Situation, M, []) :-
     once(retract(M:currently(Previous, At))),
