@@ -41,6 +41,23 @@ now(Situation, Now, At) :-
     forall(situation_property(Situation, module(M)),
            assertz(M:now(Now, At))).
 
+%!  situation_fix(?Situation:compound) is det.
+%
+%   Fixating situations does three important things.  First, it adds new
+%   Previous-When pairs to the  situation   history.  They  become was/2
+%   dynamic facts (clauses without rules). Second,  it adds, replaces or
+%   removes the most current Current-When pair. This allows detection of
+%   non-events, e.g. when something disappears.  Some types of situation
+%   might  require  such  event  edges.   Finally,  fixating  broadcasts
+%   situation-change messages.
+%
+%   The rule for fixing the Current-When pair goes like this: Is there a
+%   new now/2, at least one? The  latest   becomes  the new current. Any
+%   others become Previous-When. If there is  no now/2, then the current
+%   disappears. Messages broadcast accordingly. If   there  is more than
+%   one   now/2,   only   the    latest     becomes    current.    Hence
+%   currently-previously only transitions once in-between fixations.
+
 situation_fix(Situation) :-
     forall(situation_property(Situation, module(M)), fix(Situation, M)).
 

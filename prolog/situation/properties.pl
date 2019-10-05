@@ -6,6 +6,20 @@
 
 :- multifile canny:property_of_situation/2.
 
+%!  situation_property(?Situation:compound, ?Property) is nondet.
+%
+%   Property of Situation.
+%
+%       * module(M)
+%
+%       Marries situation terms with universally-unique modules, one for
+%       one. All dynamic situations link a situation term with a module.
+%       This design addresses performance. Retracts   take  a long time,
+%       relatively, especially for dynamic  predicates   with  very many
+%       clauses; upwards of 10,000 clauses for   example.  Note, you can
+%       never delete the  situation-module  association,   but  you  can
+%       retract all the dynamic clauses belonging to a situation.
+
 situation_property(Situation, Property) :-
     canny:property_of_situation(Property, Situation).
 
