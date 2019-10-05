@@ -17,6 +17,20 @@ canny:property_of_situation(module(M), Situation) :-
     situation_module(Situation, M).
 
 %!  situation_options(?Situation:compound, ?Options:list) is nondet.
+%
+%   Sets up Situation using Options.   Establishes the dynamic predicate
+%   options for the  temporary  situation   module  used  for persisting
+%   situation Now-At and Was-When pairs.
+%
+%   An important side effect occurs  for   ground  Situation  terms. The
+%   implementation creates the situation's temporary  module and applies
+%   Options to its new dynamic predicates.  The module(M) option unifies
+%   with the newly-created or existing situation module.
+%
+%   The predicate's determinism collapses to semi-determinism for ground
+%   situations.  Otherwise  with  variable   Situation  components,  the
+%   predicate  unifies  with  all  matching  situations,  unifying  with
+%   module(M) non-deterministically.
 
 situation_options(Situation, Options) :-
     ground(Situation),
