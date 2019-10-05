@@ -11,17 +11,26 @@
                          delay(number)
                      ]).
 
-:- use_module(options).
-:- use_module(properties).
-
 :- meta_predicate
     situation_now(:, +),
     situation_now(:, +, +),
     situation_fix(:),
     situation_fix(:, +).
 
+:- use_module(options).
+:- use_module(properties).
+
 %!  situation_now(?Situation:compound, +Now:any) is nondet.
 %!  situation_now(?Situation:compound, +Now:any, +At:number) is nondet.
+%
+%   Makes some Situation become Now  for  time   index  At,  at the next
+%   fixation. Effectively schedules a pending update  one or more times;
+%   the next situation_fix/1 fixes the pending situation changes at some
+%   future point. If no At time, arity two, uses the current time.
+%
+%   Uses  situation_options/2  when  Situation  is    ground,  but  uses
+%   situation_property/2  otherwise.  Asserts  therefore   for  multiple
+%   situations if Situation comprises variables.
 
 situation_now(Situation, Now) :-
     get_time(At),
@@ -94,6 +103,8 @@ fix(Situation, M, Now, At) :-
 fix(Situation, M, Now, At) :-
     asserta(M:currently(Now, At)),
     broadcast(situation:now(Situation, Now, At)).
+
+%!  situation_fix(?Situation:compound, +Options:list) is det.
 
 situation_fix(Situation, Options) :-
     (   option(at(At), Options),

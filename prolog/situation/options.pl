@@ -1,7 +1,5 @@
 :- module(situation_options, [situation_options/2]).
 
-:- use_module(library(random/temporary)).
-
 :- meta_predicate situation_options(:, ?).
 
 :- predicate_options(situation_options/2, 2,
@@ -9,12 +7,9 @@
                          pass_to((dynamic)/2, 2)
                      ]).
 
-:- multifile canny:property_of_situation/2.
+:- use_module(library(random/temporary)).
 
 :- dynamic situation_module/2.
-
-canny:property_of_situation(module(M), Situation) :-
-    situation_module(Situation, M).
 
 %!  situation_options(?Situation:compound, ?Options:list) is nondet.
 %
@@ -55,3 +50,8 @@ situation_options_(Situation, Options) :-
                 M:currently/2,
                 M:previously/2
             ], Options_).
+
+:- multifile canny:property_of_situation/2.
+
+canny:property_of_situation(module(M), Situation) :-
+    situation_module(Situation, M).
