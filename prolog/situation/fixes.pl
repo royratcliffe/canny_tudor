@@ -53,7 +53,7 @@ now(Situation, Now, At) :-
 %!  situation_fix(?Situation:compound) is det.
 %
 %   Fixating situations does three important things.  First, it adds new
-%   Previous-When pairs to the  situation   history.  They  become was/2
+%   Previous-When pairs to the situation   history.  They become =was/2=
 %   dynamic facts (clauses without rules). Second,  it adds, replaces or
 %   removes the most current Current-When pair. This allows detection of
 %   non-events, e.g. when something disappears.  Some types of situation
@@ -61,10 +61,10 @@ now(Situation, Now, At) :-
 %   situation-change messages.
 %
 %   The rule for fixing the Current-When pair goes like this: Is there a
-%   new now/2, at least one? The  latest   becomes  the new current. Any
-%   others become Previous-When. If there is  no now/2, then the current
-%   disappears. Messages broadcast accordingly. If   there  is more than
-%   one   now/2,   only   the    latest     becomes    current.    Hence
+%   new =now/2=, at least one? The latest   becomes the new current. Any
+%   others become Previous-When. If  there  is   no  =now/2=,  then  the
+%   current disappears. Messages broadcast accordingly. If there is more
+%   than  one  =now/2=,  only   the    latest   becomes  current.  Hence
 %   currently-previously only transitions once in-between fixations.
 
 situation_fix(Situation) :-
@@ -108,12 +108,12 @@ fix(Situation, M, Now, At) :-
 %
 %   Fixes Situation with optional behaviours for   asserting a final Now
 %   term; and delayed-based retractions.  Option   now(Now)  first makes
-%   Situation become Now. Option delay(Delay) retracts all was/2 clauses
-%   that pre-date At minus Delay. The  time   index  At  defaults to the
-%   latest situation time stamp, if no   at(At) option given. Pre-dating
-%   refers to less than but  not   equal.  This  implies that historical
-%   retractions can never remove  all  was/2   history  clauses  if  the
-%   delay/1 option appears without an advancing at/1 option.
+%   Situation become Now.  Option  delay(Delay)   retracts  all  =was/2=
+%   clauses that pre-date At minus Delay. The  time index At defaults to
+%   the  latest  situation  time  stamp,  if  no  at(At)  option  given.
+%   Pre-dating refers to less than  but   not  equal.  This implies that
+%   historical retractions can never remove  all =was/2= history clauses
+%   if the =delay/1= option appears without an advancing =at/1= option.
 
 situation_fix(Situation, Options) :-
     forall(prefix(Situation, Options), true),
