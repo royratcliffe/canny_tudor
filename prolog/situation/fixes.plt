@@ -4,7 +4,7 @@
 :- use_module(options).
 :- use_module(fixes).
 
-test(situation_now, []) :-
+test(situations, []) :-
     situation_options(x, [module(M)]),
     forall(member(Name, [now, was, currently, previously]),
            (   Term =.. [Name, _, _],
