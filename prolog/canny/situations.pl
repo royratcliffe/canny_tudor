@@ -16,6 +16,7 @@ situation(Situation, Term) :-
     canny:situation(Situation, Term).
 
 canny:situation(Situation, module(Module)) :-
+    !,
     with_mutex(canny_situations, temporary_module(Situation, Module)).
 
 temporary_module(Situation, Module) :-
@@ -32,6 +33,7 @@ temporary_module(Situation, Module) :-
             ], []).
 
 canny:situation(Situation, now(Now, At)) :-
+    !,
     ground(Now),
     number(At),
     now(Situation, Now, At).
@@ -39,14 +41,15 @@ canny:situation(Situation, now(Now, At)) :-
 now(Situation, Now, At) :-
     ground(Situation),
     !,
-    canny:situation(Situation, module(Module)),
+    situation_module(Situation, Module),
     assertz(Module:now(Now, At)).
 now(Situation, Now, At) :-
-    forall(canny:situation_property(Situation, module(Module)),
+    forall(situation_module(Situation, Module),
            assertz(Module:now(Now, At))).
 
 canny:situation(Situation, fix) :-
-    forall(canny:situation_property(Situation, module(Module)),
+    !,
+    forall(situation_module(Situation, Module),
            fix(Situation, Module)).
 
 fix(Situation, Module) :-
@@ -81,10 +84,11 @@ fix(Situation, Module, Now, At) :-
     broadcast(situation(Situation, now(Now, At))).
 fix(Situation, Module, Now, At) :-
     asserta(Module:currently(Now, At)),
-    broadcast(situation:now(Situation, Now, At)).
+    broadcast(situation(Situation, now(Now, At))).
 
 canny:situation(Situation, retract(When)) :-
-    forall(canny:situation_property(Situation, module(Module)),
+    !,
+    forall(situation_module(Situation, Module),
            retract(Situation, Module, When)).
 
 retract(Situation, Module, When0) :-
@@ -94,8 +98,9 @@ retract(Situation, Module, When0) :-
     broadcast(situation(Situation, retract(When0))).
 
 canny:situation(Situation, retract(When, Delay)) :-
+    !,
     number(Delay),
-    forall(canny:situation_property(Situation, module(Module)),
+    forall(situation_module(Situation, Module),
            retract(Situation, Module, When, Delay)).
 
 retract(Situation, Module, When, Delay) :-
