@@ -16,7 +16,6 @@ situation(Situation, Term) :-
     canny:situation(Situation, Term).
 
 canny:situation(Situation, module(Module)) :-
-    !,
     with_mutex(canny_situations, temporary_module(Situation, Module)).
 
 temporary_module(Situation, Module) :-
@@ -33,7 +32,6 @@ temporary_module(Situation, Module) :-
             ], []).
 
 canny:situation(Situation, now(Now, At)) :-
-    !,
     ground(Now),
     number(At),
     now(Situation, Now, At).
@@ -41,16 +39,15 @@ canny:situation(Situation, now(Now, At)) :-
 now(Situation, Now, At) :-
     ground(Situation),
     !,
-    situation_module(Situation, Module),
+    canny:situation(Situation, module(Module)),
     assertz(Module:now(Now, At)).
 now(Situation, Now, At) :-
-    forall(situation_module(Situation, Module),
+    forall(canny:situation(Situation, module(Module)),
            assertz(Module:now(Now, At))).
 
 canny:situation(Situation, fix) :-
-    !,
-    forall(situation_module(Situation, Module),
-           fix(Situation, Module)).
+    situation_module(Situation, Module),
+    fix(Situation, Module).
 
 fix(Situation, Module) :-
     findall(Now0-At0, retract(Module:now(Now0, At0)), Fixes0),
@@ -87,9 +84,8 @@ fix(Situation, Module, Now, At) :-
     broadcast(situation(Situation, now(Now, At))).
 
 canny:situation(Situation, retract(When)) :-
-    !,
-    forall(situation_module(Situation, Module),
-           retract(Situation, Module, When)).
+    situation_module(Situation, Module),
+    retract(Situation, Module, When).
 
 retract(Situation, Module, When0) :-
     forall((   Module:was(Was, When),
@@ -98,10 +94,9 @@ retract(Situation, Module, When0) :-
     broadcast(situation(Situation, retract(When0))).
 
 canny:situation(Situation, retract(When, Delay)) :-
-    !,
     number(Delay),
-    forall(situation_module(Situation, Module),
-           retract(Situation, Module, When, Delay)).
+    situation_module(Situation, Module),
+    retract(Situation, Module, When, Delay).
 
 retract(Situation, Module, When, Delay) :-
     var(When),
