@@ -61,7 +61,7 @@ fix([], Situation, Module) :-
     once(retract(Module:currently(Previous, When))),
     !,
     asserta(Module:previously(Previous, When)),
-    broadcast(situation:was(Situation, Previous, When)).
+    broadcast(situation(Situation, was(Previous, When))).
 fix([], _, _) :-
     !.
 fix(Fixes, Situation, Module) :-
