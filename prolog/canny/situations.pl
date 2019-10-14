@@ -107,6 +107,10 @@ retract(Situation, Module, When, Delay) :-
     When0 is When - Delay,
     retract(Situation, Module, When0).
 
+canny:situation(Situation, listing) :-
+    situation_module(Situation, Module),
+    listing(Module:_).
+
 situation_property(Situation, Property) :-
     canny:situation_property(Situation, Property).
 
