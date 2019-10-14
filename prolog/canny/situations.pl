@@ -120,3 +120,6 @@ canny:situation_property(Situation, currently(Current, When)) :-
 canny:situation_property(Situation, previously(Previous, When)) :-
     situation_module(Situation, Module),
     once(Module:previously(Previous, When)).
+canny:situation_property(Situation, history(History)) :-
+    situation_module(Situation, Module),
+    findall(was(Was, When), Module:was(Was, When), History).
