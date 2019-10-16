@@ -157,6 +157,14 @@ retract(Situation, Module, When, Delay) :-
     When0 is When - Delay,
     retract(Situation, Module, When0).
 
+canny:for_situation(fix(Now, At), Situation) :-
+    canny:for_situation(now(Now, At), Situation),
+    canny:for_situation(fix, Situation).
+canny:for_situation(fixate(Now, Delay), Situation) :-
+    get_time(At),
+    canny:for_situation(fix(Now, At), Situation),
+    canny:for_situation(retract(At, Delay), Situation).
+
 canny:for_situation(listing, Situation) :-
     situation_module(Situation, Module),
     listing(Module:_).
