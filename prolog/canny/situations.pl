@@ -6,7 +6,7 @@
 
 :- multifile
     canny:for_situation/2,
-    canny:property_for_situation/2.
+    canny:property_of_situation/2.
 
 :- use_module(library(random/temporary)).
 
@@ -41,7 +41,7 @@
 %       changes at some future point.
 %
 %       Uses canny:for_situation/2 when Situation is   ground,  but uses
-%       canny:property_for_situation/2 otherwise. Asserts  therefore for
+%       canny:property_of_situation/2 otherwise. Asserts   therefore for
 %       multiple situations if Situation comprises variables. You cannot
 %       therefore have non-ground situations.
 %
@@ -190,18 +190,18 @@ canny:for_situation(listing, Situation) :-
 %       for module(_) property.
 
 situation_property(Situation, Property) :-
-    canny:property_for_situation(Property, Situation).
+    canny:property_of_situation(Property, Situation).
 
-canny:property_for_situation(module(Module), Situation) :-
+canny:property_of_situation(module(Module), Situation) :-
     situation_module(Situation, Module).
-canny:property_for_situation(defined, Situation) :-
+canny:property_of_situation(defined, Situation) :-
     situation_module(Situation, _).
-canny:property_for_situation(currently(Current, When), Situation) :-
+canny:property_of_situation(currently(Current, When), Situation) :-
     situation_module(Situation, Module),
     once(Module:currently(Current, When)).
-canny:property_for_situation(previously(Previous, When), Situation) :-
+canny:property_of_situation(previously(Previous, When), Situation) :-
     situation_module(Situation, Module),
     once(Module:previously(Previous, When)).
-canny:property_for_situation(history(History), Situation) :-
+canny:property_of_situation(history(History), Situation) :-
     situation_module(Situation, Module),
     findall(was(Was, When), Module:was(Was, When), History).
