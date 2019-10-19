@@ -2,6 +2,15 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2019-10-19
+### Added
+- Canny situations
+- `random_temporary_module/1` predicate
+- `zip/3` predicate (swi_lists)
+- `print_table/1` predicate
+### Fixed
+- `with_output_to/3` uses `random_name_chk/1`
+
 ## [0.3.0] - 2019-09-06
 ### Added
 - `random_name_chk/1` versus non-deterministic `random_name/1`
