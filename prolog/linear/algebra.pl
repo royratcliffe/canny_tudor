@@ -6,6 +6,7 @@
               vector_translate/3,
               vector_multiply/3,
               vector_scale/3,           % ?Scalar, ?U, ?V
+              vector_heading/2,         % ?V, ?Heading
 
               scalar_translate/3,
               scalar_multiply/3,
@@ -57,6 +58,25 @@ vector_scale(_, [], []).
 vector_scale(Scalar, [X|U], [Y|V]) :-
     scalar_multiply(Scalar, X, Y),
     vector_scale(Scalar, U, V).
+
+%!  vector_heading(?V:list(number), ?Heading:number) is semidet.
+%
+%   Heading in radians of vector V.   Succeeds  only for two-dimensional
+%   vectors. Normalises the Heading  angle  in   (+,  -)  mode; negative
+%   angles  wrap  to  the  range  between   pi  and  two-pi.  Similarly,
+%   normalises the vector V in (-, +) mode; V has unit length.
+
+vector_heading([X, Y], Heading) :-
+    var(Heading),
+    !,
+    Angle is atan2(Y, X),
+    (   Angle < 0
+    ->  Heading is Angle + 2 * pi
+    ;   Heading is Angle
+    ).
+vector_heading([X, Y], Heading) :-
+    Y is sin(Heading),
+    X is cos(Heading).
 
 scalar_translate(X, Y, Z) :- {Z =:= X + Y}.
 
