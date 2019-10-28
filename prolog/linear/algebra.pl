@@ -9,7 +9,7 @@
 
               scalar_translate/3,
               scalar_multiply/3,
-              scalar_power/3
+              scalar_power/3            % ?X, ?Y, ?Z
           ]).
 
 :- use_module(library(clpr)).
@@ -61,5 +61,14 @@ vector_scale(Scalar, [X|U], [Y|V]) :-
 scalar_translate(X, Y, Z) :- {Z =:= X + Y}.
 
 scalar_multiply(X, Y, Z) :- {Z =:= X * Y}.
+
+%!  scalar_power(?X:number, ?Y:number, ?Z:number) is nondet.
+%
+%   Z is Y to the power X.
+%
+%   The first argument X is the  exponent   rather  than Y, first rather
+%   than second argument. This allows  you   to  curry  the predicate by
+%   fixing the first exponent argument.  In other words, scalar_power(2,
+%   A, B) squares A to B.
 
 scalar_power(X, Y, Z) :- {Z =:= pow(Y, X)}.
