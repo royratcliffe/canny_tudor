@@ -5,7 +5,7 @@
               vector_dimension/2,
               vector_translate/3,
               vector_multiply/3,
-              vector_scale/3,
+              vector_scale/3,           % ?Scalar, ?U, ?V
 
               scalar_translate/3,
               scalar_multiply/3,
