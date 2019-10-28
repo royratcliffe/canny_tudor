@@ -38,7 +38,7 @@ vector_multiply([X|U], [Y|V], [Z|W]) :-
     scalar_multiply(X, Y, Z),
     vector_multiply(U, V, W).
 
-%!  vector_scale(?Scalar:number, ?X:list(number), ?Y:list(number)) is
+%!  vector_scale(?Scalar:number, ?U:list(number), ?V:list(number)) is
 %!  nondet.
 %
 %   Vector U scales by Scalar to V.
