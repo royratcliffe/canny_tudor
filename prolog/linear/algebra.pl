@@ -5,6 +5,8 @@
               vector_dimension/2,
               vector_translate/3,
               vector_multiply/3,
+              vector_distance/2,        % ?V, ?Distance
+              vector_distance/3,        % ?U, ?V, ?Distance
               vector_scale/3,           % ?Scalar, ?U, ?V
               vector_heading/2,         % ?V, ?Heading
 
@@ -38,6 +40,27 @@ vector_multiply([], [], []).
 vector_multiply([X|U], [Y|V], [Z|W]) :-
     scalar_multiply(X, Y, Z),
     vector_multiply(U, V, W).
+
+%!  vector_distance(?V:list(number), ?Distance:number) is semidet.
+%!  vector_distance(?U:list(number), ?V:list(number), ?Distance:number)
+%!  is semidet.
+%
+%   Distance of the vector V  from   its  origin.  Distance is Euclidean
+%   distance between two vectors where the   first vector is the origin.
+%   Note that Euclidean  is  just  one   of  many  distances,  including
+%   Manhattan and chessboard, etc.  The   predicate  is called distance,
+%   rather than length. The term length overloads  on the dimension of a
+%   vector, its number of numeric elements.
+
+vector_distance(V, Distance) :-
+    maplist(scalar_power(2), V, [X0|X]),
+    foldl(scalar_translate, X, X0, Scalar),
+    scalar_power(2, Distance, Scalar),
+    !.
+
+vector_distance(U, V, Distance) :-
+    vector_translate(U, W, V),
+    vector_distance(W, Distance).
 
 %!  vector_scale(?Scalar:number, ?U:list(number), ?V:list(number)) is
 %!  nondet.
