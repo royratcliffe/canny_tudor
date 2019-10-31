@@ -4,6 +4,22 @@
 
 :- public test/2.
 
+test(matrix_dimensions, []) :-
+    matrix_dimensions(_, 0, 0).
+
+test(matrix_dimensions, [true(A-B=@=0-_), nondet]) :-
+    matrix_dimensions([], A, B).
+test(matrix_dimensions, [true(A-B==1-0), nondet]) :-
+    matrix_dimensions([[]], A, B).
+test(matrix_dimensions, [true(A-B=@=[]-_), nondet]) :-
+    matrix_dimensions(A, 0, B).
+
+test(matrix_dimensions, [true(A=@=[[_, _, _, _],
+                                   [_, _, _, _],
+                                   [_, _, _, _],
+                                   [_, _, _, _]]), nondet]) :-
+    matrix_dimensions(A, 4, 4).
+
 test(matrix_identity, []) :-
     matrix_identity(0, []).
 test(matrix_identity, [true(A==[[1]])]) :-
