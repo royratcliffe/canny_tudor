@@ -1,6 +1,7 @@
 :- module(linear_algebra,
           [   matrix_dimensions/3,
               matrix_identity/2,        % +Order, -Matrix
+              matrix_transpose/2,       % ?Matrix0, ?Matrix
               matrix_rotation/2,
 
               vector_dimension/2,
@@ -50,6 +51,22 @@ matrix_identity(Order, [[1|Vector]|Matrix]) :-
     maplist(=(0), Vector),
     matrix_identity(Order0, Matrix0),
     maplist([Scalars, [0|Scalars]]>>true, Matrix0, Matrix).
+
+%!  matrix_transpose(?Matrix0:list(list(number)),
+%!  ?Matrix:list(list(number))) is semidet.
+%
+%   Transposes matrices. The matrix is a list of lists. Fails unless all
+%   the sub-lists share the same length.   Works in both directions, and
+%   works with non-numerical elements. Only  operates   at  the level of
+%   two-dimensional lists, a list with   sub-lists. Sub-sub-lists remain
+%   lists and un-transposed if sub-lists comprise list elements.
+
+matrix_transpose([U0|U], []) :-
+    maplist(=([]), [U0|U]),
+    !.
+matrix_transpose([U0|U], [V0|V]) :-
+    maplist([[H|T], H, T]>>true, [U0|U], V0, U_),
+    matrix_transpose(U_, V).
 
 matrix_rotation(Theta, [[A, B], [C, A]]) :-
     {A =:= cos(Theta), B =:= sin(Theta), C =:= -B}.
