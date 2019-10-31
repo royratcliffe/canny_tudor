@@ -41,6 +41,9 @@ test(matrix_transpose, [true(A==[[1], [2], [3]])]) :-
 test(matrix_transpose, [true(A==[[1, 2, 3]])]) :-
     matrix_transpose(A, [[1], [2], [3]]).
 
+test(matrix_multiply, [true(A==[[58.0, 64.0], [139.0, 154.0]]), nondet]) :-
+    matrix_multiply([[1, 2, 3], [4, 5, 6]], [[7, 8], [9, 10], [11, 12]], A).
+
 test(vector_heading, [true(A==[0.7071067811865476, 0.7071067811865475])]) :-
     vector_heading(A, 45*pi/180).
 

@@ -2,6 +2,8 @@
           [   matrix_dimensions/3,
               matrix_identity/2,        % +Order, -Matrix
               matrix_transpose/2,       % ?Matrix0, ?Matrix
+              matrix_multiply_vector/3,
+              matrix_multiply/3,
               matrix_rotation/2,
 
               vector_dimension/2,
@@ -18,6 +20,11 @@
           ]).
 
 :- use_module(library(clpr)).
+
+/** <module> Linear algebra
+ *
+ * @author Roy Ratcliffe <royratcliffe@me.com>
+ */
 
 matrix_dimensions(Matrix, Rows, Columns) :-
     length(Matrix, Rows),
@@ -67,6 +74,13 @@ matrix_transpose([U0|U], []) :-
 matrix_transpose([U0|U], [V0|V]) :-
     maplist([[H|T], H, T]>>true, [U0|U], V0, U_),
     matrix_transpose(U_, V).
+
+matrix_multiply_vector(M, U, V) :-
+    maplist(vector_scale, U, M, [W0|W]),
+    foldl(vector_translate, W, W0, V).
+
+matrix_multiply(A, B, M) :-
+    maplist(matrix_multiply_vector(B), A, M).
 
 matrix_rotation(Theta, [[A, B], [C, A]]) :-
     {A =:= cos(Theta), B =:= sin(Theta), C =:= -B}.
