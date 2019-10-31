@@ -1,5 +1,6 @@
 :- module(linear_algebra,
           [   matrix_dimensions/3,
+              matrix_identity/2,        % +Order, -Matrix
               matrix_rotation/2,
 
               vector_dimension/2,
@@ -25,6 +26,30 @@ matrix_dimensions_([], _).
 matrix_dimensions_([V0|V], Columns) :-
     vector_dimension(V0, Columns),
     matrix_dimensions_(V, Columns).
+
+%!  matrix_identity(+Order:nonneg, -Matrix:list(list(number))) is
+%!  semidet.
+%
+%   Matrix becomes an identity matrix of Order dimensions. The result is
+%   a square diagonal matrix of Order rows and Order columns.
+%
+%   The first list of scalars  (call  it   a  row  or  column) becomes 1
+%   followed by Order-1 zeros.  Subsequent   scalar  elements  become an
+%   Order-1 identity matrix with a 0-scalar   prefix for every sub-list.
+%   Operates recursively albeit without tail recursion.
+%
+%   Fails when matrix size Order is less than zero.
+
+matrix_identity(0, []) :-
+    !.
+matrix_identity(Order, [[1|Vector]|Matrix]) :-
+    integer(Order),
+    Order > 0,
+    Order0 is Order - 1,
+    vector_dimension(Vector, Order0),
+    maplist(=(0), Vector),
+    matrix_identity(Order0, Matrix0),
+    maplist([Scalars, [0|Scalars]]>>true, Matrix0, Matrix).
 
 matrix_rotation(Theta, [[A, B], [C, A]]) :-
     {A =:= cos(Theta), B =:= sin(Theta), C =:= -B}.
