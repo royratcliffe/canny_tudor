@@ -4,13 +4,13 @@
 
 :- public test/2.
 
-test(matrix_identity, [nondet]) :-
+test(matrix_identity, []) :-
     matrix_identity(0, []).
-test(matrix_identity, [true(A==[[1]]), nondet]) :-
+test(matrix_identity, [true(A==[[1]])]) :-
     matrix_identity(1, A).
-test(matrix_identity, [true(A==[[1, 0], [0, 1]]), nondet]) :-
+test(matrix_identity, [true(A==[[1, 0], [0, 1]])]) :-
     matrix_identity(2, A).
-test(matrix_identity, [true(A==[[1, 0, 0], [0, 1, 0], [0, 0, 1]]), nondet]) :-
+test(matrix_identity, [true(A==[[1, 0, 0], [0, 1, 0], [0, 0, 1]])]) :-
     matrix_identity(3, A).
 
 test(matrix_transpose, [fail]) :-
