@@ -24,7 +24,7 @@ fmod(X, Y, Z) :-
     remainder(X_, Y_, Z_),
     (   sign(Z_) < 0
     ->  Z0 is Z_ + Y_
-    ;   Z0 is Z_
+    ;   Z0 = Z_
     ),
     Z is copysign(Z0, X).
 

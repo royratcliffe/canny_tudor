@@ -137,7 +137,7 @@ vector_heading([X, Y], Heading) :-
     Angle is atan2(Y, X),
     (   Angle < 0
     ->  Heading is Angle + 2 * pi
-    ;   Heading is Angle
+    ;   Heading = Angle
     ).
 vector_heading([X, Y], Heading) :-
     Y is sin(Heading),
