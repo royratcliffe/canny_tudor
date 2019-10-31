@@ -5,10 +5,10 @@
               matrix_rotation/2,
 
               vector_dimension/2,
-              vector_translate/3,
-              vector_multiply/3,
               vector_distance/2,        % ?V, ?Distance
               vector_distance/3,        % ?U, ?V, ?Distance
+              vector_translate/3,
+              vector_multiply/3,
               vector_scale/3,           % ?Scalar, ?U, ?V
               vector_heading/2,         % ?V, ?Heading
 
@@ -73,16 +73,6 @@ matrix_rotation(Theta, [[A, B], [C, A]]) :-
 
 vector_dimension(V, Columns) :- length(V, Columns).
 
-vector_translate([], [], []).
-vector_translate([X|U], [Y|V], [Z|W]) :-
-    scalar_translate(X, Y, Z),
-    vector_translate(U, V, W).
-
-vector_multiply([], [], []).
-vector_multiply([X|U], [Y|V], [Z|W]) :-
-    scalar_multiply(X, Y, Z),
-    vector_multiply(U, V, W).
-
 %!  vector_distance(?V:list(number), ?Distance:number) is semidet.
 %!  vector_distance(?U:list(number), ?V:list(number), ?Distance:number)
 %!  is semidet.
@@ -103,6 +93,16 @@ vector_distance(V, Distance) :-
 vector_distance(U, V, Distance) :-
     vector_translate(U, W, V),
     vector_distance(W, Distance).
+
+vector_translate([], [], []).
+vector_translate([X|U], [Y|V], [Z|W]) :-
+    scalar_translate(X, Y, Z),
+    vector_translate(U, V, W).
+
+vector_multiply([], [], []).
+vector_multiply([X|U], [Y|V], [Z|W]) :-
+    scalar_multiply(X, Y, Z),
+    vector_multiply(U, V, W).
 
 %!  vector_scale(?Scalar:number, ?U:list(number), ?V:list(number)) is
 %!  nondet.
