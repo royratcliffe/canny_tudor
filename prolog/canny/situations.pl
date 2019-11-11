@@ -180,6 +180,9 @@ retract(Situation, Module, When, Delay) :-
 canny:for_situation(fix(Now, At), Situation) :-
     canny:for_situation(now(Now, At), Situation),
     canny:for_situation(fix, Situation).
+canny:for_situation(fix(Now), Situation) :-
+    canny:for_situation(now(Now), Situation),
+    canny:for_situation(fix, Situation).
 canny:for_situation(fixate(Now, Delay), Situation) :-
     get_time(At),
     canny:for_situation(fix(Now, At), Situation),
