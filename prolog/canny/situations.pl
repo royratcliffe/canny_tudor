@@ -1,7 +1,7 @@
-:- module(canny_situations, [situation/2, situation_property/2]).
+:- module(canny_situations, [for_situation/2, situation_property/2]).
 
 :- meta_predicate
-    situation(:, ?),
+    for_situation(?, :),
     situation_property(:, ?).
 
 :- multifile
@@ -12,9 +12,9 @@
 
 :- dynamic situation_module/2.
 
-%!  situation(?Situation:any, ?Term) is nondet.
+%!  for_situation(?For, ?Situation:any) is nondet.
 %
-%   Apply Term to Situation, where Term is one of the following.
+%   Apply term For to Situation, where For is one of the following.
 %
 %       * module(Module)
 %
@@ -63,8 +63,8 @@
 %       becomes current. Hence  currently-previously   only  transitions
 %       once in-between fixations.
 
-situation(Situation, Term) :-
-    canny:for_situation(Term, Situation).
+for_situation(For, Situation) :-
+    canny:for_situation(For, Situation).
 
 canny:for_situation(module(Module), Situation) :-
     with_mutex(canny_situations, temporary_module(Situation, Module)).
