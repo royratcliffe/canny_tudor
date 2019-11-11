@@ -64,6 +64,21 @@
 %       accordingly. If there is more than  one =now/2=, only the latest
 %       becomes current. Hence  currently-previously   only  transitions
 %       once in-between fixations.
+%
+%       * fix(+Now:any)
+%
+%       Shortcut for now(Now, At) and fix where =At= becomes the current
+%       Unix epoch time. Fixes but does not retract history terms.
+%
+%       * retract(+When:number)
+%       * retract(?When:number, +Delay:number)
+%
+%       Retracts all =was/2= clauses for   all matching Situation terms.
+%       Term retract(_, Delay) retracts all  =was/2= history terms using
+%       the last term's latest time stamp. In  this way, you can retract
+%       situations without knowing their absolute time. For example, you
+%       can retract everything older than 60 seconds from the last known
+%       history term when you retract(_, 60).
 
 for_situation(For, Situation) :-
     canny:for_situation(For, Situation).
@@ -88,6 +103,9 @@ canny:for_situation(now(Now, At), Situation) :-
     ground(Now),
     number(At),
     now(Situation, Now, At).
+canny:for_situation(now(Now), Situation) :-
+    get_time(At),
+    canny:for_situation(now(Now, At), Situation).
 
 now(Situation, Now, At) :-
     ground(Situation),
