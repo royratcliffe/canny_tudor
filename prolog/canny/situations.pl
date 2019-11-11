@@ -14,7 +14,9 @@
 
 %!  for_situation(?For, ?Situation:any) is nondet.
 %
-%   Apply term For to Situation, where For is one of the following.
+%   Apply term For to Situation, where For is one of the following. Note
+%   that the For term may be nonground.  It can contain variables if the
+%   situation mutation generates new information.
 %
 %       * module(Module)
 %
