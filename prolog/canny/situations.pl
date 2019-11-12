@@ -1,8 +1,8 @@
 :- module(canny_situations, [for_situation/2, situation_property/2]).
 
 :- meta_predicate
-    for_situation(?, :),
-    situation_property(:, ?).
+    for_situation(?, :),                % ?For, ?Situation
+    situation_property(:, ?).           % ?Situation, ?Property
 
 :- multifile
     canny:for_situation/2,
@@ -18,7 +18,7 @@
 %   that the For term may be nonground.  It can contain variables if the
 %   situation mutation generates new information.
 %
-%       * module(Module)
+%       * module(?Module)
 %
 %       Sets  up  Situation  using  Module.    Establishes  the  dynamic
 %       predicate options for the temporary   situation  module used for
@@ -35,7 +35,7 @@
 %       the predicate unifies with  all   matching  situations, unifying
 %       with module(Module) non-deterministically.
 %
-%       * now(Now, At)
+%       * now(+Now:any, +At:number)
 %
 %       Makes some Situation become Now for time   index At, at the next
 %       fixation. Effectively schedules a  pending   update  one or more
@@ -196,7 +196,7 @@ canny:for_situation(listing, Situation) :-
 %
 %   Property of Situation.
 %
-%       * module(Module)
+%       * module(?Module)
 %
 %       Marries situation terms with universally-unique modules, one for
 %       one. All dynamic situations link a situation term with a module.
