@@ -2,25 +2,27 @@
 
 :- use_module(situations).
 
+:- public test/2.
+
 test(situations, []) :-
-    for_situation(module(M), x),
+    situation_apply(x, module(M)),
     forall(member(Name, [now, was, currently, previously]),
            (   Term =.. [Name, _, _],
                retractall(M:Term)
            )),
     situation_property(x, history([])),
-    for_situation(now(a, 0), x),
-    for_situation(fix, x),
+    situation_apply(x, now(a, 0)),
+    situation_apply(x, fix),
     situation_property(x, history([was(a, 0)])),
     situation_property(x, currently(a, _)),
     \+ situation_property(x, previously(_, _)),
-    for_situation(now(b, 1), x),
-    for_situation(fix, x),
+    situation_apply(x, now(b, 1)),
+    situation_apply(x, fix),
     situation_property(x, history([was(b, 1), was(a, 0)])),
     situation_property(x, currently(b, _)),
     situation_property(x, previously(a, _)),
-    for_situation(now(c, 2), x),
-    for_situation(fix, x),
+    situation_apply(x, now(c, 2)),
+    situation_apply(x, fix),
     situation_property(x, history([was(c, 2), was(b, 1), was(a, 0)])),
     situation_property(x, currently(c, _)),
     situation_property(x, previously(b, _)).

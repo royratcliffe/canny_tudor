@@ -1,22 +1,23 @@
-:- module(canny_situations, [for_situation/2, situation_property/2]).
+:- module(canny_situations, [situation_apply/2, situation_property/2]).
 
 :- meta_predicate
-    for_situation(?, :),                % ?For, ?Situation
+    situation_apply(:, ?),              % ?Situation, ?Apply
     situation_property(:, ?).           % ?Situation, ?Property
 
 :- multifile
-    canny:for_situation/2,
+    canny:apply_to_situation/2,
     canny:property_of_situation/2.
 
 :- use_module(library(random/temporary)).
 
 :- dynamic situation_module/2.
 
-%!  for_situation(?For, ?Situation:any) is nondet.
+%!  situation_apply(?Situation:any, ?Apply) is nondet.
 %
-%   Apply term For to Situation, where For is one of the following. Note
-%   that the For term may be nonground.  It can contain variables if the
-%   situation mutation generates new information.
+%   Mutates Situation. Apply term to Situation,   where  Apply is one of
+%   the following. Note that the Apply  term   may  be nonground. It can
+%   contain  variables  if  the   situation    mutation   generates  new
+%   information.
 %
 %       * module(?Module)
 %
@@ -35,19 +36,22 @@
 %       the predicate unifies with  all   matching  situations, unifying
 %       with module(Module) non-deterministically.
 %
+%       * now(+Now:any)
 %       * now(+Now:any, +At:number)
 %
 %       Makes some Situation become Now for time   index At, at the next
 %       fixation. Effectively schedules a  pending   update  one or more
 %       times; the next situation =fix/0=   fixes  the pending situation
-%       changes at some future point.
+%       changes at some future point. The   =now/1=  form applies Now to
+%       Situation at the current Unix epoch time.
 %
-%       Uses canny:for_situation/2 when Situation is   ground,  but uses
-%       canny:property_of_situation/2 otherwise. Asserts   therefore for
-%       multiple situations if Situation comprises variables. You cannot
-%       therefore have non-ground situations.
+%       Uses canny:apply_to_situation/2 when Situation   is  ground, but
+%       uses canny:property_of_situation/2 otherwise.  Asserts therefore
+%       for multiple situations if Situation   comprises  variables. You
+%       cannot therefore have non-ground situations.
 %
 %       * fix
+%       * fix(+Now:any)
 %
 %       Fixating situations does three important  things. First, it adds
 %       new Previous-When pairs to the   situation  history. They become
@@ -65,10 +69,9 @@
 %       becomes current. Hence  currently-previously   only  transitions
 %       once in-between fixations.
 %
-%       * fix(+Now:any)
-%
-%       Shortcut for now(Now, At) and fix where =At= becomes the current
-%       Unix epoch time. Fixes but does not retract history terms.
+%       Term =fix/1= is a shortcut for now(Now, At) and =fix= where =At=
+%       becomes the current Unix epoch time.  Fixes but does not retract
+%       history terms.
 %
 %       * retract(+When:number)
 %       * retract(?When:number, +Delay:number)
@@ -79,11 +82,23 @@
 %       situations without knowing their absolute time. For example, you
 %       can retract everything older than 60 seconds from the last known
 %       history term when you retract(_, 60).
+%
+%   The second argument Apply can be a list of terms to apply, including
+%   nested lists of terms. All terms apply   in order first to last, and
+%   depth first.
 
-for_situation(For, Situation) :-
-    canny:for_situation(For, Situation).
+situation_apply(Situation, Apply) :-
+    applies(Apply, Situation).
 
-canny:for_situation(module(Module), Situation) :-
+applies(Applies, Situation) :-
+    is_list(Applies),
+    !,
+    member(Apply, Applies),
+    applies(Apply, Situation).
+applies(Apply, Situation) :-
+    canny:apply_to_situation(Apply, Situation).
+
+canny:apply_to_situation(module(Module), Situation) :-
     with_mutex(canny_situations, temporary_module(Situation, Module)).
 
 temporary_module(Situation, Module) :-
@@ -99,13 +114,13 @@ temporary_module(Situation, Module) :-
                 Module:previously/2
             ], []).
 
-canny:for_situation(now(Now, At), Situation) :-
+canny:apply_to_situation(now(Now, At), Situation) :-
     ground(Now),
     number(At),
     now(Situation, Now, At).
-canny:for_situation(now(Now), Situation) :-
+canny:apply_to_situation(now(Now), Situation) :-
     get_time(At),
-    canny:for_situation(now(Now, At), Situation).
+    canny:apply_to_situation(now(Now, At), Situation).
 
 now(Situation, Now, At) :-
     ground(Situation),
@@ -115,7 +130,7 @@ now(Situation, Now, At) :-
 now(Situation, Now, At) :-
     forall(situation_module(Situation, Module), assertz(Module:now(Now, At))).
 
-canny:for_situation(fix, Situation) :-
+canny:apply_to_situation(fix, Situation) :-
     situation_module(Situation, Module),
     fix(Situation, Module).
 
@@ -153,7 +168,7 @@ fix(Situation, Module, Now, At) :-
     asserta(Module:currently(Now, At)),
     broadcast(situation(Situation, now(Now, At))).
 
-canny:for_situation(retract(When), Situation) :-
+canny:apply_to_situation(retract(When), Situation) :-
     situation_module(Situation, Module),
     retract(Situation, Module, When).
 
@@ -163,7 +178,7 @@ retract(Situation, Module, When0) :-
            ), once(retract(Module:was(Was, When)))),
     broadcast(situation(Situation, retract(When0))).
 
-canny:for_situation(retract(When, Delay), Situation) :-
+canny:apply_to_situation(retract(When, Delay), Situation) :-
     number(Delay),
     situation_module(Situation, Module),
     retract(Situation, Module, When, Delay).
@@ -177,18 +192,18 @@ retract(Situation, Module, When, Delay) :-
     When0 is When - Delay,
     retract(Situation, Module, When0).
 
-canny:for_situation(fix(Now, At), Situation) :-
-    canny:for_situation(now(Now, At), Situation),
-    canny:for_situation(fix, Situation).
-canny:for_situation(fix(Now), Situation) :-
-    canny:for_situation(now(Now), Situation),
-    canny:for_situation(fix, Situation).
-canny:for_situation(fixate(Now, Delay), Situation) :-
+canny:apply_to_situation(fix(Now, At), Situation) :-
+    canny:apply_to_situation(now(Now, At), Situation),
+    canny:apply_to_situation(fix, Situation).
+canny:apply_to_situation(fix(Now), Situation) :-
+    canny:apply_to_situation(now(Now), Situation),
+    canny:apply_to_situation(fix, Situation).
+canny:apply_to_situation(fixate(Now, Delay), Situation) :-
     get_time(At),
-    canny:for_situation(fix(Now, At), Situation),
-    canny:for_situation(retract(At, Delay), Situation).
+    canny:apply_to_situation(fix(Now, At), Situation),
+    canny:apply_to_situation(retract(At, Delay), Situation).
 
-canny:for_situation(listing, Situation) :-
+canny:apply_to_situation(listing, Situation) :-
     situation_module(Situation, Module),
     listing(Module:_).
 
@@ -211,6 +226,31 @@ canny:for_situation(listing, Situation) :-
 %       Situation is defined whenever a  unique situation module already
 %       exists for the given Situation. Amounts   to  the same as asking
 %       for module(_) property.
+%
+%       * currently(?Current:any)
+%       * currently(?Current:any, ?When:number)
+%
+%       Unifies with Current for Situation and When it happened. Unifies
+%       with the one  and  only  Current   state  for  all  the matching
+%       Situation terms. Unifies non-deterministically for all Situation
+%       solutions, but semi-deterministically for   Current  state. Thus
+%       allows for multiple matching  situations   but  only one Current
+%       solution.
+%
+%       * previously(?Previous:any)
+%       * previously(?Previous:any, ?When:number)
+%
+%       Finds  Previous  state  of    Situation,   non-deterministically
+%       resolving zero or more matching  Situation   terms.  Fails if no
+%       previous Situation condition.
+%
+%       * history(?History:list(compound))
+%
+%       Unifies  History  with  all  current    and  previous  situation
+%       conditions, including their time stamps.   History is a sequence
+%       of compounds of the  form  was(Was,   When)  where  Situation is
+%       effectively a primitive condition coordinate,   Was is a sensing
+%       outcome and When marks the moment that the outcome transpired.
 
 situation_property(Situation, Property) :-
     canny:property_of_situation(Property, Situation).
