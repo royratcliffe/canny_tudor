@@ -2,6 +2,10 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.5.1] - 2019-12-03
+### Fixed
+- Situation mutator renamed `situation_apply/2`
+
 ## [0.5.0] - 2019-12-03
 ### Added
 - Linear algebra
