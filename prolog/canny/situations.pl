@@ -199,9 +199,13 @@ canny:property_of_situation(defined, Situation) :-
 canny:property_of_situation(currently(Current, When), Situation) :-
     situation_module(Situation, Module),
     once(Module:currently(Current, When)).
+canny:property_of_situation(currently(Current), Situation) :-
+    canny:property_of_situation(currently(Current, _), Situation).
 canny:property_of_situation(previously(Previous, When), Situation) :-
     situation_module(Situation, Module),
     once(Module:previously(Previous, When)).
+canny:property_of_situation(previously(Previous), Situation) :-
+    canny:property_of_situation(previously(Previous, _), Situation).
 canny:property_of_situation(history(History), Situation) :-
     situation_module(Situation, Module),
     findall(was(Was, When), Module:was(Was, When), History).

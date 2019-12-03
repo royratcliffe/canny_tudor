@@ -2,6 +2,13 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2019-12-03
+### Added
+- Linear algebra
+- Canny maths
+### Fixed
+- Canny situations
+
 ## [0.4.0] - 2019-10-19
 ### Added
 - Canny situations
