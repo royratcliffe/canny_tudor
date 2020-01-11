@@ -2,6 +2,12 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.5.2] - 2020-01-11
+### Added
+- close_streams/2
+### Fixed
+- Do not independently broadcast was/2 and now/2 for situation transitions
+
 ## [0.5.1] - 2019-12-03
 ### Fixed
 - Situation mutator renamed `situation_apply/2`
