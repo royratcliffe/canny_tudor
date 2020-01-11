@@ -161,9 +161,7 @@ fix(Situation, Module, Now, At) :-
     !,
     asserta(Module:previously(Previous, When)),
     asserta(Module:currently(Now, At)),
-    broadcast(situation(Situation, was(Previous, When))),
-    broadcast(situation(Situation, was(Previous, When), now(Now, At))),
-    broadcast(situation(Situation, now(Now, At))).
+    broadcast(situation(Situation, was(Previous, When), now(Now, At))).
 fix(Situation, Module, Now, At) :-
     asserta(Module:currently(Now, At)),
     broadcast(situation(Situation, now(Now, At))).
