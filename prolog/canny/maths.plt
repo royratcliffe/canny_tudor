@@ -17,4 +17,17 @@ test(fmod) :- fmod(-5.1, -3, Z), epsilon_equal(2, Z, -2.1).
 test(permute_sum, [all(A==[[1, 1, 1], [1, 2], [2, 1], [3]])]) :-
     permute_sum(3, A).
 
+test(permute_list_to_grid, [true(A==[[a]])]) :-
+    permute_list_to_grid([a], A).
+test(permute_list_to_grid, [all(A==[[[a], [b]], [[a, b]]])]) :-
+    permute_list_to_grid([a, b], A).
+test(permute_list_to_grid,
+     [   all(A==[   [[a], [b], [c]],
+                    [[a], [b,   c]],
+                    [[a,   b], [c]],
+                    [[a,   b,   c]]
+                ])
+     ]) :-
+    permute_list_to_grid([a, b, c], A).
+
 :- end_tests(canny_maths).
