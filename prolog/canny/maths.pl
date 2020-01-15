@@ -59,11 +59,12 @@ permute_sum(N, [H|T]) :-
 %
 %   Permutes a list to two-dimensional grid, a   list of lists. Given an
 %   ordered List0 of elements, unifies List   with  all possible rows of
-%   columns. Given a, b and c for example, permutes three rows of single
-%   columns a, b, c; then a in the first row with b and c in the second;
-%   then a and b in the  first  row,   c  alone  in  the second; finally
-%   permutes a, b, c on a single   row. Permutations always preserve the
-%   order of elements from first to last.
+%   columns. Given =a=, =b= and =c= for  example, permutes three rows of
+%   single columns =a=, =b=, =c=; then =a= in the first row with =b= and
+%   =c= in the second; then =a= and =b=   in the first row, =c= alone in
+%   the second; finally  permutes  =a=,  =b=,   =c=  on  a  single  row.
+%   Permutations always preserve the order  of   elements  from first to
+%   last.
 
 permute_list_to_grid(List0, List) :-
     length(List0, N),
