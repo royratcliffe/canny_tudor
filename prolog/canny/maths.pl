@@ -3,7 +3,9 @@
               fmod/3,
 
               epsilon_equal/2,
-              epsilon_equal/3
+              epsilon_equal/3,
+
+              permute_sum/2
           ]).
 
 %!  remainder(+X:number, +Y:number, -Z:number) is det.
@@ -38,3 +40,16 @@ fmod(X, Y, Z) :-
 epsilon_equal(X, Y) :- epsilon_equal(1, X, Y).
 
 epsilon_equal(Epsilons, X, Y) :- Epsilons * epsilon >= abs(X - Y).
+
+%!  permute_sum(+N:nonneg, -Integers:list(integer)) is nondet.
+%
+%   Permute sum. Non-deterministically finds all combinations of integer
+%   sums between 1 and N. Assumes  that   0<=N.  The  number of possible
+%   permutations amounts to 2-to-the-power of  N-1;   for  N=3 there are
+%   four as follows: 1+1+1+1, 1+2, 2+1 and 3.
+
+permute_sum(0, []) :- !.
+permute_sum(N, [H|T]) :-
+    between(1, N, H),
+    N0 is N - H,
+    permute_sum(N0, T).
