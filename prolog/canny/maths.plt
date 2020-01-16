@@ -14,8 +14,8 @@ test(fmod) :- fmod(-5.1, 3, Z), epsilon_equal(2, Z, -2.1).
 test(fmod) :- fmod(5.1, -3, Z), epsilon_equal(2, Z, 2.1).
 test(fmod) :- fmod(-5.1, -3, Z), epsilon_equal(2, Z, -2.1).
 
-test(permute_sum, [all(A==[[1, 1, 1], [1, 2], [2, 1], [3]])]) :-
-    permute_sum(3, A).
+test(permute_sum_of_int, [all(A==[[1, 1, 1], [1, 2], [2, 1], [3]])]) :-
+    permute_sum_of_int(3, A).
 
 test(permute_list_to_grid, [true(A==[[a]])]) :-
     permute_list_to_grid([a], A).
