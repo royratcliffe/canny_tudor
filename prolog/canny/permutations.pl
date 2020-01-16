@@ -8,7 +8,7 @@
 %   Permute sum. Non-deterministically finds all combinations of integer
 %   sums between 1 and N. Assumes  that   0<=N.  The  number of possible
 %   permutations amounts to 2-to-the-power of  N-1;   for  N=3 there are
-%   four as follows: 1+1+1+1, 1+2, 2+1 and 3.
+%   four as follows: 1+1+1, 1+2, 2+1 and 3.
 
 permute_sum_of_int(0, []) :- !.
 permute_sum_of_int(N, [H|T]) :-
