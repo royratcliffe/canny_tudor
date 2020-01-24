@@ -2,7 +2,8 @@
           [   % +Key, +Dict0:dict, +OnNotEmpty:callable, +Value, -Dict:dict
               put_dict/5,
 
-              merge_dict/3,             % +Pair, +Dict0:dict, -Dict:dict
+              merge_dict/3,             % +Dict0:dict, +Dict1:dict, -Dict:dict
+              merge_pair/3,             % +Dict0:dict, +Pair, -Dict:dict
               merge_dicts/2,            % +Dicts:list(dict), -Dict:dict
 
               dict_member/2,            % ?Dict:dict, ?Member
@@ -42,40 +43,46 @@ put_dict(Key, Dict0, OnNotEmpty, Value, Dict) :-
 put_dict(Key, Dict0, _, Value, Dict) :-
     put_dict(Key, Dict0, Value, Dict).
 
-%!  merge_dict(+Pair:pair, +Dict0:dict, -Dict:dict) is det.
-%!  merge_dict(+Dict0:dict, +Pair:pair, -Dict:dict) is det.
-%!  merge_dict(+Pairs:dict, +Dict0:dict, -Dict:dict) is semidet.
+%!  merge_dict(+Dict0:dict, +Dict1:dict, -Dict:dict) is semidet.
 %
-%   Merges Pair or Pairs dictionary with  dictionary. Merges a key-value
-%   Pair, or multiple pairs from  a   dictionary  Pairs, into dictionary
+%   Merges multiple pairs  from  a   dictionary  Dict1,  into dictionary
 %   Dict0, unifying the results at  Dict.   Iterates  the  pairs for the
-%   Pairs dictionary, using them to recursively update Dict0 key-by-key.
-%   Discards the tag from Pairs; Dict carries the same tag as Dict0.
+%   Dict1 dictionary, using them to recursively update Dict0 key-by-key.
+%   Discards the tag from Dict1; Dict carries the same tag as Dict0.
 %
 %   Merges non-dictionaries according to type.   Appends  lists when the
 %   value in a key-value pair  has   list  type.  Only replaces existing
 %   values with incoming values when the leaf   is not a dictionary, and
-%   neither existing nor incoming is   a list. Predicate `merge_dict_/3`
+%   neither existing nor incoming is a list.
+%
+%   Note the argument order.  The  first   argument  specifies  the base
+%   dictionary starting point.  The  second   argument  merges  into the
+%   first. The resulting merge unifies at  the third argument. The order
+%   only matters if keys collide. Pairs  from Dict1 replace key-matching
+%   pairs in Dict0.
+%
+%   Merging does not replace the original  dictionary tag. This includes
+%   an unbound tag. The tag of Dict0 remains unchanged after merge.
+
+merge_dict(Dict0, Dict1, Dict) :-
+    is_dict(Dict1),
+    dict_pairs(Dict1, _, Pairs),
+    foldl(merge_pair_, Pairs, Dict0, Dict).
+
+%!  merge_pair(+Dict0:dict, +Pair:pair, -Dict:dict) is det.
+%
+%   Merges Pair with dictionary. Merges a key-value Pair into dictionary
+%   Dict0, unifying the results at Dict.
+%
+%   Private predicate `merge_dict_/3`
 %   is the value merging predicate; given   the  original Value0 and the
 %   incoming Value, it merges the two values at Value_.
-%
-%   Which side of the input arguments should  the incoming pair or pairs
-%   occupy? Should it be the first or the   second? This is a design and
-%   semantics issue. The implementation allows for  either style. If the
-%   first argument is a pair, the second   must be a dictionary; else if
-%   the first is *not* a pair but the  second is, then the first must be
-%   the dictionary.
 
-merge_dict(Key-Value, Dict0, Dict) :-
-    !,
+merge_pair(Dict0, Key-Value, Dict) :-
+    merge_pair_(Key-Value, Dict0, Dict).
+
+merge_pair_(Key-Value, Dict0, Dict) :-
     put_dict(Key, Dict0, merge_dict_, Value, Dict).
-merge_dict(Dict0, Key-Value, Dict) :-
-    !,
-    put_dict(Key, Dict0, merge_dict_, Value, Dict).
-merge_dict(Pairs0, Dict0, Dict) :-
-    is_dict(Pairs0),
-    dict_pairs(Pairs0, _, Pairs),
-    foldl(merge_dict, Pairs, Dict0, Dict).
 
 %!  merge_dict_(+Value0, +Value, -Value_) is semidet.
 %
