@@ -12,6 +12,7 @@ unlisten :-
     unlisten(M),
     nodebug(situation).
 
+situation([_, fix]) :- !.
 situation(Arguments) :-
     Term =.. [situation|Arguments],
     debug(situation, '~q', [Term]).
