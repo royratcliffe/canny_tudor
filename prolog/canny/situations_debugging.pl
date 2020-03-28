@@ -22,6 +22,12 @@ situation(Arguments) :-
 :- use_module(library(print/table)).
 
 %!  print_situation_history_lengths is det.
+%
+%   Finds all situations.  Samples  their   histories  and  measures the
+%   history lengths. Uses `=` when sorting;   do  not remove duplicates.
+%   Prints a table of  situations  by   their  history  length,  longest
+%   history comes first. Filters out   single-element  histories for the
+%   sake of noise minimisation.
 
 print_situation_history_lengths :-
     findall((Module:Situation)-Length,
