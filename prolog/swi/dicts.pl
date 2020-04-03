@@ -225,3 +225,13 @@ pairs_tag([Key-Value|T], Tag) :-
     ;   true
     ),
     pairs_tag(T, Tag).
+
+%!  create_dict(?Tag, +Dict0, -Dict) is semidet.
+
+create_dict(Tag, Dict0, Dict) :-
+    is_dict(Dict0, _),
+    !,
+    dict_pairs(Dict0, _, Pairs),
+    dict_create(Dict, Tag, Pairs).
+create_dict(Tag, Data, Dict) :-
+    dict_create(Dict, Tag, Data).
