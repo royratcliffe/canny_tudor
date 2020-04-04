@@ -11,7 +11,8 @@
               % ?Tag, ?Template, :Goal, -Dicts:list(dict)
               findall_dict/4,
 
-              dict_tag/2                % +Dict, ?Tag
+              dict_tag/2,               % +Dict, ?Tag
+              create_dict/3             % ?Tag, +Dict0, -Dict
           ]).
 
 :- use_module(compounds).
@@ -225,3 +226,26 @@ pairs_tag([Key-Value|T], Tag) :-
     ;   true
     ),
     pairs_tag(T, Tag).
+
+%!  create_dict(?Tag, +Dict0, -Dict) is semidet.
+%
+%   Creates a dictionary just  like  dict_create/3   does  but  with two
+%   important differences. First, the argument  order differs. Tag comes
+%   first to make maplist/3 and  convlist/3   more  convenient where the
+%   Goal argument includes the Tag. The   new dictionary Dict comes last
+%   for the same reason. Secondly, always applies   the given Tag to the
+%   new Dict, even if the incoming Data supplies one.
+%
+%   Creating a dictionary using standard dict_create/3 overrides the tag
+%   argument from its Data dictionary,  ignoring   the  Tag  if any. For
+%   example, using dict_create/3 for tag xyz  and dictionary abc{} gives
+%   you abc{} as the outgoing dictionary.   This predicate reverses this
+%   behaviour; the Tag argument replaces any tag in a Data dictionary.
+
+create_dict(Tag, Dict0, Dict) :-
+    is_dict(Dict0, _),
+    !,
+    dict_pairs(Dict0, _, Pairs),
+    dict_create(Dict, Tag, Pairs).
+create_dict(Tag, Data, Dict) :-
+    dict_create(Dict, Tag, Data).

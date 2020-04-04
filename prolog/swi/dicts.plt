@@ -32,4 +32,13 @@ test(dict_member, [true(A-B==a^b/c^d/e^f/g^h/i^j-999), nondet]) :-
 test(dict_tag, [true(A-B==tag-tag_sub)]) :-
     dict_tag(A{sub:B{}}, tag).
 
+test(create_dict, true(Dict == abc{})) :-
+    dict_create(Dict, xyz, abc{}).
+test(create_dict, true(Dict == xyz{})) :-
+    create_dict(xyz, [], Dict).
+test(create_dict, true(A==xyz{})) :-
+    create_dict(xyz, abc{}, A).
+test(create_dict, true(Dict==Tag{})) :-
+    create_dict(Tag, abc{}, Dict).
+
 :- end_tests(swi_dicts).
