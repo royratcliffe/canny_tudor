@@ -36,7 +36,9 @@ test(create_dict, true(Dict == abc{})) :-
     dict_create(Dict, xyz, abc{}).
 test(create_dict, true(Dict == xyz{})) :-
     create_dict(xyz, [], Dict).
-test(create_dict, [true(A==xyz{}), nondet]) :-
+test(create_dict, true(A==xyz{})) :-
     create_dict(xyz, abc{}, A).
+test(create_dict, true(Dict==Tag{})) :-
+    create_dict(Tag, abc{}, Dict).
 
 :- end_tests(swi_dicts).
