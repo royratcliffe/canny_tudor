@@ -2,6 +2,16 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2020-04-06
+### Added
+- permute_sum_of_int/2
+- permute_list_to_grid/2
+- dict_tag/2
+- print_situation_history_lengths/0
+- create_dict/3
+### Fixed
+- Code stylings
+
 ## [0.5.2] - 2020-01-11
 ### Added
 - close_streams/2

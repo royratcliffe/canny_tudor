@@ -21,7 +21,7 @@ scrape_row_(URL, Row) :-
     findall(Head, xpath(Table, //(thead)/tr/td(normalize_space), Head), Heads),
     xpath(Table, //(tr), TR),
     findall(Datum, xpath(TR, //(td(normalize_space)), Datum), Data),
-    Data \= Heads,
+    Data \== Heads,
     scrape_row__(Heads, Data, Columns),
     Row =.. [row|Columns].
 
