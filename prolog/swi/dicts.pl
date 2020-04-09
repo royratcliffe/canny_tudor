@@ -13,7 +13,8 @@
 
               dict_tag/2,               % +Dict, ?Tag
               create_dict/3,            % ?Tag, +Dict0, -Dict
-              is_key/1                  % +Key
+              is_key/1,                 % +Key
+              dict_compound/2           % +Dict, -Compound
           ]).
 
 :- use_module(compounds).
@@ -259,3 +260,25 @@ create_dict(Tag, Data, Dict) :-
 
 is_key(Key) :- atom(Key), !.
 is_key(Key) :- integer(Key).
+
+%!  dict_compound(+Dict:dict, ?Compound:compound) is nondet.
+
+dict_compound(Dict, Compound) :-
+    dict_pairs(Dict, _, Pairs),
+    member(Key0-Value, Pairs),
+    restyle_identifier_ex(one_two, Key0, Key_),
+    downcase_atom(Key_, Key),
+    dict_compound_(Key-Value, Compound).
+
+dict_compound_(Key-Value, Compound) :-
+    is_dict(Value),
+    !,
+    dict_compound(Value, Compound_),
+    Compound =.. [Key, Compound_].
+dict_compound_(Key-Value, Compound) :-
+    is_list(Value),
+    !,
+    member(Member, Value),
+    dict_compound_(Key-Member, Compound).
+dict_compound_(Key-Value, Compound) :-
+    Compound =.. [Key, Value].
