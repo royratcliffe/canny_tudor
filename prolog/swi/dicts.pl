@@ -258,6 +258,9 @@ create_dict(Tag, Data, Dict) :-
 %   Succeeds for terms that  can  serve   as  keys  within a dictionary.
 %   Dictionary keys are atoms or  tagged   integers,  otherwise known as
 %   constant values. Integers include negatives.
+%
+%   @arg Key successfully unites for all dictionary-key conforming
+%   terms: atomic or integral.
 
 is_key(Key) :- atom(Key), !.
 is_key(Key) :- integer(Key).
