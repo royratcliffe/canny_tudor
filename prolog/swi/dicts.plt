@@ -57,5 +57,9 @@ test(dict_compound, [true(B=='1'(a)), nondet]) :-
     dict_compound(_{1:a}, B).
 test(dict_compound, [true(B=='-1'(a)), nondet]) :-
     dict_compound(_{-1:a}, B).
+test(dict_compound, [true(C=='999'(123, a)), nondet]) :-
+    dict_compound(_{123:_{999:a}}, C).
+test(dict_compound, [true(E==a(1, 2, 3, b)), nondet]) :-
+    dict_compound(_{1:_{2:_{3:_{a:b}}}}, E).
 
 :- end_tests(swi_dicts).

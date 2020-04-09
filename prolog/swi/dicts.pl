@@ -18,6 +18,7 @@
           ]).
 
 :- use_module(compounds).
+:- use_module(atoms).
 
 :- meta_predicate
     put_dict(+, +, 3, +, -),
@@ -262,25 +263,50 @@ is_key(Key) :- atom(Key), !.
 is_key(Key) :- integer(Key).
 
 %!  dict_compound(+Dict:dict, ?Compound:compound) is nondet.
+%
+%   Finds all compound-folded terms within Dict.  Unifies with all pairs
+%   within Dict as compounds of the  form key(Value) where =key= matches
+%   the dictionary key converted to one-two style and lower-case.
+%
+%   Unfolds lists and sub-dictionaries   non-deterministically. For most
+%   occasions, the non-deterministic unfolding of   sub-lists results in
+%   multiple non-deterministic solutions and  typically   has  a  plural
+%   compound name. This is not a perfect  solution for lists of results,
+%   since the order of the solutions  defines the relations between list
+%   elements.
+%
+%   Dictionary keys can be  atoms  or   integers.  Converts  integers to
+%   compound names using integer-to-atom translation. However, compounds
+%   for sub-dictionaries re-wrap the  sub-compounds   by  inserting  the
+%   integer key as the prefix argument of a two or more arity compound.
 
 dict_compound(Dict, Compound) :-
     dict_pairs(Dict, _, Pairs),
-    member(Key0-Value, Pairs),
-    dict_compound_key(Key0, Key),
+    member(Key-Value, Pairs),
     dict_compound_(Key-Value, Compound).
 
 dict_compound_(Key-Value, Compound) :-
     is_dict(Value),
     !,
-    dict_compound(Value, Compound_),
-    Compound =.. [Key, Compound_].
+    dict_compound__(Key-Value, Compound).
 dict_compound_(Key-Value, Compound) :-
     is_list(Value),
     !,
     member(Member, Value),
     dict_compound_(Key-Member, Compound).
-dict_compound_(Key-Value, Compound) :-
+dict_compound_(Key0-Value, Compound) :-
+    dict_compound_key(Key0, Key),
     Compound =.. [Key, Value].
+
+dict_compound__(Key-Dict, Compound) :-
+    integer(Key),
+    !,
+    dict_compound(Dict, Compound0),
+    Compound0 =.. [Name|Arguments],
+    Compound =.. [Name, Key|Arguments].
+dict_compound__(Key-Dict, Compound) :-
+    dict_compound(Dict, Compound0),
+    Compound =.. [Key, Compound0].
 
 dict_compound_key(Key0, Key) :-
     integer(Key0),
