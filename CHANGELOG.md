@@ -2,6 +2,12 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.6.1] - 2020-04-09
+### Added
+- restyle_identifier_ex/3
+- is_key/1
+- dict_compound/2
+
 ## [0.6.0] - 2020-04-06
 ### Added
 - permute_sum_of_int/2

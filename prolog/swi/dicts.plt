@@ -41,4 +41,25 @@ test(create_dict, true(A==xyz{})) :-
 test(create_dict, true(Dict==Tag{})) :-
     create_dict(Tag, abc{}, Dict).
 
+test(dict_compound, [fail]) :-
+    dict_compound(_{}, _).
+test(dict_compound, [true(B==a(1)), nondet]) :-
+    dict_compound(_{a:1}, B).
+test(dict_compound, [true(B==a(1)), nondet]) :-
+    dict_compound(_{'A':1}, B).
+test(dict_compound, [true(C==a(b(c))), nondet]) :-
+    dict_compound(_{a:_{b:c}}, C).
+test(dict_compound, [fail]) :-
+    dict_compound(_{a:[]}, _).
+test(dict_compound, [all(B==[a(1), a(2), a(3)])]) :-
+    dict_compound(_{a:[1, 2, 3]}, B).
+test(dict_compound, [true(B=='1'(a)), nondet]) :-
+    dict_compound(_{1:a}, B).
+test(dict_compound, [true(B=='-1'(a)), nondet]) :-
+    dict_compound(_{-1:a}, B).
+test(dict_compound, [true(C=='999'(123, a)), nondet]) :-
+    dict_compound(_{123:_{999:a}}, C).
+test(dict_compound, [true(E==a(1, 2, 3, b)), nondet]) :-
+    dict_compound(_{1:_{2:_{3:_{a:b}}}}, E).
+
 :- end_tests(swi_dicts).
