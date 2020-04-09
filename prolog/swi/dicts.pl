@@ -12,7 +12,8 @@
               findall_dict/4,
 
               dict_tag/2,               % +Dict, ?Tag
-              create_dict/3             % ?Tag, +Dict0, -Dict
+              create_dict/3,            % ?Tag, +Dict0, -Dict
+              is_key/1                  % +Key
           ]).
 
 :- use_module(compounds).
@@ -249,3 +250,12 @@ create_dict(Tag, Dict0, Dict) :-
     dict_create(Dict, Tag, Pairs).
 create_dict(Tag, Data, Dict) :-
     dict_create(Dict, Tag, Data).
+
+%!  is_key(+Key:any) is semidet.
+%
+%   Succeeds for terms that  can  serve   as  keys  within a dictionary.
+%   Dictionary keys are atoms or  tagged   integers,  otherwise known as
+%   constant values. Integers include negatives.
+
+is_key(Key) :- atom(Key), !.
+is_key(Key) :- integer(Key).
