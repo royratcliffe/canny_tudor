@@ -266,8 +266,7 @@ is_key(Key) :- integer(Key).
 dict_compound(Dict, Compound) :-
     dict_pairs(Dict, _, Pairs),
     member(Key0-Value, Pairs),
-    restyle_identifier_ex(one_two, Key0, Key_),
-    downcase_atom(Key_, Key),
+    dict_compound_key(Key0, Key),
     dict_compound_(Key-Value, Compound).
 
 dict_compound_(Key-Value, Compound) :-
@@ -282,3 +281,11 @@ dict_compound_(Key-Value, Compound) :-
     dict_compound_(Key-Member, Compound).
 dict_compound_(Key-Value, Compound) :-
     Compound =.. [Key, Value].
+
+dict_compound_key(Key0, Key) :-
+    integer(Key0),
+    !,
+    atom_number(Key, Key0).
+dict_compound_key(Key0, Key) :-
+    restyle_identifier_ex(one_two, Key0, Key_),
+    downcase_atom(Key_, Key).
