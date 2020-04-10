@@ -2,6 +2,10 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.7.0] - 2020-04-10
+### Fixed
+- Key restyling for dict_compound/2
+
 ## [0.6.1] - 2020-04-09
 ### Added
 - restyle_identifier_ex/3
