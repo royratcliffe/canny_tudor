@@ -2,8 +2,6 @@
 
 :- use_module(situations).
 
-:- public test/2.
-
 test(situations, []) :-
     situation_apply(x, module(M)),
     forall(member(Name, [now, was, currently, previously]),

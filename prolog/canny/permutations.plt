@@ -2,8 +2,6 @@
 
 :- use_module(permutations).
 
-:- public test/2.
-
 test(permute_sum_of_int, [all(A==[[1, 1, 1], [1, 2], [2, 1], [3]])]) :-
     permute_sum_of_int(3, A).
 

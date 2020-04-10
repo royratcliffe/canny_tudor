@@ -2,8 +2,6 @@
 
 :- use_module(random_names).
 
-:- public test/2.
-
 test(random_name, [fail]) :-
     random_name(x).
 test(random_name, []) :-
