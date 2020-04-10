@@ -1,7 +1,5 @@
 :- begin_tests(swi_dicts).
 
-:- public test/2.
-
 :- use_module(dicts).
 
 test(merge_dict, [true(v(Tag, Dict)==v(Tag, Tag{a:2}))]) :-
