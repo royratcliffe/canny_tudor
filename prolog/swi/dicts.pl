@@ -307,8 +307,9 @@ dict_compound__(Key-Dict, Compound) :-
     dict_compound(Dict, Compound0),
     Compound0 =.. [Name|Arguments],
     Compound =.. [Name, Key|Arguments].
-dict_compound__(Key-Dict, Compound) :-
+dict_compound__(Key0-Dict, Compound) :-
     dict_compound(Dict, Compound0),
+    dict_compound_key(Key0, Key),
     Compound =.. [Key, Compound0].
 
 dict_compound_key(Key0, Key) :-
