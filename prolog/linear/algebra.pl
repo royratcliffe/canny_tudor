@@ -20,6 +20,7 @@
           ]).
 
 :- use_module(library(clpr)).
+:- use_module(library(clpq), []).
 
 /** <module> Linear algebra
  *
