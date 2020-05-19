@@ -14,11 +14,13 @@
               dict_tag/2,               % +Dict, ?Tag
               create_dict/3,            % ?Tag, +Dict0, -Dict
               is_key/1,                 % +Key
-              dict_compound/2           % +Dict, -Compound
+              dict_compound/2,          % +Dict, -Compound
+              list_dict/3               % ?List, ?Tag, ?Dict
           ]).
 
 :- use_module(compounds).
 :- use_module(atoms).
+:- use_module(lists).
 
 :- meta_predicate
     put_dict(+, +, 3, +, -),
@@ -319,3 +321,14 @@ dict_compound_key(Key0, Key) :-
 dict_compound_key(Key0, Key) :-
     restyle_identifier_ex(one_two, Key0, Key_),
     downcase_atom(Key_, Key).
+
+%!  list_dict(?List, ?Tag, ?Dict) is semidet.
+%
+%   List to Dict by zipping up items from List with integer indexed keys
+%   starting at 1. Finds  only  the   first  solution,  even if multiple
+%   solutions exist.
+
+list_dict(List, Tag, Dict) :-
+    indexed_pairs(List, 1, Pairs),
+    dict_create(Dict, Tag, Pairs),
+    !.

@@ -16,6 +16,8 @@ test(dict_member, [true(A==settings^advanced-advanced{})]) :-
 
 test(dict_member, [true(A==dict{key:value{}})]) :-
     dict_member(A, dict^key-value{}).
+test(dict_member, [true(A==tag{})]) :-
+    dict_member(A, tag).
 test(dict_member, [true(A==dict^key-value{})]) :-
     dict_member(dict{key:value{}}, A).
 
@@ -59,5 +61,10 @@ test(dict_compound, [true(C=='999'(123, a)), nondet]) :-
     dict_compound(_{123:_{999:a}}, C).
 test(dict_compound, [true(E==a(1, 2, 3, b)), nondet]) :-
     dict_compound(_{1:_{2:_{3:_{a:b}}}}, E).
+
+test(list_dict, [true(A==tag{1:a, 2:b, 3:c})]) :-
+    list_dict([a, b, c], tag, A).
+test(list_dict, [true(A-B==[a]-tag)]) :-
+    list_dict(A, B, tag{1:a}).
 
 :- end_tests(swi_dicts).
