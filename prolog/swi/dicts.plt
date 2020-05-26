@@ -29,6 +29,25 @@ test(dict_member, [true(A==a{b:c{d:e{f:1}}}), nondet]) :-
 test(dict_member, [true(A-B==a^b/c^d/e^f/g^h/i^j-999), nondet]) :-
     dict_member(a{b:c{d:e{f:g{h:i{j:999}}}}}, A-B).
 
+test(dict_leaf, [fail]) :-
+    dict_leaf(_{}, _).
+test(dict_leaf, [true(A-B=@=_-(a-1))]) :-
+    dict_leaf(A{a:1}, B).
+test(dict_leaf, [true(v(A, B, C)=@=v(_, _, a(b)-1))]) :-
+    dict_leaf(A{a:B{b:1}}, C).
+test(dict_leaf, [all(v(A, B, C)=@=[v(_, _, a(b)-1), v(_, _, a(c)-2)])]) :-
+    dict_leaf(A{a:B{b:1, c:2}}, C).
+test(dict_leaf, [true(A=@=_{a:_{b:_{c:123}}})]) :-
+    dict_leaf(A, a(b(c))-123).
+test(dict_leaf, [true(A-B=@=_-(1-1))]) :-
+    dict_leaf(A{1:1}, B).
+test(dict_leaf, [true(A=@=_{1:1})]) :-
+    dict_leaf(A, 1-1).
+test(dict_leaf, [fail]) :-
+    dict_leaf(_{1:_{2:3}}, _).
+test(dict_leaf, [true(v(A, B, C)=@=v(_, _, a(2)-3))]) :-
+    dict_leaf(A{a:B{2:3}}, C).
+
 test(dict_tag, [true(A-B==tag-tag_sub)]) :-
     dict_tag(A{sub:B{}}, tag).
 
