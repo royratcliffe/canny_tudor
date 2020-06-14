@@ -1,5 +1,7 @@
 :- module(canny_situations_debugging, [print_situation_history_lengths/0]).
 
+:- use_module(situations).
+
 listen :-
     unlisten,
     debug(situation),
@@ -12,10 +14,14 @@ unlisten :-
     unlisten(M),
     nodebug(situation).
 
-situation([_, fix]) :- !.
-situation(Arguments) :-
-    Term =.. [situation|Arguments],
-    debug(situation, '~q', [Term]).
+situation([Situation, was(Was, _)]) :-
+    !,
+    debug(situation, 'situation ~q WAS ~q', [Situation, Was]).
+situation([Situation, was(Was, _), now(Now, _)]) :-
+    !,
+    debug(situation, 'situation ~q WAS ~q NOW ~q', [Situation, Was, Now]).
+situation([Situation, now(Now, _)]) :-
+    debug(situation, 'situation ~q NOW ~q', [Situation, Now]).
 
 :- initialization listen.
 
