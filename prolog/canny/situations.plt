@@ -2,8 +2,6 @@
 
 :- use_module(situations).
 
-:- public test/2.
-
 test(situations, []) :-
     situation_apply(x, module(M)),
     forall(member(Name, [now, was, currently, previously]),
@@ -22,6 +20,7 @@ test(situations, []) :-
     situation_apply(x, [now(c, 2), fix]),
     situation_property(x, history([was(c, 2), was(b, 1), was(a, 0)])),
     situation_property(x, currently(c, _)),
-    situation_property(x, previously(b, _)).
+    situation_property(x, previously(b, _)),
+    situation_apply(x, fix).
 
 :- end_tests(canny_situations).

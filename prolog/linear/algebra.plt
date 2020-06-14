@@ -2,8 +2,6 @@
 
 :- use_module(algebra).
 
-:- public test/2.
-
 test(matrix_dimensions, []) :-
     matrix_dimensions(_, 0, 0).
 

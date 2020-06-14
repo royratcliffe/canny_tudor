@@ -16,6 +16,8 @@ test(dict_member, [true(A==settings^advanced-advanced{})]) :-
 
 test(dict_member, [true(A==dict{key:value{}})]) :-
     dict_member(A, dict^key-value{}).
+test(dict_member, [true(A==tag{})]) :-
+    dict_member(A, tag).
 test(dict_member, [true(A==dict^key-value{})]) :-
     dict_member(dict{key:value{}}, A).
 
@@ -26,6 +28,25 @@ test(dict_member, [true(A==a{b:c{d:e{f:1}}}), nondet]) :-
     dict_member(A, a^b/c^d/e^f-1).
 test(dict_member, [true(A-B==a^b/c^d/e^f/g^h/i^j-999), nondet]) :-
     dict_member(a{b:c{d:e{f:g{h:i{j:999}}}}}, A-B).
+
+test(dict_leaf, [fail]) :-
+    dict_leaf(_{}, _).
+test(dict_leaf, [true(A-B=@=_-(a-1))]) :-
+    dict_leaf(A{a:1}, B).
+test(dict_leaf, [true(v(A, B, C)=@=v(_, _, a(b)-1))]) :-
+    dict_leaf(A{a:B{b:1}}, C).
+test(dict_leaf, [all(v(A, B, C)=@=[v(_, _, a(b)-1), v(_, _, a(c)-2)])]) :-
+    dict_leaf(A{a:B{b:1, c:2}}, C).
+test(dict_leaf, [true(A=@=_{a:_{b:_{c:123}}})]) :-
+    dict_leaf(A, a(b(c))-123).
+test(dict_leaf, [true(A-B=@=_-(1-1))]) :-
+    dict_leaf(A{1:1}, B).
+test(dict_leaf, [true(A=@=_{1:1})]) :-
+    dict_leaf(A, 1-1).
+test(dict_leaf, [fail]) :-
+    dict_leaf(_{1:_{2:3}}, _).
+test(dict_leaf, [true(v(A, B, C)=@=v(_, _, a(2)-3))]) :-
+    dict_leaf(A{a:B{2:3}}, C).
 
 test(dict_tag, [true(A-B==tag-tag_sub)]) :-
     dict_tag(A{sub:B{}}, tag).
@@ -59,5 +80,10 @@ test(dict_compound, [true(C=='999'(123, a)), nondet]) :-
     dict_compound(_{123:_{999:a}}, C).
 test(dict_compound, [true(E==a(1, 2, 3, b)), nondet]) :-
     dict_compound(_{1:_{2:_{3:_{a:b}}}}, E).
+
+test(list_dict, [true(A==tag{1:a, 2:b, 3:c})]) :-
+    list_dict([a, b, c], tag, A).
+test(list_dict, [true(A-B==[a]-tag)]) :-
+    list_dict(A, B, tag{1:a}).
 
 :- end_tests(swi_dicts).

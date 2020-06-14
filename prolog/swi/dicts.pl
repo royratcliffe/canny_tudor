@@ -7,6 +7,7 @@
               merge_dicts/2,            % +Dicts:list(dict), -Dict:dict
 
               dict_member/2,            % ?Dict:dict, ?Member
+              dict_leaf/2,              % ?Dict, ?Pair
 
               % ?Tag, ?Template, :Goal, -Dicts:list(dict)
               findall_dict/4,
@@ -14,11 +15,13 @@
               dict_tag/2,               % +Dict, ?Tag
               create_dict/3,            % ?Tag, +Dict0, -Dict
               is_key/1,                 % +Key
-              dict_compound/2           % +Dict, -Compound
+              dict_compound/2,          % +Dict, -Compound
+              list_dict/3               % ?List, ?Tag, ?Dict
           ]).
 
 :- use_module(compounds).
 :- use_module(atoms).
+:- use_module(lists).
 
 :- meta_predicate
     put_dict(+, +, 3, +, -),
@@ -185,6 +188,40 @@ member_dict_(Tag0^Key/Tag, Tag0{}.put(Key, Dict)) :-
 member_dict_(Tag, Tag{}) :-
     atom(Tag).
 
+%!  dict_leaf(-Dict, +Pair) is semidet.
+%!  dict_leaf(+Dict, -Pair) is nondet.
+%
+%   Unifies Dict with its leaf nodes non-deterministically. Each Pair is
+%   either  an  atom  for   root-level   keys,    or   a   compound  for
+%   nested-dictionary keys. Pair thereby represents   a  nested key path
+%   Leaf with its corresponding Value.
+%
+%   Fails for integer keys because integers   cannot  serve as functors.
+%   Does not attempt to map integer  keys   to  an atom, since this will
+%   create a reverse conversion disambiguation   issue. This *does* work
+%   for nested integer leaf keys, e.g.   a(1), provided that the integer
+%   key does not translate to a functor.
+
+dict_leaf(Dict, Leaf-Value) :- var(Dict), !, leaf_dict_(Dict, Leaf-Value).
+dict_leaf(Dict, Leaf-Value) :-
+    dict_pairs(Dict, _Tag, Pairs),
+    member(Key-Value0, Pairs),
+    dict_leaf_(Key-Value0, Leaf-Value).
+
+dict_leaf_(Key-Value0, Leaf-Value) :- is_dict(Value0), !,
+    dict_leaf(Value0, Leaf0-Value),
+    atom(Key),
+    Leaf =.. [Key, Leaf0].
+dict_leaf_(Key-Value, Key-Value).
+
+leaf_dict_(Dict, Leaf-Value) :- is_key(Leaf), !,
+    dict_create(Dict, _, [Leaf-Value]).
+leaf_dict_(Dict, Leaf-Value) :-
+    compound(Leaf),
+    compound_name_arguments(Leaf, Key, [Leaf_]),
+    leaf_dict_(Dict0, Leaf_-Value),
+    dict_create(Dict, _, [Key-Dict0]).
+
 %!  findall_dict(?Tag, ?Template, :Goal, -Dicts:list(dict)) is det.
 %
 %   Finds all dictionary-only solutions  to   Template  within Goal. Tag
@@ -319,3 +356,14 @@ dict_compound_key(Key0, Key) :-
 dict_compound_key(Key0, Key) :-
     restyle_identifier_ex(one_two, Key0, Key_),
     downcase_atom(Key_, Key).
+
+%!  list_dict(?List, ?Tag, ?Dict) is semidet.
+%
+%   List to Dict by zipping up items from List with integer indexed keys
+%   starting at 1. Finds  only  the   first  solution,  even if multiple
+%   solutions exist.
+
+list_dict(List, Tag, Dict) :-
+    indexed_pairs(List, 1, Pairs),
+    dict_create(Dict, Tag, Pairs),
+    !.

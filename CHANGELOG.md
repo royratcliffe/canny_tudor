@@ -2,6 +2,17 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.7.1] - 2020-06-14
+### Added
+- indexed_pairs/{2,3}
+- list_dict/3
+- dict_leaf/2
+- split_lines/2
+### Fixed
+- make/0 warnings
+- Situation debugging reports WAS, NOW
+- Clean up test side effects
+
 ## [0.7.0] - 2020-04-10
 ### Fixed
 - Key restyling for dict_compound/2

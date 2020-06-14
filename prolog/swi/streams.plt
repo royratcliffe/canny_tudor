@@ -2,8 +2,6 @@
 
 :- use_module(streams).
 
-:- public test/1, test/2.
-
 test(no_streams) :-
     close_streams([], []).
 
