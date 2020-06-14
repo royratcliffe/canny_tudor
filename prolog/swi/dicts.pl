@@ -8,6 +8,7 @@
 
               dict_member/2,            % ?Dict:dict, ?Member
               dict_leaf/2,              % ?Dict, ?Pair
+              dict_pair/2,              % ?Dict, ?Pair
 
               % ?Tag, ?Template, :Goal, -Dicts:list(dict)
               findall_dict/4,
@@ -221,6 +222,30 @@ leaf_dict_(Dict, Leaf-Value) :-
     compound_name_arguments(Leaf, Key, [Leaf_]),
     leaf_dict_(Dict0, Leaf_-Value),
     dict_create(Dict, _, [Key-Dict0]).
+
+%!  dict_pair(+Dict, -Pair) is nondet.
+%!  dict_pair(-Dict, +Pair) is det.
+%
+%   Finds all dictionary  pairs   non-deterministically  and recursively
+%   where  each  pair  is  a  Path-Value.   Path  is  a  slash-delimited
+%   dictionary key path. Note, the search   fails for dictionary leaves;
+%   succeeds  only  for  non-dictionaries.  Fails  therefore  for  empty
+%   dictionaries or dictionaries of empty sub-dictionaries.
+
+dict_pair(Dict, Path-Value) :-
+    is_dict(Dict),
+    !,
+    dict_pairs(Dict, _, Pairs),
+    member(Key-Value0, Pairs),
+    dict_pair_(Key-Value0, Path-Value).
+dict_pair(_{}.put(Path, Value), Path-Value).
+
+dict_pair_(Key-Value0, Path-Value) :-
+    is_dict(Value0),
+    !,
+    dict_pair(Value0, Path0-Value),
+    append_path(Key, Path0, Path).
+dict_pair_(Key-Value, Key-Value).
 
 %!  findall_dict(?Tag, ?Template, :Goal, -Dicts:list(dict)) is det.
 %

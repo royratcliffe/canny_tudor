@@ -48,6 +48,13 @@ test(dict_leaf, [fail]) :-
 test(dict_leaf, [true(v(A, B, C)=@=v(_, _, a(2)-3))]) :-
     dict_leaf(A{a:B{2:3}}, C).
 
+test(dict_pair, [fail]) :-
+    dict_pair(_{a:_{}}, _).
+test(dict_pair, [true(A=@=_{a:_{b:_{c:123}}})]) :-
+    dict_pair(A, a/b/c-123).
+test(dict_pair, [all(A-B=@=[_-(1-a), _-(2-b), _-(3-c)])]) :-
+    dict_pair(A{1:a, 2:b, 3:c}, B).
+
 test(dict_tag, [true(A-B==tag-tag_sub)]) :-
     dict_tag(A{sub:B{}}, tag).
 
