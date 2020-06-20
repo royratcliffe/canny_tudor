@@ -47,6 +47,10 @@ test(dict_leaf, [fail]) :-
     dict_leaf(_{1:_{2:3}}, _).
 test(dict_leaf, [true(v(A, B, C)=@=v(_, _, a(2)-3))]) :-
     dict_leaf(A{a:B{2:3}}, C).
+test(dict_leaf, [true(A==a-1)]) :-
+    dict_leaf([a=1], A).
+test(dict_leaf, [true(A-B=@=_-(a(b)-ab))]) :-
+    dict_leaf([a=A{b:ab}], B).
 
 test(dict_pair, [fail]) :-
     dict_pair(_{a:_{}}, _).

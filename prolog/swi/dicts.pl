@@ -202,6 +202,9 @@ member_dict_(Tag, Tag{}) :-
 %   create a reverse conversion disambiguation   issue. This *does* work
 %   for nested integer leaf keys, e.g.   a(1), provided that the integer
 %   key does not translate to a functor.
+%
+%   @arg Dict is either a dictionary or  a list of key-value pairs whose
+%   syntax conforms to valid dictionary data.
 
 dict_leaf(Dict, Leaf-Value) :- var(Dict), !, leaf_dict_(Dict, Leaf-Value).
 dict_leaf(Dict, Leaf-Value) :-
