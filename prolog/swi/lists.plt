@@ -21,4 +21,11 @@ test(indexed_pairs, [true(A==[0-first, 1-second, 2-third])]) :-
 test(indexed_pairs, [true(A==1)]) :-
     indexed_pairs([first], A, [1-first]).
 
+test(take_at_most, [true(A==[])]) :- take_at_most(0, [1, 2, 3], A).
+test(take_at_most, [true(A==[1])]) :- take_at_most(1, [1, 2, 3], A).
+test(take_at_most, [true(A==[1, 2])]) :- take_at_most(2, [1, 2, 3], A).
+test(take_at_most, [true(A==[1, 2, 3])]) :- take_at_most(3, [1, 2, 3], A).
+test(take_at_most, [true(A==[1, 2, 3])]) :- take_at_most(4, [1, 2, 3], A).
+test(take_at_most, [true(A==[1, 2])]) :- take_at_most(5, [1, 2], A).
+
 :- end_tests(swi_lists).

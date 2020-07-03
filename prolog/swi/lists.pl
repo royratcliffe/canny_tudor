@@ -1,4 +1,8 @@
-:- module(swi_lists, [zip/3, indexed_pairs/2, indexed_pairs/3]).
+:- module(swi_lists, [ zip/3,
+                       indexed_pairs/2,
+                       indexed_pairs/3,
+                       take_at_most/3
+                     ]).
 
 %!  zip(?List1:list, ?List2:list, ?ListOfLists:list(list)) is semidet.
 %
@@ -26,3 +30,15 @@ indexed_pairs([], _, []).
 indexed_pairs([H|T0], Index0, [Index0-H|T]) :-
     Index is Index0 + 1,
     indexed_pairs(T0, Index, T).
+
+%!  take_at_most(+Length:integer, +List0, -List) is semidet.
+%
+%   List takes at most Length elements from   List0.  List for Length of
+%   zero is always an empty list, regardless of the incoming List0. List
+%   is always empty for an empty   List0, regardless of Length. Finally,
+%   elements from List0 unify with  List   until  either Length elements
+%   have been seen, or until no more elements at List0 exist.
+
+take_at_most(0, _, []) :- !.
+take_at_most(_, [], []) :- !.
+take_at_most(N, [H|T0], [H|T]) :- succ(N0, N), take_at_most(N0, T0, T).
