@@ -227,6 +227,7 @@ canny:apply_to_situation(listing, Situation) :-
 %
 %       * currently(?Current:any)
 %       * currently(?Current:any, ?When:number)
+%       * currently(Current:any, for(Seconds:number))
 %
 %       Unifies with Current for Situation and When it happened. Unifies
 %       with the one  and  only  Current   state  for  all  the matching
@@ -237,6 +238,7 @@ canny:apply_to_situation(listing, Situation) :-
 %
 %       * previously(?Previous:any)
 %       * previously(?Previous:any, ?When:number)
+%       * previously(Previous:any, for(Seconds:number))
 %
 %       Finds  Previous  state  of    Situation,   non-deterministically
 %       resolving zero or more matching  Situation   terms.  Fails if no
@@ -259,14 +261,41 @@ canny:property_of_situation(defined, Situation) :-
     situation_module(Situation, _).
 canny:property_of_situation(currently(Current, When), Situation) :-
     situation_module(Situation, Module),
-    once(Module:currently(Current, When)).
+    once(Module:currently(Current, When0)),
+    currently_for(When, When0).
 canny:property_of_situation(currently(Current), Situation) :-
     canny:property_of_situation(currently(Current, _), Situation).
 canny:property_of_situation(previously(Previous, When), Situation) :-
     situation_module(Situation, Module),
-    once(Module:previously(Previous, When)).
+    once(Module:previously(Previous, When0)),
+    previously_for(When, When0, Situation).
 canny:property_of_situation(previously(Previous), Situation) :-
     canny:property_of_situation(previously(Previous, _), Situation).
 canny:property_of_situation(history(History), Situation) :-
     situation_module(Situation, Module),
     findall(was(Was, When), Module:was(Was, When), History).
+
+currently_for(When, When0) :-
+    var(When),
+    !,
+    When = When0.
+currently_for(for(Seconds), When) :-
+    !,
+    get_time(At),
+    Seconds is At - When.
+currently_for(When, When).
+
+previously_for(When, When0, _Situation) :-
+    var(When),
+    !,
+    When = When0.
+previously_for(for(Seconds), When, Situation) :-
+    !,
+    currently_at(At, Situation),
+    Seconds is At - When.
+previously_for(When, When, _Situation).
+
+currently_at(At, Situation) :-
+    canny:property_of_situation(currently(_, At), Situation),
+    !.
+currently_at(At, _Situation) :- get_time(At).
