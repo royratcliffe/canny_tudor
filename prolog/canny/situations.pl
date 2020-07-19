@@ -115,7 +115,7 @@ temporary_module(Situation, Module) :-
             ], []).
 
 canny:apply_to_situation(now(Now, At), Situation) :-
-    ground(Now),
+    nonvar(Now),
     number(At),
     now(Situation, Now, At).
 canny:apply_to_situation(now(Now), Situation) :-
