@@ -28,4 +28,9 @@ test(take_at_most, [true(A==[1, 2, 3])]) :- take_at_most(3, [1, 2, 3], A).
 test(take_at_most, [true(A==[1, 2, 3])]) :- take_at_most(4, [1, 2, 3], A).
 test(take_at_most, [true(A==[1, 2])]) :- take_at_most(5, [1, 2], A).
 
+test(select1, [true(A==[c, b, a])]) :-
+    select1([3, 2, 1], [a, b, c], A).
+test(select1, [true(A==[a])]) :-
+    select1([1], [a, b, c], A).
+
 :- end_tests(swi_lists).
