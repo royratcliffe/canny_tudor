@@ -1,8 +1,12 @@
 :- module(swi_lists, [ zip/3,
                        indexed_pairs/2,
                        indexed_pairs/3,
-                       take_at_most/3
+                       take_at_most/3,
+                       select1/3,       % +Indices, +List0, -List
+                       select_apply1/3  % +Indices, :Goal, +Extra
                      ]).
+
+:- meta_predicate select_apply1(+, :, +).
 
 %!  zip(?List1:list, ?List2:list, ?ListOfLists:list(list)) is semidet.
 %
@@ -42,3 +46,29 @@ indexed_pairs([H|T0], Index0, [Index0-H|T]) :-
 take_at_most(0, _, []) :- !.
 take_at_most(_, [], []) :- !.
 take_at_most(N, [H|T0], [H|T]) :- succ(N0, N), take_at_most(N0, T0, T).
+
+%!  select1(+Indices, +List0, -List) is det.
+%
+%   Selects List elements by index from   List0.  Applies nth1/3 to each
+%   element of Indices. The 1  suffix   of  the predicate name indicates
+%   one-based Indices used for selection.   Mirrors select/3 except that
+%   the predicate picks elements from a  list   by  index rather than by
+%   element removal.
+%
+%   @see nth1/3
+%   @see select/3
+
+select1(Indices, List0, List) :- maplist(select1_(List0), Indices, List).
+
+select1_(List, Index, Elem) :- nth1(Index, List, Elem).
+
+%!  select_apply1(+Indices, :Goal, +Extra) is nondet.
+%
+%   Selects one-based index  arguments  from   Extra  and  applies these
+%   extras to Goal.
+%
+%   @see apply/2
+
+select_apply1(Indices, Goal, Extra) :-
+    select1(Indices, Extra, Extra1),
+    apply(Goal, Extra1).
