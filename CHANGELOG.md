@@ -2,6 +2,13 @@
 
 Uses [Semantic Versioning](https://semver.org/).
 
+## [0.7.2] - 2020-07-25
+### Added
+- append_path/3
+- dict_pair/2
+- take_at_most/3
+- select1/3, select_apply1/3
+
 ## [0.7.1] - 2020-06-14
 ### Added
 - indexed_pairs/{2,3}
