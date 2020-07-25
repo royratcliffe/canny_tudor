@@ -87,23 +87,19 @@
 %   nested lists of terms. All terms apply   in order first to last, and
 %   depth first.
 
-situation_apply(Situation, Apply) :-
-    applies(Apply, Situation).
+situation_apply(Situation, Apply) :- applies(Apply, Situation).
 
 applies(Applies, Situation) :-
     is_list(Applies),
     !,
     member(Apply, Applies),
     applies(Apply, Situation).
-applies(Apply, Situation) :-
-    canny:apply_to_situation(Apply, Situation).
+applies(Apply, Situation) :- canny:apply_to_situation(Apply, Situation).
 
 canny:apply_to_situation(module(Module), Situation) :-
     with_mutex(canny_situations, temporary_module(Situation, Module)).
 
-temporary_module(Situation, Module) :-
-    situation_module(Situation, Module),
-    !.
+temporary_module(Situation, Module) :- situation_module(Situation, Module), !.
 temporary_module(Situation, Module) :-
     ground(Situation),
     once(random_temporary_module(Module)),
@@ -147,15 +143,12 @@ fix([], Situation, Module) :-
     !,
     asserta(Module:previously(Previous, When)),
     broadcast(situation(Situation, was(Previous, When))).
-fix([], _, _) :-
-    !.
+fix([], _, _) :- !.
 fix(Fixes, Situation, Module) :-
     last(Fixes, now(Now, At)),
     fix(Situation, Module, Now, At).
 
-fix(_, Module, Now, _) :-
-    once(Module:currently(Now, _)),
-    !.
+fix(_, Module, Now, _) :- once(Module:currently(Now, _)), !.
 fix(Situation, Module, Now, At) :-
     once(retract(Module:currently(Previous, When))),
     !,
@@ -275,20 +268,11 @@ canny:property_of_situation(history(History), Situation) :-
     situation_module(Situation, Module),
     findall(was(Was, When), Module:was(Was, When), History).
 
-currently_for(When, When0) :-
-    var(When),
-    !,
-    When = When0.
-currently_for(for(Seconds), When) :-
-    !,
-    get_time(At),
-    Seconds is At - When.
+currently_for(When, When0) :- var(When), !, When = When0.
+currently_for(for(Seconds), When) :- !, get_time(At), Seconds is At - When.
 currently_for(When, When).
 
-previously_for(When, When0, _Situation) :-
-    var(When),
-    !,
-    When = When0.
+previously_for(When, When0, _Situation) :- var(When), !, When = When0.
 previously_for(for(Seconds), When, Situation) :-
     !,
     currently_at(At, Situation),
