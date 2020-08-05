@@ -8,43 +8,41 @@ byte(Byte) -->
     },
     [Octet].
 
-big(word, Word) -->
-    { high_low_word(High, Low, Word) },
+big(16, Word16) -->
+    { high_low(16, High, Low, Word16) },
     byte(High),
     byte(Low).
-big(long, Long) -->
-    { high_low_long(High, Low, Long) },
-    big(word, High),
-    big(word, Low).
-big(long_word, LongWord) -->
-    { high_low_long_word(High, Low, LongWord) },
-    big(long, High),
-    big(long, Low).
+big(32, Word32) -->
+    { high_low(32, High, Low, Word32) },
+    big(16, High),
+    big(16, Low).
+big(64, Word64) -->
+    { high_low(64, High, Low, Word64) },
+    big(32, High),
+    big(32, Low).
 
-little(word, Word) -->
-    { high_low_word(High, Low, Word) },
+little(16, Word16) -->
+    { high_low(16, High, Low, Word16) },
     byte(Low),
     byte(High).
-little(long, Long) -->
-    { high_low_long(High, Low, Long) },
-    little(word, Low),
-    little(word, High).
-little(long_word, LongWord) -->
-    { high_low_long_word(High, Low, LongWord) },
-    little(long, Low),
-    little(long, High).
+little(32, Word32) -->
+    { high_low(32, High, Low, Word32) },
+    little(16, Low),
+    little(16, High).
+little(64, Word64) -->
+    { high_low(64, High, Low, Word64) },
+    little(32, Low),
+    little(32, High).
 
-high_low_word(High, Low, Word) :-
-    Low #= Word /\ 0xff,
-    High #= (Word >> 8) /\ 0xff,
-    Word #= (High << 8) \/ Low.
-
-high_low_long(High, Low, Long) :-
-    Low #= Long /\ 0xffff,
-    High #= (Long >> 16) /\ 0xffff,
-    Long #= (High << 16) \/ Low.
-
-high_low_long_word(High, Low, LongWord) :-
-    Low #= LongWord /\ 0xffff_ffff,
-    High #= (LongWord >> 32) /\ 0xffff_ffff,
-    LongWord #= (High << 32) \/ Low.
+high_low(16, High, Low, Word16) :-
+    Low #= Word16 /\ 0xff,
+    High #= (Word16 >> 8) /\ 0xff,
+    Word16 #= (High << 8) \/ Low.
+high_low(32, High, Low, Word32) :-
+    Low #= Word32 /\ 0xffff,
+    High #= (Word32 >> 16) /\ 0xffff,
+    Word32 #= (High << 16) \/ Low.
+high_low(64, High, Low, Word64) :-
+    Low #= Word64 /\ 0xffff_ffff,
+    High #= (Word64 >> 32) /\ 0xffff_ffff,
+    Word64 #= (High << 32) \/ Low.
