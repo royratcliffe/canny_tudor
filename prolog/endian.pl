@@ -1,4 +1,4 @@
-:- module(endian, [byte//1, big//2, little//2]).
+:- module(endian, [byte//1, big_endian//2, little_endian//2]).
 
 :- use_module(library(clpfd)).
 
@@ -8,31 +8,35 @@ byte(Byte) -->
     },
     [Octet].
 
-big(16, Word16) -->
+%!  big_endian(?Width:integer, ?Word:integer)// is semidet.
+
+big_endian(16, Word16) -->
     { high_low(16, High, Low, Word16) },
     byte(High),
     byte(Low).
-big(32, Word32) -->
+big_endian(32, Word32) -->
     { high_low(32, High, Low, Word32) },
-    big(16, High),
-    big(16, Low).
-big(64, Word64) -->
+    big_endian(16, High),
+    big_endian(16, Low).
+big_endian(64, Word64) -->
     { high_low(64, High, Low, Word64) },
-    big(32, High),
-    big(32, Low).
+    big_endian(32, High),
+    big_endian(32, Low).
 
-little(16, Word16) -->
+%!  little_endian(?Width:integer, ?Word:integer)// is semidet.
+
+little_endian(16, Word16) -->
     { high_low(16, High, Low, Word16) },
     byte(Low),
     byte(High).
-little(32, Word32) -->
+little_endian(32, Word32) -->
     { high_low(32, High, Low, Word32) },
-    little(16, Low),
-    little(16, High).
-little(64, Word64) -->
+    little_endian(16, Low),
+    little_endian(16, High).
+little_endian(64, Word64) -->
     { high_low(64, High, Low, Word64) },
-    little(32, Low),
-    little(32, High).
+    little_endian(32, Low),
+    little_endian(32, High).
 
 high_low(16, High, Low, Word16) :-
     Low #= Word16 /\ 0xff,
