@@ -8,21 +8,6 @@ byte(Byte) -->
     },
     [Octet].
 
-high_low_word(High, Low, Word) :-
-    Low #= Word /\ 0xff,
-    High #= (Word >> 8) /\ 0xff,
-    Word #= (High << 8) \/ Low.
-
-high_low_long(High, Low, Long) :-
-    Low #= Long /\ 0xffff,
-    High #= (Long >> 16) /\ 0xffff,
-    Long #= (High << 16) \/ Low.
-
-high_low_long_word(High, Low, LongWord) :-
-    Low #= LongWord /\ 0xffff_ffff,
-    High #= (LongWord >> 32) /\ 0xffff_ffff,
-    LongWord #= (High << 32) \/ Low.
-
 big(word, Word) -->
     { high_low_word(High, Low, Word) },
     byte(High),
@@ -48,3 +33,18 @@ little(long_word, LongWord) -->
     { high_low_long_word(High, Low, LongWord) },
     little(long, Low),
     little(long, High).
+
+high_low_word(High, Low, Word) :-
+    Low #= Word /\ 0xff,
+    High #= (Word >> 8) /\ 0xff,
+    Word #= (High << 8) \/ Low.
+
+high_low_long(High, Low, Long) :-
+    Low #= Long /\ 0xffff,
+    High #= (Long >> 16) /\ 0xffff,
+    Long #= (High << 16) \/ Low.
+
+high_low_long_word(High, Low, LongWord) :-
+    Low #= LongWord /\ 0xffff_ffff,
+    High #= (LongWord >> 32) /\ 0xffff_ffff,
+    LongWord #= (High << 32) \/ Low.
