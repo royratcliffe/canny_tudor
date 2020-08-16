@@ -22,4 +22,10 @@ test(big, [true(A==[0, 0, 255, 255])]) :-
 test(big, [fail]) :-
     phrase(big_endian(32, 1<<32), _, []).
 
+test(little_endian, [true(A==16909060)]) :-
+    phrase(little_endian(32, A), [4, 3, 2, 1]).
+test(little_endian, [true(B==[4, 3, 2, 1])]) :-
+    phrase(little_endian(32, A), [4, 3, 2, 1]),
+    phrase(little_endian(32, A), B).
+
 :- end_tests(canny_endian).
