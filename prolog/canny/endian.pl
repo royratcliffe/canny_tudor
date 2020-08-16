@@ -1,4 +1,4 @@
-:- module(endian, [byte//1, big_endian//2, little_endian//2]).
+:- module(canny_endian, [byte//1, big_endian//2, little_endian//2]).
 
 /** <module> Big- and little-endian grammars
  *
