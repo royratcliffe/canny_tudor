@@ -1,4 +1,4 @@
-:- begin_tests(endian).
+:- begin_tests(canny_endian).
 
 :- use_module(endian).
 
@@ -22,4 +22,4 @@ test(big, [true(A==[0, 0, 255, 255])]) :-
 test(big, [fail]) :-
     phrase(big_endian(32, 1<<32), _, []).
 
-:- end_tests(endian).
+:- end_tests(canny_endian).
