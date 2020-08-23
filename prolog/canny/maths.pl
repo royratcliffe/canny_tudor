@@ -3,7 +3,10 @@
               fmod/3,
 
               epsilon_equal/2,
-              epsilon_equal/3
+              epsilon_equal/3,
+
+              frexp/3,
+              ldexp/3
           ]).
 
 %!  remainder(+X:number, +Y:number, -Z:number) is det.
@@ -38,3 +41,7 @@ fmod(X, Y, Z) :-
 epsilon_equal(X, Y) :- epsilon_equal(1, X, Y).
 
 epsilon_equal(Epsilons, X, Y) :- Epsilons * epsilon >= abs(X - Y).
+
+frexp(X, Y, Exp) :- float_parts(X, Y, 2, Exp).
+
+ldexp(X, Y, Exp) :- Y is X * 2 ** Exp.
