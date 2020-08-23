@@ -24,13 +24,25 @@ sig_exp(Bits, Word, Sig, Exp) :-
     ieee(Bits, ExpBits, ExpBias),
     SigBits is Bits - ExpBits - 1,
     bits(Bits - 1, 1, Word, Sign, Word1),
-    bits(0, SigBits, Word1, Sig0, Word2),
+    bits(0, SigBits, Word1, Word0, Word2),
     bits(SigBits, ExpBits, Word2, Exp0, 0),
     Exp #= Exp0 - ExpBias,
-    sig(Sign, 1 << SigBits, Sig0, Sig).
+    sig(Sign, 1 << SigBits, Word0, Sig).
 
-sig(0, X, Sig0, Sig) :- var(Sig), !, Sig is Sig0 / X + 1.
-sig(1, X, Sig0, Sig) :- var(Sig), !, Sig is -(Sig0 / X + 1).
-sig(1, X, Sig0, Sig) :- sign(Sig) < 0, !, Sig0 is round((-Sig - 1) * X).
-sig(0, _, 0, Sig) :- 0 is round(Sig), !.
-sig(0, X, Sig0, Sig) :- Sig0 is round((Sig - 1) * X).
+sig(Sign, Max, Word, Sig) :- var(Sig), !, ieee_sig(Sign, Word, Max, Sig).
+sig(Sign, Max, Word, Sig) :- sig_ieee(Sign, Sig, Max, Word).
+
+ieee_sig(0, Word, Max, Sig) :- ieee_sig(Word, Max, Sig), !.
+ieee_sig(1, Word, Max, Sig) :- ieee_sig(Word, Max, Sig0), Sig is -Sig0.
+
+ieee_sig(Word, Max, Sig) :- Sig is Word / Max + 1.
+
+sig_ieee(1, Sig, Max, Word) :-
+    sign(Sig) < 0,
+    !,
+    Sig_ is -Sig,
+    sig_ieee(Sig_, Max, Word).
+sig_ieee(0, Sig, _Max, 0) :- 0 is round(Sig), !.
+sig_ieee(0, Sig, Max, Word) :- sig_ieee(Sig, Max, Word).
+
+sig_ieee(Sig, Max, Word) :- Word is round((Sig - 1) * Max).
