@@ -9,6 +9,7 @@ pack_unpack(Width, Float0, Float) :-
     ieee_754_float(Width, Word, Float).
 
 test(pack_unpack) :- pack_unpack(32, 3.0, A), epsilon_equal(3.0, A).
+test(pack_unpack) :- pack_unpack(32, 0.0, A), epsilon_equal(0.0, A).
 test(pack_unpack) :- pack_unpack(32, -3.0, A), epsilon_equal(-3.0, A).
 
 :- end_tests(ieee_754).
