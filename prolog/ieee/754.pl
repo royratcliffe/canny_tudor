@@ -28,5 +28,5 @@ pack(Width, Word, Sig, Exp) :-
 
 sig(0, X, Sig0, Sig) :- var(Sig), !, Sig is Sig0 / X + 1.
 sig(1, X, Sig0, Sig) :- var(Sig), !, Sig is -(Sig0 / X + 1).
-sig(1, X, Sig0, Sig) :- sign(Sig) < 0, !, Sig0 is -round((Sig - 1) * X).
+sig(1, X, Sig0, Sig) :- sign(Sig) < 0, !, Sig0 is round((-Sig - 1) * X).
 sig(0, X, Sig0, Sig) :- Sig0 is round((Sig - 1) * X).
