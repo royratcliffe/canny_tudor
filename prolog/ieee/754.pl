@@ -5,8 +5,14 @@
 :- use_module(library(canny/maths)).
 :- use_module(library(canny/bits)).
 
+ieee(16, 5, 15).
 ieee(32, 8, 127).
 ieee(64, 11, 1023).
+ieee(128, 15, 16383).
+ieee(256, 19, 262143).
+
+%!  ieee_754_float(+Bits, ?Word, ?Float) is det.
+%!  ieee_754_float(-Bits, ?Word, ?Float) is nondet.
 
 ieee_754_float(Bits, Word, Float) :-
     var(Float),
