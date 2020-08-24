@@ -19,12 +19,10 @@ ieee_754_float(Bits, Word, Float) :-
     !,
     sig_exp(Bits, Word, Sig, Exp),
     ldexp(Sig, Float, Exp).
+ieee_754_float(Bits, 0, 0.0) :- ieee(Bits, _, _), !.
 ieee_754_float(Bits, Word, Float) :-
     frexp(Float, Sig, Exp),
-    sig_exp_(Bits, Word, Sig, Exp).
-
-sig_exp_(Bits, 0, 0.0, 0) :- ieee(Bits, _, _), !.
-sig_exp_(Bits, Word, Sig, Exp) :- sig_exp(Bits, Word, Sig * 2, Exp - 1).
+    sig_exp(Bits, Word, Sig * 2, Exp - 1).
 
 sig_exp(Bits, Word, Sig, Exp) :-
     ieee(Bits, ExpBits, ExpBias),
@@ -44,7 +42,6 @@ ieee_sig(1, Word, Max, Sig) :- ieee_sig(Word, Max, Sig0), Sig is -Sig0.
 ieee_sig(Word, Max, Sig) :- Sig is Word / Max + 1.
 
 sig_ieee(1, Sig, Max, Word) :- sign(Sig) < 0, !, sig_ieee(-Sig, Max, Word).
-sig_ieee(0, Sig, _Max, 0) :- 0 is round(Sig), !.
 sig_ieee(0, Sig, Max, Word) :- sig_ieee(Sig, Max, Word).
 
 sig_ieee(Sig, Max, Word) :- Word is round((Sig - 1) * Max).
