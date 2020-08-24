@@ -11,6 +11,10 @@ ieee(64, 11, 1023).
 ieee(128, 15, 16383).
 ieee(256, 19, 262143).
 
+inf(Bits, Inf) :-
+    ieee(Bits, ExpBits, _),
+    Inf is ((1 << ExpBits) - 1) << (Bits - ExpBits - 1).
+
 %!  ieee_754_float(+Bits, ?Word, ?Float) is det.
 %!  ieee_754_float(-Bits, ?Word, ?Float) is nondet.
 
@@ -20,10 +24,11 @@ ieee_754_float(Bits, Word, Float) :-
     sig_exp(Bits, Word, Sig, Exp),
     ldexp(Sig, Float, Exp).
 ieee_754_float(Bits, 0, 0.0) :- ieee(Bits, _, _), !.
-ieee_754_float(Bits, Inf, 1.0Inf) :-
+ieee_754_float(Bits, Inf, +1.0Inf) :- !, inf(Bits, Inf).
+ieee_754_float(Bits, Inf, -1.0Inf) :-
     !,
-    ieee(Bits, ExpBits, _),
-    Inf is ((1 << ExpBits) - 1) << (Bits - ExpBits - 1).
+    inf(Bits, Inf0),
+    Inf is 1 << (Bits - 1) \/ Inf0.
 ieee_754_float(Bits, Word, Float) :-
     frexp(Float, Sig, Exp),
     sig_exp(Bits, Word, Sig * 2, Exp - 1).
