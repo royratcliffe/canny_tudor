@@ -20,6 +20,10 @@ ieee_754_float(Bits, Word, Float) :-
     sig_exp(Bits, Word, Sig, Exp),
     ldexp(Sig, Float, Exp).
 ieee_754_float(Bits, 0, 0.0) :- ieee(Bits, _, _), !.
+ieee_754_float(Bits, Inf, 1.0Inf) :-
+    !,
+    ieee(Bits, ExpBits, _),
+    Inf is ((1 << ExpBits) - 1) << (Bits - ExpBits - 1).
 ieee_754_float(Bits, Word, Float) :-
     frexp(Float, Sig, Exp),
     sig_exp(Bits, Word, Sig * 2, Exp - 1).
