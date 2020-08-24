@@ -27,10 +27,10 @@ sig_exp(Bits, Word, Sig, Exp) :-
     bits(0, SigBits, Word1, Word0, Word2),
     bits(SigBits, ExpBits, Word2, Exp0, 0),
     Exp #= Exp0 - ExpBias,
-    sig(Sign, 1 << SigBits, Word0, Sig).
+    sig(Sign, Word0, 1 << SigBits, Sig).
 
-sig(Sign, Max, Word, Sig) :- var(Sig), !, ieee_sig(Sign, Word, Max, Sig).
-sig(Sign, Max, Word, Sig) :- sig_ieee(Sign, Sig, Max, Word).
+sig(Sign, Word, Max, Sig) :- var(Sig), !, ieee_sig(Sign, Word, Max, Sig).
+sig(Sign, Word, Max, Sig) :- sig_ieee(Sign, Sig, Max, Word).
 
 ieee_sig(0, Word, Max, Sig) :- ieee_sig(Word, Max, Sig), !.
 ieee_sig(1, Word, Max, Sig) :- ieee_sig(Word, Max, Sig0), Sig is -Sig0.
