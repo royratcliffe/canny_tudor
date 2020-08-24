@@ -29,6 +29,11 @@ ieee_754_float(Bits, Inf, -1.0Inf) :-
     !,
     inf(Bits, Inf0),
     Inf is 1 << (Bits - 1) \/ Inf0.
+ieee_754_float(Bits, NaN, 1.5NaN) :-
+    !,
+    inf(Bits, Inf0),
+    ieee(Bits, ExpBits, _),
+    NaN is Inf0 \/ (1 << (Bits - ExpBits - 2)).
 ieee_754_float(Bits, Word, Float) :-
     frexp(Float, Sig, Exp),
     sig_exp(Bits, Word, Sig * 2, Exp - 1).
