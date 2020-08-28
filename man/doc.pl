@@ -1,6 +1,6 @@
 doc :-
     bagof(File, doc(File), Files),
-    doc_latex(Files, 'doc.tex', [stand_alone(false)]),
+    doc_latex(Files, 'doc.tex', [stand_alone(false), section_level(chapter)]),
     !.
 
 doc('../README.md').

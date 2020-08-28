@@ -1,9 +1,7 @@
 % This LaTeX document was generated using the LaTeX backend of PlDoc,
 % The SWI-Prolog documentation system
 
-
-
-\section{Canny bag o' Tudor}
+\chapter{Canny bag o' Tudor}
 
 This is an experimental SWI-Prolog 'pack' comprising technical spikes, or
 otherwise useful, Prolog predicates that do not seem to fit anywhere else.
@@ -33,7 +31,7 @@ due to its nature. The pack's major version will always remain 0.
 Work in progress!
 \end{itemize}
 
-\subsection{Apps}
+\section{Apps}
 
 You can start or stop an app.
 
@@ -59,7 +57,7 @@ instance. The green cut prevents unnecessary backtracking.
 You can start and continuously restart apps using \verb$app_up/1$, and subsequently
 shut them down with \verb$app_down/1$.
 
-\subsubsection{Apps testing}
+\subsection{Apps testing}
 
 On a Windows system, try the following for example. It launches Microsoft Paint.
 Exit the Paint app after \verb$app_up/1$ below and it will relaunch automatically.
@@ -75,11 +73,11 @@ true.
 true.
 \end{code}
 
-\subsection{SWI-Prolog extensions}
+\section{SWI-Prolog extensions}
 
 This includes the following.
 
-\subsubsection{Non-deterministic `dict_member(?Dict, ?Member)`}
+\subsection{Non-deterministic `dict_member(?Dict, ?Member)`}
 
 This predicate offers an alternative approach to dictionary iteration in
 Prolog. It makes a dictionary expose its leaves as a list exposes its
@@ -95,13 +93,13 @@ Value = 999.
 Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 \end{code}
 
-\section{Change Log}
+\chapter{Change Log}
 
 Uses \href{https://semver.org/}{Semantic Versioning}.
 
-\subsection{[0.7.2] - 2020-07-25}
+\section{[0.7.2] - 2020-07-25}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \predref{append_path}{3}
@@ -110,9 +108,9 @@ Uses \href{https://semver.org/}{Semantic Versioning}.
     \item \predref{select1}{3}, \predref{select_apply1}{3}
 \end{shortlist}
 
-\subsection{[0.7.1] - 2020-06-14}
+\section{[0.7.1] - 2020-06-14}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item indexed_pairs/\{2,3\}
@@ -121,7 +119,7 @@ Uses \href{https://semver.org/}{Semantic Versioning}.
     \item \predref{split_lines}{2}
 \end{shortlist}
 
-\subsubsection{Fixed}
+\subsection{Fixed}
 
 \begin{shortlist}
     \item \predref{make}{0} warnings
@@ -129,17 +127,17 @@ Uses \href{https://semver.org/}{Semantic Versioning}.
     \item Clean up test side effects
 \end{shortlist}
 
-\subsection{[0.7.0] - 2020-04-10}
+\section{[0.7.0] - 2020-04-10}
 
-\subsubsection{Fixed}
+\subsection{Fixed}
 
 \begin{shortlist}
     \item Key restyling for \predref{dict_compound}{2}
 \end{shortlist}
 
-\subsection{[0.6.1] - 2020-04-09}
+\section{[0.6.1] - 2020-04-09}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \predref{restyle_identifier_ex}{3}
@@ -147,9 +145,9 @@ Uses \href{https://semver.org/}{Semantic Versioning}.
     \item \predref{dict_compound}{2}
 \end{shortlist}
 
-\subsection{[0.6.0] - 2020-04-06}
+\section{[0.6.0] - 2020-04-06}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \predref{permute_sum_of_int}{2}
@@ -159,52 +157,52 @@ Uses \href{https://semver.org/}{Semantic Versioning}.
     \item \predref{create_dict}{3}
 \end{shortlist}
 
-\subsubsection{Fixed}
+\subsection{Fixed}
 
 \begin{shortlist}
     \item Code stylings
 \end{shortlist}
 
-\subsection{[0.5.2] - 2020-01-11}
+\section{[0.5.2] - 2020-01-11}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \predref{close_streams}{2}
 \end{shortlist}
 
-\subsubsection{Fixed}
+\subsection{Fixed}
 
 \begin{itemize}
     \item Do not independently broadcast \predref{was}{2} and \predref{now}{2} for situation transitions
 \end{itemize}
 
-\subsection{[0.5.1] - 2019-12-03}
+\section{[0.5.1] - 2019-12-03}
 
-\subsubsection{Fixed}
+\subsection{Fixed}
 
 \begin{shortlist}
     \item Situation mutator renamed \verb$situation_apply/2$
 \end{shortlist}
 
-\subsection{[0.5.0] - 2019-12-03}
+\section{[0.5.0] - 2019-12-03}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item Linear algebra
     \item Canny maths
 \end{shortlist}
 
-\subsubsection{Fixed}
+\subsection{Fixed}
 
 \begin{shortlist}
     \item Canny situations
 \end{shortlist}
 
-\subsection{[0.4.0] - 2019-10-19}
+\section{[0.4.0] - 2019-10-19}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item Canny situations
@@ -213,55 +211,53 @@ Uses \href{https://semver.org/}{Semantic Versioning}.
     \item \verb$print_table/1$ predicate
 \end{shortlist}
 
-\subsubsection{Fixed}
+\subsection{Fixed}
 
 \begin{shortlist}
     \item \verb$with_output_to/3$ uses \verb$random_name_chk/1$
 \end{shortlist}
 
-\subsection{[0.3.0] - 2019-09-06}
+\section{[0.3.0] - 2019-09-06}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \verb$random_name_chk/1$ versus non-deterministic \verb$random_name/1$
 \end{shortlist}
 
-\subsection{[0.2.1] - 2019-09-03}
+\section{[0.2.1] - 2019-09-03}
 
-\subsubsection{Fixed}
+\subsection{Fixed}
 
 \begin{itemize}
     \item Fix the fix; \verb$dict_member/2$ unifies with empty dictionary leaf nodes
 \end{itemize}
 
-\subsection{[0.2.0] - 2019-09-02}
+\section{[0.2.0] - 2019-09-02}
 
-\subsubsection{Fixed}
+\subsection{Fixed}
 
 \begin{shortlist}
     \item Allow dictionary leaf values for \verb$dict_member/2$
 \end{shortlist}
 
-\subsection{[0.1.1] - 2019-08-02}
+\section{[0.1.1] - 2019-08-02}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item Missing pack maintainer, home and download links
 \end{shortlist}
 
-\subsection{[0.1.0] - 2019-08-02}
+\section{[0.1.0] - 2019-08-02}
 
-\subsubsection{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item Initial spike
 \end{shortlist}
 
-\section{library(canny/maths)}
-
-\label{sec:maths}
+\chapter{library(canny/maths)}\label{sec:maths}
 
 \begin{description}
     \predicate[det]{remainder}{3}{+X:number, +Y:number, -Z:number}
@@ -280,9 +276,7 @@ numbers \arg{X} and \arg{Y} is less than or equal to epsilon, or some factor
 (\arg{Epsilons}) of epsilon according to rounding limitations.
 \end{description}
 
-\section{library(canny/permutations)}
-
-\label{sec:permutations}
+\chapter{library(canny/permutations)}\label{sec:permutations}
 
 \begin{description}
     \predicate[nondet]{permute_sum_of_int}{2}{+N:nonneg, -Integers:list(integer)}
@@ -302,9 +296,7 @@ Permutations always preserve the order of elements from first to
 last.
 \end{description}
 
-\section{library(canny/situations)}
-
-\label{sec:situations}
+\chapter{library(canny/situations)}\label{sec:situations}
 
 \begin{description}
     \predicate[nondet]{situation_apply}{2}{?Situation:any, ?Apply}
@@ -414,9 +406,7 @@ outcome and When marks the moment that the outcome transpired.
 \end{description}
 \end{description}
 
-\section{library(canny/situations_debugging)}
-
-\label{sec:situationsdebugging}
+\chapter{library(canny/situations_debugging)}\label{sec:situationsdebugging}
 
 \begin{description}
     \predicate[det]{print_situation_history_lengths}{0}{}
@@ -427,13 +417,7 @@ history comes first. Filters out single-element histories for the
 sake of noise minimisation.
 \end{description}
 
-\section{library(canny_tudor)}
-
-\label{sec:cannytudor}
-
-\section{library(docker/random_names)}
-
-\label{sec:randomnames}
+\chapter{library(canny_tudor)}\label{sec:cannytudor}\chapter{library(docker/random_names)}\label{sec:randomnames}
 
 \begin{description}
     \predicate[nondet]{random_name}{1}{?Name}
@@ -479,9 +463,7 @@ collapses to failure if the argument cannot unify with random-name
 possibilities.
 \end{description}
 
-\section{library(html/scrapes)}
-
-\label{sec:scrapes}
+\chapter{library(html/scrapes)}\label{sec:scrapes}
 
 \begin{description}
     \predicate[nondet]{scrape_row}{2}{+URL, -Row}
@@ -494,9 +476,7 @@ flexibility. Asking for sub-rows finds head sub-rows; catches and
 filters out by disunifying data with heads.
 \end{description}
 
-\section{library(linear/algebra): Linear algebra}
-
-\label{sec:algebra}
+\chapter{library(linear/algebra): Linear algebra}\label{sec:algebra}
 
 \begin{tags}
     \tag{author}
@@ -624,9 +604,7 @@ than second argument. This allows you to curry the predicate by
 fixing the first exponent argument. In other words, \verb$scalar_power(2, A, B)$ squares A to B.
 \end{description}
 
-\section{library(os/apps): Operation system apps}
-
-\label{sec:apps}
+\chapter{library(os/apps): Operation system apps}\label{sec:apps}
 
 What is an app? In this operating-system \verb$os_apps$ module context,
 simply something you can start and stop using a process. It has no
@@ -645,7 +623,7 @@ alternatives: process, no because that means something that loads an
 app; program, no because that generally refers the app's image
 including its resources.
 
-\subsection{App configuration}
+\section{App configuration}
 
 Apps start by creating a process. Processes have four distinct
 specification parameter groups: a path specification, a list of
@@ -671,7 +649,7 @@ describing the app \textbf{and} its app-specific configuration information;
 non-deterministically. Predicate \predref{app_start}{1} finds all the argument-
 and option-solutions \textit{in the order defined}.
 
-\subsection{Start up and shut down}
+\section{Start up and shut down}
 
 By default, starting an app does \textbf{not} persist the app. It does not
 restart if the user or some other agent, including bugs, causes the
@@ -681,7 +659,7 @@ amounts to starting and upping or stopping and downing, but
 substitutes shut for stop. Starting up issues a start but also
 watches for stopping.
 
-\subsection{Broadcasts}
+\section{Broadcasts}
 
 Sends three broadcast messages for any given App, as follows:
 
@@ -754,25 +732,11 @@ Shuts down an \arg{App}. Shuts down multiple apps non-deterministically if
 the \arg{App} compound matches more than one app definition.
 \end{description}
 
-\section{library(os/apps_debugging)}
-
-\label{sec:appsdebugging}
-
-\section{library(os/apps_testing)}
-
-\label{sec:appstesting}
-
-\section{library(os/file_searches): File searches}
-
-\label{sec:filesearches}
+\chapter{library(os/apps_debugging)}\label{sec:appsdebugging}\chapter{library(os/apps_testing)}\label{sec:appstesting}\chapter{library(os/file_searches): File searches}\label{sec:filesearches}
 
 By design, the following extensions for Windows avoid underscores
 in order not to clash with existing standard paths, e.g. \verb$app_path$
-which Prolog defines by default.\vspace{0.7cm}
-
-\section{library(os/lc)}
-
-\label{sec:lc}
+which Prolog defines by default.\vspace{0.7cm}\chapter{library(os/lc)}\label{sec:lc}
 
 \begin{description}
     \predicate[det]{lc_r}{1}{+Extensions:list}
@@ -800,9 +764,7 @@ lines counted is the second pair-element. \\
 \end{arguments}
 \end{description}
 
-\section{library(os/search_paths)}
-
-\label{sec:searchpaths}
+\chapter{library(os/search_paths)}\label{sec:searchpaths}
 
 \begin{description}
     \predicate[det]{search_path_prepend}{2}{+Name:atom, +Directory:atom}
@@ -836,13 +798,7 @@ identify a proper separator-delimited variable.
 operating system; colon elsewhere.
 \end{description}
 
-\section{library(power_shell/get_content)}
-
-\label{sec:getcontent}
-
-\section{library(print/(table))}
-
-\label{sec:table}
+\chapter{library(power_shell/get_content)}\label{sec:getcontent}\chapter{library(print/(table))}\label{sec:table}
 
 \begin{description}
     \predicate[det]{print_table}{1}{:Goal}
@@ -868,9 +824,7 @@ on a teletype like terminal. Ignores any exceptions by design.
 
 \end{description}
 
-\section{library(random/temporary)}
-
-\label{sec:temporary}
+\chapter{library(random/temporary)}\label{sec:temporary}
 
 \begin{description}
     \predicate[nondet]{random_temporary_module}{1}{-M:atom}
@@ -892,9 +846,7 @@ clauses testing for an existing module and its creation. Succeeds
 only for mode (-).
 \end{description}
 
-\section{library(swi/atoms)}
-
-\label{sec:atoms}
+\chapter{library(swi/atoms)}\label{sec:atoms}
 
 \begin{description}
     \predicate[semidet]{restyle_identifier_ex}{3}{+Style, +Text, ?Atom}
@@ -914,9 +866,7 @@ text, including codes, but does not throw.
 \end{arguments}
 \end{description}
 
-\section{library(swi/codes)}
-
-\label{sec:codes}
+\chapter{library(swi/codes)}\label{sec:codes}
 
 \begin{description}
     \predicate[semidet]{split_lines}{2}{?Codes, ?Lines:list(list)}
@@ -926,9 +876,7 @@ reverse unification however always appends a trailing newline to the
 last line.
 \end{description}
 
-\section{library(swi/compounds)}
-
-\label{sec:compounds}
+\chapter{library(swi/compounds)}\label{sec:compounds}
 
 \begin{description}
     \predicate[semidet]{flatten_slashes}{2}{+Components0:compound, ?Components:compound}
@@ -966,9 +914,7 @@ the argument is really a compound, not just unifies with a slash
 compound since Path/Component unifies with any unbound variable.
 \end{description}
 
-\section{library(swi/dicts)}
-
-\label{sec:dicts}
+\chapter{library(swi/dicts)}\label{sec:dicts}
 
 \begin{description}
     \predicate[det]{put_dict}{5}{+Key, +Dict0:dict, +OnNotEmpty:callable, +Value, -Dict:dict}
@@ -1133,9 +1079,7 @@ starting at 1. Finds only the first solution, even if multiple
 solutions exist.
 \end{description}
 
-\section{library(swi/lists)}
-
-\label{sec:lists}
+\chapter{library(swi/lists)}\label{sec:lists}
 
 \begin{description}
     \predicate[semidet]{zip}{3}{?List1:list, ?List2:list, ?ListOfLists:list(list)}
@@ -1181,9 +1125,7 @@ extras to \arg{Goal}.
 \end{tags}
 \end{description}
 
-\section{library(swi/streams)}
-
-\label{sec:streams}
+\chapter{library(swi/streams)}\label{sec:streams}
 
 \begin{description}
     \predicate[det]{close_streams}{2}{+Streams:list, -Catchers:list}
@@ -1191,9 +1133,7 @@ Closes zero or more \arg{Streams} while accumulating any exceptions at
 \arg{Catchers}.
 \end{description}
 
-\section{library(with/output)}
-
-\label{sec:output}
+\chapter{library(with/output)}\label{sec:output}
 
 \begin{description}
     \predicate[semidet]{with_output_to}{3}{+FileType, ?Spec, :Goal}
