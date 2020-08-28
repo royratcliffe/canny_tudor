@@ -1,0 +1,1159 @@
+% This LaTeX document was generated using the LaTeX backend of PlDoc,
+% The SWI-Prolog documentation system
+
+\chapter{Canny bag o' Tudor}
+
+This is an experimental SWI-Prolog 'pack' comprising technical spikes, or
+otherwise useful, Prolog predicates that do not seem to fit anywhere else.
+
+The package name reflects a mixed bag of bits and pieces. It's a phrase from the
+North-East corner of England, United Kingdom. 'Canny' means nice, or good. Tudor
+is a crisp (chip, in American) manufacturer. This pack comprises various
+unrelated predicates that may, or may not, be tasty; like crisps in a bag, the
+library sub-folders and module names delineate the disparate components. If the
+sub-modules grow to warrant a larger division, they can ultimately fork their
+own pack.
+
+The pack currently includes:
+
+\begin{itemize}
+    \item Docker-style random names
+    \item Operating system-related features:
+
+\begin{shortlist}
+    \item Search path manipulation
+    \item Start and stop, upping and downing apps
+\end{shortlist}
+
+    \item SWI-Prolog extensions for dictionaries and compounds
+The pack comprises experimental modules subject to change and revision
+due to its nature. The pack's major version will always remain 0.
+Work in progress!
+\end{itemize}
+
+\section{Apps}
+
+You can start or stop an app.
+
+\begin{code}
+app_start(App)
+app_stop(App)
+\end{code}
+
+App is some compound that identifies which app to start and stop. You define an
+App using \verb$os:property_for_app/2$ multi-file predicate. You must at least define
+an app's path using, as an example:
+
+\begin{code}
+os:property_for_app(path(path(mspaint)), mspaint) :- !.
+\end{code}
+
+Note that the Path is a path Spec used by \verb$process_create/3$, so can include a
+path-relative term as above. This is enough to launch the Microsoft Paint app on
+Windows. No need for arguments and options for this example. Starting a \textit{running}
+app does not start a new instance. Rather, it succeeds for the existing
+instance. The green cut prevents unnecessary backtracking.
+
+You can start and continuously restart apps using \verb$app_up/1$, and subsequently
+shut them down with \verb$app_down/1$.
+
+\subsection{Apps testing}
+
+On a Windows system, try the following for example. It launches Microsoft Paint.
+Exit the Paint app after \verb$app_up/1$ below and it will relaunch automatically.
+
+\begin{code}
+?- [library(os/apps), library(os/apps_testing)].
+true.
+
+?- app_up(mspaint).
+true.
+
+?- app_down(mspaint).
+true.
+\end{code}
+
+\section{SWI-Prolog extensions}
+
+This includes the following.
+
+\subsection{Non-deterministic `dict_member(?Dict, ?Member)`}
+
+This predicate offers an alternative approach to dictionary iteration in
+Prolog. It makes a dictionary expose its leaves as a list exposes its
+elements, one by one non-deterministically. It does not unify with
+non-leaves, as for empty dictionaries.
+
+\begin{code}
+?- dict_member(a{b:c{d:e{f:g{h:i{j:999}}}}}, Key-Value).
+Key = a^b/c^d/e^f/g^h/i^j,
+Value = 999.
+
+?- dict_member(Dict, a^b/c^d/e^f/g^h/i^j-999).
+Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
+\end{code}
+
+\chapter{Change Log}
+
+Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
+log}.
+
+\section{[0.7.2] - 2020-07-25}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item \predref{append_path}{3}
+    \item \predref{dict_pair}{2}
+    \item \predref{take_at_most}{3}
+    \item \predref{select1}{3}, \predref{select_apply1}{3}
+\end{shortlist}
+
+\section{[0.7.1] - 2020-06-14}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item indexed_pairs/\{2,3\}
+    \item \predref{list_dict}{3}
+    \item \predref{dict_leaf}{2}
+    \item \predref{split_lines}{2}
+\end{shortlist}
+
+\subsection{Fixed}
+
+\begin{shortlist}
+    \item \predref{make}{0} warnings
+    \item Situation debugging reports WAS, NOW
+    \item Clean up test side effects
+\end{shortlist}
+
+\section{[0.7.0] - 2020-04-10}
+
+\subsection{Fixed}
+
+\begin{shortlist}
+    \item Key restyling for \predref{dict_compound}{2}
+\end{shortlist}
+
+\section{[0.6.1] - 2020-04-09}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item \predref{restyle_identifier_ex}{3}
+    \item \predref{is_key}{1}
+    \item \predref{dict_compound}{2}
+\end{shortlist}
+
+\section{[0.6.0] - 2020-04-06}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item \predref{permute_sum_of_int}{2}
+    \item \predref{permute_list_to_grid}{2}
+    \item \predref{dict_tag}{2}
+    \item \predref{print_situation_history_lengths}{0}
+    \item \predref{create_dict}{3}
+\end{shortlist}
+
+\subsection{Fixed}
+
+\begin{shortlist}
+    \item Code stylings
+\end{shortlist}
+
+\section{[0.5.2] - 2020-01-11}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item \predref{close_streams}{2}
+\end{shortlist}
+
+\subsection{Fixed}
+
+\begin{itemize}
+    \item Do not independently broadcast \predref{was}{2} and \predref{now}{2} for situation transitions
+\end{itemize}
+
+\section{[0.5.1] - 2019-12-03}
+
+\subsection{Fixed}
+
+\begin{shortlist}
+    \item Situation mutator renamed \verb$situation_apply/2$
+\end{shortlist}
+
+\section{[0.5.0] - 2019-12-03}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Linear algebra
+    \item Canny maths
+\end{shortlist}
+
+\subsection{Fixed}
+
+\begin{shortlist}
+    \item Canny situations
+\end{shortlist}
+
+\section{[0.4.0] - 2019-10-19}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Canny situations
+    \item \verb$random_temporary_module/1$ predicate
+    \item \verb$zip/3$ predicate (swi_lists)
+    \item \verb$print_table/1$ predicate
+\end{shortlist}
+
+\subsection{Fixed}
+
+\begin{shortlist}
+    \item \verb$with_output_to/3$ uses \verb$random_name_chk/1$
+\end{shortlist}
+
+\section{[0.3.0] - 2019-09-06}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item \verb$random_name_chk/1$ versus non-deterministic \verb$random_name/1$
+\end{shortlist}
+
+\section{[0.2.1] - 2019-09-03}
+
+\subsection{Fixed}
+
+\begin{itemize}
+    \item Fix the fix; \verb$dict_member/2$ unifies with empty dictionary leaf nodes
+\end{itemize}
+
+\section{[0.2.0] - 2019-09-02}
+
+\subsection{Fixed}
+
+\begin{shortlist}
+    \item Allow dictionary leaf values for \verb$dict_member/2$
+\end{shortlist}
+
+\section{[0.1.1] - 2019-08-02}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Missing pack maintainer, home and download links
+\end{shortlist}
+
+\section{[0.1.0] - 2019-08-02}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Initial spike
+\end{shortlist}
+
+\chapter{library(canny/maths)}\label{sec:maths}
+
+\begin{description}
+    \predicate[det]{remainder}{3}{+X:number, +Y:number, -Z:number}
+\arg{Z} is the remainder after dividing \arg{X} by \arg{Y}, calculated by \arg{X} - N * \arg{Y}
+where N is the nearest integral to \arg{X} / \arg{Y}.
+
+    \predicate[det]{fmod}{3}{+X:number, +Y:number, -Z:number}
+\arg{Z} is the remainder after dividing \arg{X} by \arg{Y}, equal to \arg{X} - N * \arg{Y} where N
+is \arg{X} over \arg{Y} after truncating its fractional part.
+
+    \predicate[semidet]{epsilon_equal}{2}{+X:number, +Y:number}
+\nodescription
+    \predicate[semidet]{epsilon_equal}{3}{+Epsilons:number, +X:number, +Y:number}
+Succeeds only when the absolute difference between the two given
+numbers \arg{X} and \arg{Y} is less than or equal to epsilon, or some factor
+(\arg{Epsilons}) of epsilon according to rounding limitations.
+\end{description}
+
+\chapter{library(canny/permutations)}\label{sec:permutations}
+
+\begin{description}
+    \predicate[nondet]{permute_sum_of_int}{2}{+N:nonneg, -Integers:list(integer)}
+Permute sum. Non-deterministically finds all combinations of integer
+sums between 1 and \arg{N}. Assumes that 0\Sel{}\arg{N}. The number of possible
+permutations amounts to 2-to-the-power of \arg{N}-1; for \arg{N}=3 there are
+four as follows: 1+1+1, 1+2, 2+1 and 3.
+
+    \predicate[nondet]{permute_list_to_grid}{2}{+List0:list, -List:list(list)}
+Permutes a list to two-dimensional grid, a list of lists. Given an
+ordered \arg{List0} of elements, unifies \arg{List} with all possible rows of
+columns. Given \const{a}, \const{b} and \const{c} for example, permutes three rows of
+single columns \const{a}, \const{b}, \const{c}; then \const{a} in the first row with \const{b} and
+\const{c} in the second; then \const{a} and \const{b} in the first row, \const{c} alone in
+the second; finally permutes \const{a}, \const{b}, \const{c} on a single row.
+Permutations always preserve the order of elements from first to
+last.
+\end{description}
+
+\chapter{library(canny/situations)}\label{sec:situations}
+
+\begin{description}
+    \predicate[nondet]{situation_apply}{2}{?Situation:any, ?Apply}
+Mutates \arg{Situation}. \arg{Apply} term to \arg{Situation}, where \arg{Apply} is one of
+the following. Note that the \arg{Apply} term may be nonground. It can
+contain variables if the situation mutation generates new
+information.
+
+\begin{description}
+    \termitem{module}{?Module}
+Sets up \arg{Situation} using \arg{Module}. Establishes the dynamic
+predicate options for the temporary situation module used for
+persisting situation Now-At and Was-When tuples.
+
+An important side effect occurs for ground \arg{Situation} terms. The
+implementation creates the situation's temporary module and
+applies default options to its new dynamic predicates. The
+\verb$module(Module)$ term unifies with the newly-created or existing
+situation module.
+
+The predicate's determinism collapses to semi-determinism for
+ground situations. Otherwise with variable \arg{Situation} components,
+the predicate unifies with all matching situations, unifying
+with \verb$module(Module)$ non-deterministically.
+    \termitem{now}{+Now:any}
+    \termitem{now}{+Now:any, +At:number}
+Makes some \arg{Situation} become \arg{Now} for time index \arg{At}, at the next
+fixation. Effectively schedules a pending update one or more
+times; the next situation \verb$fix/0$ fixes the pending situation
+changes at some future point. The \verb$now/1$ form applies \arg{Now} to
+\arg{Situation} at the current Unix epoch time.
+
+Uses \qpredref{canny}{apply_to_situation}{2} when \arg{Situation} is ground, but
+uses \qpredref{canny}{property_of_situation}{2} otherwise. Asserts therefore
+for multiple situations if \arg{Situation} comprises variables. You
+cannot therefore have non-ground situations.
+    \termitem{fix}{}
+    \termitem{fix}{+Now:any}
+Fixating situations does three important things. First, it adds
+new Previous-When pairs to the situation history. They become
+\verb$was/2$ dynamic facts (clauses without rules). Second, it adds,
+replaces or removes the most current Current-When pair. This
+allows detection of non-events, e.g. when something disappears.
+Some types of situation might require such event edges. Finally,
+fixating broadcasts situation-change messages.
+
+The rule for fixing the Current-When pair goes like this: Is
+there a new \verb$now/2$, at least one? The latest becomes the new
+current. Any others become Previous-When. If there is no
+\verb$now/2$, then the current disappears. Messages broadcast
+accordingly. If there is more than one \verb$now/2$, only the latest
+becomes current. Hence currently-previously only transitions
+once in-between fixations.
+
+Term \verb$fix/1$ is a shortcut for \verb$now(Now, At)$ and \const{fix} where \verb$At$
+becomes the current Unix epoch time. Fixes but does not retract
+history terms.
+    \termitem{retract}{+When:number}
+    \termitem{retract}{?When:number, +Delay:number}
+Retracts all \verb$was/2$ clauses for all matching \arg{Situation} terms.
+Term \verb$retract(_, Delay)$ retracts all \verb$was/2$ history terms using
+the last term's latest time stamp. In this way, you can retract
+situations without knowing their absolute time. For example, you
+can retract everything older than 60 seconds from the last known
+history term when you \verb$retract(_, 60)$.
+\end{description}
+
+The second argument \arg{Apply} can be a list of terms to apply, including
+nested lists of terms. All terms apply in order first to last, and
+depth first.
+
+    \predicate[nondet]{situation_property}{2}{?Situation:any, ?Property}
+\arg{Property} of \arg{Situation}.
+
+\begin{description}
+    \termitem{module}{?Module}
+Marries situation terms with universally-unique modules, one for
+one. All dynamic situations link a situation term with a module.
+This design addresses performance. Retracts take a long time,
+relatively, especially for dynamic predicates with very many
+clauses; upwards of 10,000 clauses for example. Note, you can
+never delete the situation-module association, but you can
+retract all the dynamic clauses belonging to a situation.
+    \termitem{defined}{}
+\arg{Situation} is defined whenever a unique situation module already
+exists for the given \arg{Situation}. Amounts to the same as asking
+for \verb$module(_)$ property.
+    \termitem{currently}{?Current:any}
+    \termitem{currently}{?Current:any, ?When:number}
+Unifies with \arg{Current} for \arg{Situation} and \arg{When} it happened. Unifies
+with the one and only \arg{Current} state for all the matching
+\arg{Situation} terms. Unifies non-deterministically for all \arg{Situation}
+solutions, but semi-deterministically for \arg{Current} state. Thus
+allows for multiple matching situations but only one \arg{Current}
+solution.
+    \termitem{previously}{?Previous:any}
+    \termitem{previously}{?Previous:any, ?When:number}
+Finds \arg{Previous} state of \arg{Situation}, non-deterministically
+resolving zero or more matching \arg{Situation} terms. Fails if no
+previous \arg{Situation} condition.
+    \termitem{history}{?History:list(compound)}
+Unifies \arg{History} with all current and previous situation
+conditions, including their time stamps. \arg{History} is a sequence
+of compounds of the form \verb$was(Was, When)$ where \arg{Situation} is
+effectively a primitive condition coordinate, Was is a sensing
+outcome and When marks the moment that the outcome transpired.
+\end{description}
+\end{description}
+
+\chapter{library(canny/situations_debugging)}\label{sec:situationsdebugging}
+
+\begin{description}
+    \predicate[det]{print_situation_history_lengths}{0}{}
+Finds all situations. Samples their histories and measures the
+history lengths. Uses \verb$=$ when sorting; do not remove duplicates.
+Prints a table of situations by their history length, longest
+history comes first. Filters out single-element histories for the
+sake of noise minimisation.
+\end{description}
+
+\chapter{library(canny_tudor)}\label{sec:cannytudor}\chapter{library(docker/random_names)}\label{sec:randomnames}
+
+\begin{description}
+    \predicate[nondet]{random_name}{1}{?Name}
+Non-deterministically generates Docker-style random names. Uses
+\predref{random_permutation}{2} and \predref{member}{2}, rather than \predref{random_member}{2}, in
+order to generate all possible random names by back-tracking if
+necessary.
+
+The engine-based implementation has two key features: generates
+random permutations of both left and right sub-names independently;
+does not repeat until after unifying all permutations. This implies
+that two consecutive names will never be the same up until the
+boundary event between two consecutive randomisations. There is a
+possibility, albeit small, that the last random name from one
+sequence might accidentally match the first name in the next random
+sequence. There are 23,500 possible combinations.
+
+The implementation is \textbf{not} the most efficient, but does perform
+accurate randomisation over all left-right name permutations.
+
+Allows \arg{Name} to collapse to semi-determinism with ground terms
+without continuous random-name generation since it will never match
+an atom that does not belong to the Docker-random name set. The
+engine-based non-determinism only kicks in when \arg{Name} unbound.
+
+    \predicate[det]{random_name_chk}{1}{-Name:atom}
+Generates a random \arg{Name}.
+
+Only ever fails if \arg{Name} is bound and fails to match the next random
+\arg{Name}, without testing for an unbound argument. That makes little
+sense, so fails unless \arg{Name} is a variable.
+
+    \predicate[semidet]{random_name_chk}{2}{?LHS:atom, ?RHS:atom}
+Unifies \arg{LHS}-\arg{RHS} with one random name, a randomised selection from
+all possible names.
+
+Note, this does \textbf{not} naturally work in (+, ?) or (?, +) or (+, +)
+modes, even if required. Predicate \predref{random_member}{2} fails
+semi-deterministically if the given atom fails to match the
+randomised selection. Unifies semi-deterministically for ground
+atoms in order to work correctly for non-variable arguments. It
+collapses to failure if the argument cannot unify with random-name
+possibilities.
+\end{description}
+
+\chapter{library(html/scrapes)}\label{sec:scrapes}
+
+\begin{description}
+    \predicate[nondet]{scrape_row}{2}{+URL, -Row}
+Scrapes all table rows non-deterministically by row within each
+table. Tables must have table headers, \const{thead} elements.
+
+Scrapes distinct rows. Distinct is important because HTML documents
+contain tables within tables within tables. Attempts to permit some
+flexibility. Asking for sub-rows finds head sub-rows; catches and
+filters out by disunifying data with heads.
+\end{description}
+
+\chapter{library(linear/algebra): Linear algebra}\label{sec:algebra}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe $<$royratcliffe@me.com$>$
+\end{tags}
+
+"The introduction of numbers as coordinates is an act of
+violence."--Hermann Weyl, 1885-1955.
+
+Vectors are just lists of numbers, or scalars. These scalars apply to
+arbitrary abstract dimensions. For example, a two-dimensional vector
+[1, 2] applies two scalars, 1 and 2, to dimensional units \textit{i} and
+\textit{j}; known as the basis vectors for the coordinate system.
+
+Is it possible, advisable, sensible to describe vector and matrix
+operations using Constraint Logic Programming (CLP) techniques? That
+is, since vectors and matrices are basically columns and rows of
+real-numeric scalars, their operators amount to constrained
+relationships between real numbers and hence open to the application
+of CLP over reals. The simple answer is yes, the linear_algebra
+predicates let you express vector operators using real-number
+constraints.
+
+Constraint logic adds some important features to vector operations.
+Suppose for instance that you have a simple addition of two vectors,
+a vector translation of U+V=W. Add U to V giving W. The following
+statements all hold true. Note that the CLP-based translation unifies
+correctly when W is unknown but also when U or V is unknown. Given
+any two, you can ask for the missing vector.
+
+\begin{code}
+?- vector_translate([1, 1], [2, 2], W).
+W = [3.0, 3.0] ;
+false.
+?- vector_translate([1, 1], V, [3, 3]).
+V = [2.0, 2.0] ;
+false.
+?- vector_translate(U, [2, 2], [3, 3]).
+U = [1.0, 1.0] ;
+false.
+\end{code}
+
+Note also that the predicate answers non-deterministically with
+back-tracking until no alternative answer exists. This presumes that
+alternatives could exist at least in theory if not in practice.
+Trailing choice-points remain unless you cut them.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[semidet]{matrix_dimensions}{3}{?Matrix:list(list(number)), ?Rows:nonneg, ?Columns:nonneg}
+Dimensions of \arg{Matrix} where dimensions are \arg{Rows} and \arg{Columns}.
+
+A matrix of M rows and N columns is an M-by-N matrix. A matrix with
+a single row is a row vector; one with a single column is a column
+vector. Because the linear_algebra module uses lists to represent
+vectors and matrices, you need never distinguish between row and
+column vectors.
+
+Boundary cases exist. The dimensions of an empty matrix \Snil{} equals
+[0, _] rather than [0, 0]. And this works in reverse; the matrix
+unifying with dimensions [0, _] equals [].
+
+    \predicate[semidet]{matrix_identity}{2}{+Order:nonneg, -Matrix:list(list(number))}
+\arg{Matrix} becomes an identity matrix of \arg{Order} dimensions. The result is
+a square diagonal matrix of \arg{Order} rows and \arg{Order} columns.
+
+The first list of scalars (call it a row or column) becomes 1
+followed by \arg{Order}-1 zeros. Subsequent scalar elements become an
+\arg{Order}-1 identity matrix with a 0-scalar prefix for every sub-list.
+Operates recursively albeit without tail recursion.
+
+Fails when matrix size \arg{Order} is less than zero.
+
+    \predicate[semidet]{matrix_transpose}{2}{?Matrix0:list(list(number)), ?Matrix:list(list(number))}
+Transposes matrices. The matrix is a list of lists. Fails unless all
+the sub-lists share the same length. Works in both directions, and
+works with non-numerical elements. Only operates at the level of
+two-dimensional lists, a list with sub-lists. Sub-sub-lists remain
+lists and un-transposed if sub-lists comprise list elements.
+
+    \predicate[nondet]{matrix_rotation}{2}{?Theta:number, ?Matrix:list(list(number))}
+The constructed matrix applies to column vectors [X, Y] where
+positive \arg{Theta} rotates X and Y anticlockwise; negative rotates
+clockwise. Transpose the rotation matrix to reverse the angle of
+rotation; positive for clockwise, negative anticlockwise.
+
+    \predicate[semidet]{vector_distance}{2}{?V:list(number), ?Distance:number}
+\nodescription
+    \predicate[semidet]{vector_distance}{3}{?U:list(number), ?V:list(number), ?Distance:number}
+\arg{Distance} of the vector \arg{V} from its origin. \arg{Distance} is Euclidean
+distance between two vectors where the first vector is the origin.
+Note that Euclidean is just one of many distances, including
+Manhattan and chessboard, etc. The predicate is called distance,
+rather than length. The term length overloads on the dimension of a
+vector, its number of numeric elements.
+
+    \predicate[nondet]{vector_translate}{3}{?U, ?V, ?W}
+Translation works forwards and backwards. Since \arg{U}+\arg{V}=\arg{W} it follows
+that \arg{U}=\arg{W}-\arg{V} and also \arg{V}=\arg{W}-\arg{U}. So for unbound \arg{U}, the vector becomes \arg{W}-\arg{V}
+and similarly for \arg{V}.
+
+    \predicate[nondet]{vector_scale}{3}{?Scalar:number, ?U:list(number), ?V:list(number)}
+Vector \arg{U} scales by \arg{Scalar} to \arg{V}.
+
+What is the difference between multiply and scale? Multiplication
+multiplies two vectors whereas scaling multiplies a vector by a
+scalar; hence the verb to scale. Why is the scalar at the front of
+the argument list? This allows the meta-call of \verb$vector_scale(Scalar)$
+passing two vector arguments, e.g. when mapping lists of vectors.
+
+The implementation performs non-deterministically because the CLP(R)
+library leaves a choice point when searching for alternative
+arithmetical solutions.
+
+    \predicate[semidet]{vector_heading}{2}{?V:list(number), ?Heading:number}
+\arg{Heading} in radians of vector \arg{V}. Succeeds only for two-dimensional
+vectors. Normalises the \arg{Heading} angle in (+, -) mode; negative
+angles wrap to the range between pi and two-pi. Similarly,
+normalises the vector \arg{V} in (-, +) mode; \arg{V} has unit length.
+
+    \predicate[nondet]{scalar_power}{3}{?X:number, ?Y:number, ?Z:number}
+\arg{Z} is \arg{Y} to the power \arg{X}.
+
+The first argument \arg{X} is the exponent rather than \arg{Y}, first rather
+than second argument. This allows you to curry the predicate by
+fixing the first exponent argument. In other words, \verb$scalar_power(2, A, B)$ squares A to B.
+\end{description}
+
+\chapter{library(os/apps): Operation system apps}\label{sec:apps}
+
+What is an app? In this operating-system \verb$os_apps$ module context,
+simply something you can start and stop using a process. It has no
+standard input, and typically none or minimal standard output and
+error.
+
+There is an important distinction between apps and processes. These
+predicates use processes to launch apps. An application typically has
+one process instance; else if not, has differing arguments to
+distinguish one running instance of the app from another. Hence for
+the same reason, the app model here ignores "standard input." Apps
+have no such input stream, conceptually speaking.
+
+Is "app" the right word to describe such a thing? English limits the
+alternatives: process, no because that means something that loads an
+app; program, no because that generally refers the app's image
+including its resources.
+
+\section{App configuration}
+
+Apps start by creating a process. Processes have four distinct
+specification parameter groups: a path specification, a list of
+arguments, possibly some execution options along with some optional
+encoding and other run-time related options. Call this the
+application's configuration.
+
+The \verb$os_apps$ predicates rely on multi-file \qpredref{os}{property_for_app}{2} to
+configure the app launch path, arguments and options. The
+property-for-app predicate supplies an app's configuration
+non-deterministically using three sub-terms for the first Property
+argument, as follows.
+
+\begin{shortlist}
+    \item os:\verb$property_for_app(path(Path), App)$
+    \item os:\verb$property_for_app(argument(Argument), App)$
+    \item os:\verb$property_for_app(option(Option), App)$
+\end{shortlist}
+
+Two things to note about these predicates; (1) App is a compound
+describing the app \textbf{and} its app-specific configuration information;
+(2) the first Property argument collates arguments and options
+non-deterministically. Predicate \predref{app_start}{1} finds all the argument-
+and option-solutions \textit{in the order defined}.
+
+\section{Start up and shut down}
+
+By default, starting an app does \textbf{not} persist the app. It does not
+restart if the user or some other agent, including bugs, causes the
+app to exit. Consequently, this module offers a secondary
+app-servicing layer. You can start up or shut down any app. This
+amounts to starting and upping or stopping and downing, but
+substitutes shut for stop. Starting up issues a start but also
+watches for stopping.
+
+\section{Broadcasts}
+
+Sends three broadcast messages for any given App, as follows:
+
+\begin{shortlist}
+    \item os:\verb$app_started(App)$
+    \item os:\verb$app_decoded(App, stdout(Codes))$
+    \item os:\verb$app_decoded(App, stderr(Codes))$
+    \item os:\verb$app_stopped(App, Status)$
+\end{shortlist}
+
+Running apps send zero or more os:\verb$app_decoded(App, Term)$ messages,
+one for every line appearing in their standard output and standard
+error streams. Removes line terminators. App termination broadcasts
+an \verb$exit(Code)$ term for its final Status.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[nondet]{app_property}{2}{?App:compound, ?Property}
+\arg{Property} of \arg{App}.
+
+Note that \verb$app_property(App, defined)$ should \textbf{not} throw an
+exception. Some apps have an indeterminate number of invocations
+where \arg{App} is a compound with variables. Make sure that the necessary
+properties are ground, rather than unbound.
+
+Collapses non-determinism to determinism by collecting \arg{App} and
+\arg{Property} pairs before expanding the bag to members
+non-deterministically.
+
+    \predicate[nondet]{app_start}{1}{?App:compound}
+Starts an \arg{App} if not already running. Starts more than one apps
+non-deterministically if \arg{App} binds with more than one specifier.
+Does not restart the app if launching fails. See \predref{app_up}{1} for
+automatic restarts. An app's argument and option properties execute
+non-deterministically.
+
+Options can include the following:
+
+\begin{description}
+    \termitem{encoding}{Encoding}
+an encoding option for the output and error streams.
+    \termitem{alias}{Alias}
+an alias prefix for the detached watcher thread.
+\end{description}
+
+Checks for not-running \textbf{after} unifying with the \arg{App} path. Succeeds
+if already running.
+
+    \predicate[nondet]{app_stop}{1}{?App:compound}
+Kills the \arg{App} process. Stopping the app does not prevent subsequent
+automatic restart.
+
+Killing does \textbf{not} retract the \predref{app_pid}{2} by design. Doing so would
+trigger a failure warning. (The waiting PID-monitor thread would die
+on failure because its retract attempt fails.)
+
+    \predicate[nondet]{app_up}{1}{?App:compound}
+Starts up an \arg{App}.
+
+Semantics of this predicate rely on \predref{app_start}{1} succeeding even if
+already started. That way, you can start an app then subsequently
+\textit{up} it, meaning stay up. Hence, you can \verb$app_stop(App)$ to force a
+restart if already \verb$app_up(App)$. Stopping an app does not \textit{down} it!
+
+Note that \predref{app_start}{1} will fail for one of two reasons: (1) because
+the \arg{App} has not been defined yet; (2) because starting it fails for
+some reason.
+
+    \predicate[nondet]{app_down}{1}{?App:compound}
+Shuts down an \arg{App}. Shuts down multiple apps non-deterministically if
+the \arg{App} compound matches more than one app definition.
+\end{description}
+
+\chapter{library(os/apps_debugging)}\label{sec:appsdebugging}\chapter{library(os/apps_testing)}\label{sec:appstesting}\chapter{library(os/file_searches): File searches}\label{sec:filesearches}
+
+By design, the following extensions for Windows avoid underscores
+in order not to clash with existing standard paths, e.g. \verb$app_path$
+which Prolog defines by default.\vspace{0.7cm}\chapter{library(os/lc)}\label{sec:lc}
+
+\begin{description}
+    \predicate[det]{lc_r}{1}{+Extensions:list}
+Recursively counts and prints a table of the number of lines within
+read-access files having one of the given \arg{Extensions} found in the
+current directory or one of its sub-directories. Prints the results
+in line-count descending order with the total count appearing first
+against an asterisk, standing for all lines counted.
+
+    \predicate[det]{lc_r}{2}{-Pairs, +Options}
+Counts lines in files recursively within the current directory.
+
+    \predicate[det]{lc_r}{3}{+Directory, -Pairs, +Options}
+Counts lines within files starting at \arg{Directory}.
+
+    \predicate[det]{lc}{3}{+Directory, -Pairs, +Options}
+Counts lines in files starting at \arg{Directory} and using \arg{Options}.
+Counts for each file concurrently in order to maintain high
+performance.
+
+\begin{arguments}
+\arg{Pairs} & is a list of atom-integer pairs where the relative path
+of a matching text file is the first pair-element, and the number of
+lines counted is the second pair-element. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(os/search_paths)}\label{sec:searchpaths}
+
+\begin{description}
+    \predicate[det]{search_path_prepend}{2}{+Name:atom, +Directory:atom}
+Adds \arg{Directory} to a search-path environment variable. Note, this is
+not naturally an atomic operation but the prepend makes it thread
+safe by wrapping the fetching and storing within a mutex.
+
+Prepends \arg{Directory} to the environment search path by \arg{Name}, unless
+already present. Uses semi-colon as the search-path separator on
+Windows operating systems, or colon everywhere else. Adds \arg{Directory}
+to the start of an existing path. Makes \arg{Directory} the first and only
+directory element if the search path does not yet exist.
+
+Note that \arg{Directory} should be an operating-system compatible search
+path because non-Prolog software needs to search using the included
+directory paths. Automatically converts incoming directory paths to
+operating-system compatible paths.
+
+Note also, the environment variable \arg{Name} is case insensitive on
+Windows, but not so on Unix-based operating systems.
+
+    \predicate[semidet]{search_path}{2}{+Name:atom, -Directories:list(atom)}
+\nodescription
+    \predicate[det]{search_path}{2}{+Name:atom, +Directories:list(atom)}
+Only fails if the environment does \textbf{not} contain the given
+search-path variable. Does not fail if the variable does \textbf{not}
+identify a proper separator-delimited variable.
+
+    \predicate[semidet]{search_path_separator}{1}{?Separator:atom}
+\arg{Separator} used for search paths: semi-colon on the Microsoft Windows
+operating system; colon elsewhere.
+\end{description}
+
+\chapter{library(power_shell/get_content)}\label{sec:getcontent}\chapter{library(print/(table))}\label{sec:table}
+
+\begin{description}
+    \predicate[det]{print_table}{1}{:Goal}
+Prints all the variables within the given non-deterministic \arg{Goal}
+term formatted as a table of centre-padded columns to
+\verb$current_output$. One \arg{Goal} solution becomes one line of text.
+Solutions to free variables become printed cells.
+
+Makes an important assumption: that codes equate to character
+columns; one code, one column. This will be true for most languages
+on a teletype like terminal. Ignores any exceptions by design.
+
+\begin{code}
+?- print_table(user:prolog_file_type(_, _)).
++------+----------+
+|  pl  |  prolog  |
+|prolog|  prolog  |
+| qlf  |  prolog  |
+| qlf  |   qlf    |
+| dll  |executable|
++------+----------+
+\end{code}
+
+\end{description}
+
+\chapter{library(random/temporary)}\label{sec:temporary}
+
+\begin{description}
+    \predicate[nondet]{random_temporary_module}{1}{-M:atom}
+Finds a module that does not exist. Makes it exist. The new module
+has a module class of temporary. Operates non-deterministically by
+continuously generating a newly unique temporary module. Surround
+with \predref{once}{1} when generating just a single module.
+
+Utilises the \predref{uuid}{1} predicate which never fails; the implementation
+relies on that prerequisite. Nor does \predref{uuid}{1} automatically generate
+a randomly \textit{unique} identifier. The implementation repeats on
+failure to find a module that does not already exist. If the
+generation of a new unique module name always fails, the predicate
+will continue an infinite failure-driven loop running until
+interrupted within the calling thread.
+
+The predicate allows for concurrency by operating a mutex across the
+clauses testing for an existing module and its creation. Succeeds
+only for mode (-).
+\end{description}
+
+\chapter{library(swi/atoms)}\label{sec:atoms}
+
+\begin{description}
+    \predicate[semidet]{restyle_identifier_ex}{3}{+Style, +Text, ?Atom}
+Restyles \arg{Text} to \arg{Atom}. Predicate \predref{restyle_identifier}{3} fails for
+incoming text with leading underscore. Standard
+\qpredref{atom}{restyle_identifier}{3} fails for '_' because underscore fails for
+\verb$atom_codes('_', [Code])$, \verb$code_type(Code, prolog_symbol)$. Underscore
+(code 95) is a Prolog variable start and identifier continuation
+symbol, not a Prolog symbol.
+
+Strips any leading underscore or underscores. Succeeds only for
+text, including codes, but does not throw.
+
+\begin{arguments}
+\arg{Text} & string, atom or codes. \\
+\arg{Atom} & restyled. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(swi/codes)}\label{sec:codes}
+
+\begin{description}
+    \predicate[semidet]{split_lines}{2}{?Codes, ?Lines:list(list)}
+Splits \arg{Codes} into \arg{Lines} of codes, or vice versa. \arg{Lines} split by
+newlines. The last line does not require newline termination. The
+reverse unification however always appends a trailing newline to the
+last line.
+\end{description}
+
+\chapter{library(swi/compounds)}\label{sec:compounds}
+
+\begin{description}
+    \predicate[semidet]{flatten_slashes}{2}{+Components0:compound, ?Components:compound}
+Flattens slash-delimited components. \arg{Components0} unifies flatly with
+\arg{Components} using \verb$mode(+, ?)$. Fails if \arg{Components} do not match the
+incoming \arg{Components0} correctly with the same number of slashes.
+
+Consecutive slash-delimited compound terms decompose in Prolog as
+nested slash-functors. Compound \verb$a/b/c$ decomposes to \verb$/(a/b, c)$
+for example. Sub-term \verb$a/b$ decomposes to nested \verb$/(a, b)$. The
+predicate converts any \verb$/(a, b/c)$ to \verb$/(a/b, c)$ so that the
+shorthand flattens from \verb$a/(b/c)$ to \verb$a/b/c$.
+
+Note that Prolog variables match partially-bound compounds; \verb$A$
+matches \verb$A/(B/C)$. The first argument must therefore be fully ground
+in order to avoid infinite recursion.
+
+\begin{tags}
+    \tag{To be done}
+Enhance the predicate modes to allow variable components such
+as A/B/C; mode (?, ?).
+\end{tags}
+
+    \predicate[semidet]{append_path}{3}{?Left, ?Right, ?LeftAndRight}
+\arg{LeftAndRight} appends \arg{Left} path to \arg{Right} path. Paths in this context
+amount to any slash-separated terms, including atoms and compounds.
+Paths can include variables. Use this predicate to split or join
+arbitrary paths. The solutions associate to the left by preference
+and collate at \arg{Left}, even though the slash operator associates to
+the right. Hence \verb$append_path(A, B/5, 1/2/3/4/5)$ gives one solution
+of A = 1/2/3 and B = 4.
+
+There is an implementation subtlety. Only find the \arg{Right} hand key if
+the argument is really a compound, not just unifies with a slash
+compound since Path/Component unifies with any unbound variable.
+\end{description}
+
+\chapter{library(swi/dicts)}\label{sec:dicts}
+
+\begin{description}
+    \predicate[det]{put_dict}{5}{+Key, +Dict0:dict, +OnNotEmpty:callable, +Value, -Dict:dict}
+Updates dictionary pair calling for merge if not empty. Updates
+\arg{Dict0} to \arg{Dict} with \arg{Key}-\arg{Value}, combining \arg{Value} with any existing
+value by calling \arg{OnNotEmpty}/3. The callable can merge its first two
+arguments in some way, or replace the first with the second, or even
+reject the second.
+
+The implementation puts \arg{Key} and \arg{Value} in \arg{Dict0}, unifying the result
+at \arg{Dict}. However, if the dictionary \arg{Dict0} already contains another
+value for the indicated \arg{Key} then it invokes \arg{OnNotEmpty} with the
+original Value0 and the replacement \arg{Value}, finally putting the
+combined or selected \arg{Value}_ in the dictionary for the \arg{Key}.
+
+    \predicate[semidet]{merge_dict}{3}{+Dict0:dict, +Dict1:dict, -Dict:dict}
+Merges multiple pairs from a dictionary \arg{Dict1}, into dictionary
+\arg{Dict0}, unifying the results at \arg{Dict}. Iterates the pairs for the
+\arg{Dict1} dictionary, using them to recursively update \arg{Dict0} key-by-key.
+Discards the tag from \arg{Dict1}; \arg{Dict} carries the same tag as \arg{Dict0}.
+
+Merges non-dictionaries according to type. Appends lists when the
+value in a key-value pair has list type. Only replaces existing
+values with incoming values when the leaf is not a dictionary, and
+neither existing nor incoming is a list.
+
+Note the argument order. The first argument specifies the base
+dictionary starting point. The second argument merges into the
+first. The resulting merge unifies at the third argument. The order
+only matters if keys collide. Pairs from \arg{Dict1} replace key-matching
+pairs in \arg{Dict0}.
+
+Merging does not replace the original dictionary tag. This includes
+an unbound tag. The tag of \arg{Dict0} remains unchanged after merge.
+
+    \predicate[det]{merge_pair}{3}{+Dict0:dict, +Pair:pair, -Dict:dict}
+Merges \arg{Pair} with dictionary. Merges a key-value \arg{Pair} into dictionary
+\arg{Dict0}, unifying the results at \arg{Dict}.
+
+Private predicate \verb$merge_dict_/3$
+is the value merging predicate; given the original Value0 and the
+incoming Value, it merges the two values at Value_.
+
+    \predicate[semidet]{merge_dicts}{2}{+Dicts:list(dict), -Dict:dict}
+Merges one or more dictionaries. You cannot merge an empty list of
+dictionaries. Fails in such cases. It does \textbf{not} unify \arg{Dict} with a
+tagless empty dictionary. The implementation merges two consecutive
+dictionaries before tail recursion until eventually one remains.
+
+Merging ignores tags.
+
+    \predicate[nondet]{dict_member}{2}{?Dict:dict, ?Member}
+Unifies with members of dictionary. Unifies \arg{Member} with all
+dictionary members, where \arg{Member} is any non-dictionary leaf,
+including list elements, or empty leaf dictionary.
+
+Keys become tagged keys of the form \verb$Tag^Key$. The caret operator
+neatly fits by operator precedence in-between the pair operator
+(\verb$-$) and the sub-key slash delimiter (\verb$/$). Nested keys become
+nested slash-functor binary compounds of the form
+\verb$TaggedKeys/TaggedKey$. So for example, the compound \verb$Tag^Key-Value$
+translates to Tag\{Key:Value\} in dictionary form. \verb$Tag^Key-Value$
+decomposes term-wise as \verb$[-, Tag^Key, Value]$. Note that tagged
+keys, including super-sub tagged keys, take precedence within the
+term.
+
+This is a non-standard approach to dictionary unification. It turns
+nested sub-dictionary hierarchies into flatten pair-lists of
+tagged-key paths and their leaf values.
+
+    \predicate[semidet]{dict_leaf}{2}{-Dict, +Pair}
+\nodescription
+    \predicate[nondet]{dict_leaf}{2}{+Dict, -Pair}
+Unifies \arg{Dict} with its leaf nodes non-deterministically. Each \arg{Pair} is
+either an atom for root-level keys, or a compound for
+nested-dictionary keys. \arg{Pair} thereby represents a nested key path
+Leaf with its corresponding Value.
+
+Fails for integer keys because integers cannot serve as functors.
+Does not attempt to map integer keys to an atom, since this will
+create a reverse conversion disambiguation issue. This \textbf{does} work
+for nested integer leaf keys, e.g. \verb$a(1)$, provided that the integer
+key does not translate to a functor.
+
+\begin{arguments}
+\arg{Dict} & is either a dictionary or a list of key-value pairs whose
+syntax conforms to valid dictionary data. \\
+\end{arguments}
+
+    \predicate[nondet]{dict_pair}{2}{+Dict, -Pair}
+\nodescription
+    \predicate[det]{dict_pair}{2}{-Dict, +Pair}
+Finds all dictionary pairs non-deterministically and recursively
+where each pair is a Path-Value. Path is a slash-delimited
+dictionary key path. Note, the search fails for dictionary leaves;
+succeeds only for non-dictionaries. Fails therefore for empty
+dictionaries or dictionaries of empty sub-dictionaries.
+
+    \predicate[det]{findall_dict}{4}{?Tag, ?Template, :Goal, -Dicts:list(dict)}
+Finds all dictionary-only solutions to \arg{Template} within \arg{Goal}. \arg{Tag}
+selects which tags to select. What happens when \arg{Tag} is variable? In
+such cases, unites with the first bound tag then all subsequent
+matching tags.
+
+    \predicate[semidet]{dict_tag}{2}{+Dict, ?Tag}
+Tags \arg{Dict} with \arg{Tag} if currently untagged. Fails if already tagged
+but not matching \arg{Tag}, just like \predref{is_dict}{2} with a ground tag. Never
+mutates ground tags as a result. Additionally Tags all nested
+sub-dictionaries using \arg{Tag} and the sub-key for the sub-dictionary.
+An underscore delimiter concatenates the tag and key.
+
+The implementation uses atomic concatenation to merge \arg{Tag} and the
+dictionary sub-keys. Note that \predref{atomic_list_concat}{3} works for
+non-atomic keys, including numbers and strings. Does not traverse
+sub-lists. Ignores sub-dictionaries where a dictionary value is a
+list containing dictionaries. Perhaps future versions will.
+
+    \predicate[semidet]{create_dict}{3}{?Tag, +Dict0, -Dict}
+Creates a dictionary just like \predref{dict_create}{3} does but with two
+important differences. First, the argument order differs. \arg{Tag} comes
+first to make \predref{maplist}{3} and \predref{convlist}{3} more convenient where the
+Goal argument includes the \arg{Tag}. The new dictionary \arg{Dict} comes last
+for the same reason. Secondly, always applies the given \arg{Tag} to the
+new \arg{Dict}, even if the incoming Data supplies one.
+
+Creating a dictionary using standard \predref{dict_create}{3} overrides the tag
+argument from its Data dictionary, ignoring the \arg{Tag} if any. For
+example, using \predref{dict_create}{3} for tag xyz and dictionary abc\Scurl{} gives
+you abc\Scurl{} as the outgoing dictionary. This predicate reverses this
+behaviour; the \arg{Tag} argument replaces any tag in a Data dictionary.
+
+    \predicate[semidet]{is_key}{1}{+Key:any}
+Succeeds for terms that can serve as keys within a dictionary.
+Dictionary keys are atoms or tagged integers, otherwise known as
+constant values. Integers include negatives.
+
+\begin{arguments}
+\arg{Key} & successfully unites for all dictionary-key conforming
+terms: atomic or integral. \\
+\end{arguments}
+
+    \predicate[nondet]{dict_compound}{2}{+Dict:dict, ?Compound:compound}
+Finds all compound-folded terms within \arg{Dict}. Unifies with all pairs
+within \arg{Dict} as compounds of the form \verb$key(Value)$ where \const{key} matches
+the dictionary key converted to one-two style and lower-case.
+
+Unfolds lists and sub-dictionaries non-deterministically. For most
+occasions, the non-deterministic unfolding of sub-lists results in
+multiple non-deterministic solutions and typically has a plural
+compound name. This is not a perfect solution for lists of results,
+since the order of the solutions defines the relations between list
+elements.
+
+Dictionary keys can be atoms or integers. Converts integers to
+compound names using integer-to-atom translation. However, compounds
+for sub-dictionaries re-wrap the sub-compounds by inserting the
+integer key as the prefix argument of a two or more arity compound.
+
+    \predicate[semidet]{list_dict}{3}{?List, ?Tag, ?Dict}
+\arg{List} to \arg{Dict} by zipping up items from \arg{List} with integer indexed keys
+starting at 1. Finds only the first solution, even if multiple
+solutions exist.
+\end{description}
+
+\chapter{library(swi/lists)}\label{sec:lists}
+
+\begin{description}
+    \predicate[semidet]{zip}{3}{?List1:list, ?List2:list, ?ListOfLists:list(list)}
+Zips two lists, \arg{List1} and \arg{List2}, where each element from the first
+list pairs with the same element from the second list. Alternatively
+unzips one list of lists into two lists.
+
+Only succeeds if the lists and sub-lists have matching lengths.
+
+    \predicate[semidet]{indexed_pairs}{2}{?Items:list, ?Pairs:list(pair)}
+\nodescription
+    \predicate[semidet]{indexed_pairs}{3}{?List1:list, ?Index:integer, ?List2:list}
+Unifies \arg{List1} of items with \arg{List2} of pairs where the first pair
+element is an increasing integer index. \arg{Index} has some arbitrary
+starting point, or defaults to 1 for one-based indexing. Unification
+works in all modes.
+
+    \predicate[semidet]{take_at_most}{3}{+Length:integer, +List0, -List}
+\arg{List} takes at most \arg{Length} elements from \arg{List0}. \arg{List} for \arg{Length} of
+zero is always an empty list, regardless of the incoming \arg{List0}. \arg{List}
+is always empty for an empty \arg{List0}, regardless of \arg{Length}. Finally,
+elements from \arg{List0} unify with \arg{List} until either \arg{Length} elements
+have been seen, or until no more elements at \arg{List0} exist.
+
+    \predicate[det]{select1}{3}{+Indices, +List0, -List}
+Selects \arg{List} elements by index from \arg{List0}. Applies \predref{nth1}{3} to each
+element of \arg{Indices}. The 1 suffix of the predicate name indicates
+one-based \arg{Indices} used for selection. Mirrors \predref{select}{3} except that
+the predicate picks elements from a list by index rather than by
+element removal.
+
+\begin{tags}
+\mtag{See also}- \predref{nth1}{3} \\- \predref{select}{3}
+\end{tags}
+
+    \predicate[nondet]{select_apply1}{3}{+Indices, :Goal, +Extra}
+Selects one-based index arguments from \arg{Extra} and applies these
+extras to \arg{Goal}.
+
+\begin{tags}
+    \tag{See also}
+\predref{apply}{2}
+\end{tags}
+\end{description}
+
+\chapter{library(swi/streams)}\label{sec:streams}
+
+\begin{description}
+    \predicate[det]{close_streams}{2}{+Streams:list, -Catchers:list}
+Closes zero or more \arg{Streams} while accumulating any exceptions at
+\arg{Catchers}.
+\end{description}
+
+\chapter{library(with/output)}\label{sec:output}
+
+\begin{description}
+    \predicate[semidet]{with_output_to}{3}{+FileType, ?Spec, :Goal}
+Runs \arg{Goal} with \verb$current_output$ pointing at a file with UTF-8
+encoding. In (+, -, :) mode, creates a randomly-generated file with
+random new name unified at \arg{Spec}. With \arg{Spec} unbound, generates a
+random one-time name. Does \textbf{not} try to back-track in order to
+create a unique random name. Hence overwrites any existing file.
+
+This is an arity-three version of \predref{with_output_to}{2}; same name,
+different arity. Writes the results of running \arg{Goal} to some file
+given by \arg{Spec} and \arg{FileType}. Fails if \arg{Spec} and \arg{FileType} fail to
+specify a writable file location.
+
+When \arg{Spec} unbound, generates a random name. Binds the name to \arg{Spec}.
+
+    \predicate[semidet]{with_output_to_pl}{2}{?Spec, :Goal}
+Runs \arg{Goal} with \verb$current_output$ pointing at a randomly-generated
+Prolog source file with UTF-8 encoding. In (+, :) mode, creates a
+Prolog file with name given by \arg{Spec}.
+\end{description}
+
