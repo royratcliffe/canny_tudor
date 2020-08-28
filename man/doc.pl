@@ -2,7 +2,16 @@
 
 :- multifile user:file_search_path/2.
 
+%   Add the root to the library search path. Otherwise, the
+%   documentation builder reports the full path rather than the
+%   library-relative path, e.g. library(SubPath). Prefer the latter.
+%   Assumes that the current working directory is the *man* folder.
+
 user:file_search_path(library, '../prolog').
+
+%   There appears to be a problem with doc_latex/3. It back-tracks then
+%   tries to load the list of input files. Work around the issue by
+%   soft-cutting the redundant choice-point.
 
 doc :-
     bagof(File, doc(File), Files),
