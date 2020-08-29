@@ -34,7 +34,7 @@
 %   with Args specifying the  number  of   arguments  and  also residing
 %   within a given module, M. Unifies the result at Term.
 %
-%   @arg Prefix atom, either apply_to_ or property_of_.
+%   @arg Prefix atom, either `apply_to_` or `property_of_`.
 %
 %   @arg Suffix must  be  an  instantiated   atom.  You  cannot  pass  a
 %   variable. Fails otherwise.
