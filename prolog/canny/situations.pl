@@ -86,24 +86,24 @@
 %   The second argument Apply can be a list of terms to apply, including
 %   nested lists of terms. All terms apply   in order first to last, and
 %   depth first.
+%
+%   @arg Now is the state of a Situation  at some point in time. The Now
+%   term must be non-variable but   not necessarily ground. Dictionaries
+%   with unbound tags can exist within the situation calculus.
 
-situation_apply(Situation, Apply) :-
-    applies(Apply, Situation).
+situation_apply(Situation, Apply) :- applies(Apply, Situation).
 
 applies(Applies, Situation) :-
     is_list(Applies),
     !,
     member(Apply, Applies),
     applies(Apply, Situation).
-applies(Apply, Situation) :-
-    canny:apply_to_situation(Apply, Situation).
+applies(Apply, Situation) :- canny:apply_to_situation(Apply, Situation).
 
 canny:apply_to_situation(module(Module), Situation) :-
     with_mutex(canny_situations, temporary_module(Situation, Module)).
 
-temporary_module(Situation, Module) :-
-    situation_module(Situation, Module),
-    !.
+temporary_module(Situation, Module) :- situation_module(Situation, Module), !.
 temporary_module(Situation, Module) :-
     ground(Situation),
     once(random_temporary_module(Module)),
@@ -115,7 +115,7 @@ temporary_module(Situation, Module) :-
             ], []).
 
 canny:apply_to_situation(now(Now, At), Situation) :-
-    ground(Now),
+    nonvar(Now),
     number(At),
     now(Situation, Now, At).
 canny:apply_to_situation(now(Now), Situation) :-
@@ -147,15 +147,12 @@ fix([], Situation, Module) :-
     !,
     asserta(Module:previously(Previous, When)),
     broadcast(situation(Situation, was(Previous, When))).
-fix([], _, _) :-
-    !.
+fix([], _, _) :- !.
 fix(Fixes, Situation, Module) :-
     last(Fixes, now(Now, At)),
     fix(Situation, Module, Now, At).
 
-fix(_, Module, Now, _) :-
-    once(Module:currently(Now, _)),
-    !.
+fix(_, Module, Now, _) :- once(Module:currently(Now, _)), !.
 fix(Situation, Module, Now, At) :-
     once(retract(Module:currently(Previous, When))),
     !,
@@ -227,6 +224,7 @@ canny:apply_to_situation(listing, Situation) :-
 %
 %       * currently(?Current:any)
 %       * currently(?Current:any, ?When:number)
+%       * currently(Current:any, for(Seconds:number))
 %
 %       Unifies with Current for Situation and When it happened. Unifies
 %       with the one  and  only  Current   state  for  all  the matching
@@ -235,8 +233,14 @@ canny:apply_to_situation(listing, Situation) :-
 %       allows for multiple matching  situations   but  only one Current
 %       solution.
 %
+%       You can replace the When  term   with  for(Seconds)  in order to
+%       measure elapsed interval since fixing Situation. Same applies to
+%       previously/2 except that the current situation time stamp serves
+%       as the baseline time, else defaults to the current time.
+%
 %       * previously(?Previous:any)
 %       * previously(?Previous:any, ?When:number)
+%       * previously(Previous:any, for(Seconds:number))
 %
 %       Finds  Previous  state  of    Situation,   non-deterministically
 %       resolving zero or more matching  Situation   terms.  Fails if no
@@ -259,14 +263,49 @@ canny:property_of_situation(defined, Situation) :-
     situation_module(Situation, _).
 canny:property_of_situation(currently(Current, When), Situation) :-
     situation_module(Situation, Module),
-    once(Module:currently(Current, When)).
+    once(Module:currently(Current, When0)),
+    currently_for(When, When0).
 canny:property_of_situation(currently(Current), Situation) :-
     canny:property_of_situation(currently(Current, _), Situation).
 canny:property_of_situation(previously(Previous, When), Situation) :-
     situation_module(Situation, Module),
-    once(Module:previously(Previous, When)).
+    once(Module:previously(Previous, When0)),
+    previously_for(When, When0, Situation).
 canny:property_of_situation(previously(Previous), Situation) :-
     canny:property_of_situation(previously(Previous, _), Situation).
 canny:property_of_situation(history(History), Situation) :-
     situation_module(Situation, Module),
     findall(was(Was, When), Module:was(Was, When), History).
+
+%!  currently_for(?When, +When0) is det.
+%
+%   The predicate has three outcomes.  (1)   Unifies  When with When0 if
+%   unbound. (2) If When unifies with  for(Seconds) then Seconds unifies
+%   with the difference between the last When stamp and the current time
+%   stamp. This assumes that the situation   time  carries the same time
+%   scale as Epoch time.  This  is   not  always  necessarily  the case,
+%   however. (3) By default, the outgoing When unifies with the incoming
+%   When0.
+
+currently_for(When, When0) :- var(When), !, When = When0.
+currently_for(for(Seconds), When) :- !, get_time(At), Seconds is At - When.
+currently_for(When, When).
+
+%!  previously_for(?When, +When0, +Situation) is det.
+%
+%   Previously for(Seconds) compares the previous  When with the current
+%   When,  assuming  Situation  answers   to  currently(Current,  When).
+%   Situations may have a previous without a  current if fixed without a
+%   Now term.
+
+previously_for(When, When0, _Situation) :- var(When), !, When = When0.
+previously_for(for(Seconds), When, Situation) :-
+    !,
+    currently_at(At, Situation),
+    Seconds is At - When.
+previously_for(When, When, _Situation).
+
+currently_at(At, Situation) :-
+    canny:property_of_situation(currently(_, At), Situation),
+    !.
+currently_at(At, _Situation) :- get_time(At).

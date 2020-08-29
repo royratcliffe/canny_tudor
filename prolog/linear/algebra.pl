@@ -63,7 +63,6 @@
  * alternatives could exist at  least  in   theory  if  not in practice.
  * Trailing choice-points remain unless you cut them.
  *
- * @author Roy Ratcliffe <royratcliffe@me.com>
  */
 
 %!  matrix_dimensions(?Matrix:list(list(number)), ?Rows:nonneg,

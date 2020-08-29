@@ -1,6 +1,22 @@
 # Change Log
 
-Uses [Semantic Versioning](https://semver.org/).
+Uses [Semantic Versioning](https://semver.org/). Always [keep a change
+log](https://keepachangelog.com/en/1.0.0/).
+
+## [0.8.0] - 2020-08-29
+### Added
+- canny_payloads module
+- canny_endian module
+- canny_bits module
+- ieee_754 module
+- LaTeX generator for PDF manual
+### Fixed
+- Situations now permit non-variable Now terms. This allows for dictionaries
+  with unbound tags.
+- Situations also now support time-differential calculations with for(Seconds)
+  in place of When. Current and previous situations compute the time delay
+  between historic situation samples: the difference in time between the current
+  and now, or the time delay between the previous and the current.
 
 ## [0.7.2] - 2020-07-25
 ### Added

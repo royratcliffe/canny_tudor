@@ -9,7 +9,7 @@ os:property_for_app(path(path(powershell)), App) :-
 
 path_options(power_shell:get_content(Spec, Options), Path, Options) :-
     ground(Spec),
-    absolute_file_name(Spec, Path, [access(read)]).
+    absolute_file_name(Spec, Path, [access(read), file_errors(fail)]).
 
 os:property_for_app(argument('Get-Content'), App) :-
     path_options(App, _, _).
