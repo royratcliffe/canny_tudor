@@ -258,6 +258,64 @@ log}.
     \item Initial spike
 \end{shortlist}
 
+\chapter{library(canny/bits)}\label{sec:bits}
+
+\begin{description}
+    \predicate[semidet]{bits}{5}{+Shift, +Width, ?Word, ?Bits, ?Rest}
+Unifies \arg{Bits} within a \arg{Word} using \arg{Shift} and \arg{Width}. All arguments are
+integers treated as words of arbitrary bit-width.
+
+The implementation uses relational integer arithmetic, i.e. CLP(FD).
+Hence allows for forward and backward transformations from \arg{Word} to
+\arg{Bits} and vice versa. Integer \arg{Word} applies a \arg{Shift} and bit \arg{Width} mask
+to integer \arg{Bits}. \arg{Bits} is always a smaller integer. Decomposes the
+problem into shifting and masking. Treats these operations
+separately.
+
+\begin{arguments}
+\arg{Width} & of \arg{Bits} from \arg{Word} after \arg{Shift}. \arg{Width} of zero always
+fails. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(canny/endian): Big- and little-endian grammars}\label{sec:endian}
+
+The endian predicates unify big- and little-endian words, longs and
+long words with lists of octets by applying shifts and masks to
+correctly align integer values with their endian-specific octet
+positions. They utilise integer-relational finite domain CLP(FD)
+predicates in order to implement forward and reverse translation
+between octets and integers.
+
+Use of CLP allows the DCG clauses to express the integer relations
+between octets and their integer interpretations implicitly. The
+constraints simultaneously define a byte in terms of an octet and
+vice versa.\vspace{0.7cm}
+
+\begin{description}
+    \dcg[semidet]{byte}{1}{?Byte:integer}
+Parses or generates an octet for \arg{Byte}. Bytes are eight bits wide and
+unify with octets between 0 and 255 inclusive. Fails for octets
+falling outside this valid range.
+
+\begin{arguments}
+\arg{Byte} & value of octet. \\
+\end{arguments}
+
+    \dcg[semidet]{big_endian}{2}{?Width:integer, ?Word:integer}
+Unifies big-endian words with octets.
+
+Example as follows: four octets to one big-endian 32-bit word.
+
+\begin{code}
+?- phrase(big_endian(32, A), [4, 3, 2, 1]), format('~16r~n', [A]).
+4030201
+\end{code}
+
+    \dcg[semidet]{little_endian}{2}{?Width:integer, ?Word:integer}
+Unifies little-endian words with octet stream.
+\end{description}
+
 \chapter{library(canny/maths)}\label{sec:maths}
 
 \begin{description}
@@ -275,6 +333,69 @@ is \arg{X} over \arg{Y} after truncating its fractional part.
 Succeeds only when the absolute difference between the two given
 numbers \arg{X} and \arg{Y} is less than or equal to epsilon, or some factor
 (\arg{Epsilons}) of epsilon according to rounding limitations.
+
+    \predicate[det]{frexp}{3}{+X:number, -Y:number, -Exp:integer}
+Answers mantissa \arg{Y} and exponent \arg{Exp} for floating-point number \arg{X}.
+
+\begin{arguments}
+\arg{Y} & is the floating-point mantissa falling within the interval
+[0.5, 1.0). Note the non-inclusive upper bound. \\
+\end{arguments}
+
+    \predicate[det]{ldexp}{3}{+X:number, -Y:number, +Exp:integer}
+Loads exponent. Multiplies \arg{X} by 2 to the power \arg{Exp} giving \arg{Y}. Mimics
+the C math \verb$ldexp(x, exp)$ function.
+
+Uses an unusual argument order. Ordering aligns \arg{X}, \arg{Y} and \arg{Exp} with
+\predref{frexp}{3}. Uses \Spow{} rather than \Shat{} operator. \arg{Exp} is an integer.
+
+\begin{arguments}
+\arg{X} & is some floating-point value. \\
+\arg{Y} & is \arg{X} times 2 to the power \arg{Exp}. \\
+\arg{Exp} & is the exponent, typically an integer. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(canny/payloads): Local Payloads}\label{sec:payloads}
+
+Apply and Property terms must be non-variable. The list below
+indicates the valid forms of Apply, indicating determinism. Note that
+only peek and pop perform non-deterministically for all thread-local
+payloads.
+
+\begin{shortlist}
+    \item reset is det
+    \item push is semi-det
+    \item \verb$peek(Payload)$ is non-det
+    \item \verb$pop(Payload)$ is non-det
+    \item [Apply0\Sbar{}Applies] is semi-det
+    \item Apply is semi-det for payload
+\end{shortlist}
+
+Properties as follows.
+
+\begin{shortlist}
+    \item \verb$top(Property)$ is semi-det for payload
+    \item Property is semi-det for payload
+\end{shortlist}
+
+The first form \predref{top}{1} peeks at the latest payload once. It behaves
+semi-deterministically for the top-most payload.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[nondet]{apply_to}{2}{+Apply, :To}
+\nodescription
+    \predicate[semidet]{apply_to}{2}{+Applies, :To}
+
+\begin{arguments}
+\arg{Applies} & is a list of \arg{Apply} terms. It succeeds when all its
+\arg{Apply} terms succeed, and fails when the first one fails, possibly
+leaving side effects if the apply-to predicate generates addition
+effects; though typically not for mutation arity-3 apply-to
+predicates. \\
+\end{arguments}
+
+    \predicate[nondet]{property_of}{2}{+Property, :Of}
 \end{description}
 
 \chapter{library(canny/permutations)}\label{sec:permutations}
@@ -369,6 +490,12 @@ The second argument \arg{Apply} can be a list of terms to apply, including
 nested lists of terms. All terms apply in order first to last, and
 depth first.
 
+\begin{arguments}
+\arg{Now} & is the state of a \arg{Situation} at some point in time. The Now
+term must be non-variable but not necessarily ground. Dictionaries
+with unbound tags can exist within the situation calculus. \\
+\end{arguments}
+
     \predicate[nondet]{situation_property}{2}{?Situation:any, ?Property}
 \arg{Property} of \arg{Situation}.
 
@@ -387,14 +514,21 @@ exists for the given \arg{Situation}. Amounts to the same as asking
 for \verb$module(_)$ property.
     \termitem{currently}{?Current:any}
     \termitem{currently}{?Current:any, ?When:number}
-Unifies with \arg{Current} for \arg{Situation} and \arg{When} it happened. Unifies
+    \termitem{currently}{Current:any, for(Seconds:number)}
+Unifies with \arg{Current} for \arg{Situation} and When it happened. Unifies
 with the one and only \arg{Current} state for all the matching
 \arg{Situation} terms. Unifies non-deterministically for all \arg{Situation}
 solutions, but semi-deterministically for \arg{Current} state. Thus
 allows for multiple matching situations but only one \arg{Current}
 solution.
+
+You can replace the When term with \verb$for(Seconds)$ in order to
+measure elapsed interval since fixing \arg{Situation}. Same applies to
+\predref{previously}{2} except that the current situation time stamp serves
+as the baseline time, else defaults to the current time.
     \termitem{previously}{?Previous:any}
     \termitem{previously}{?Previous:any, ?When:number}
+    \termitem{previously}{Previous:any, for(Seconds:number)}
 Finds \arg{Previous} state of \arg{Situation}, non-deterministically
 resolving zero or more matching \arg{Situation} terms. Fails if no
 previous \arg{Situation} condition.
@@ -475,6 +609,30 @@ Scrapes distinct rows. Distinct is important because HTML documents
 contain tables within tables within tables. Attempts to permit some
 flexibility. Asking for sub-rows finds head sub-rows; catches and
 filters out by disunifying data with heads.
+\end{description}
+
+\chapter{library(ieee/754)}\label{sec:754}
+
+\begin{description}
+    \predicate[det]{ieee_754_float}{3}{+Bits, ?Word, ?Float}
+\nodescription
+    \predicate[nondet]{ieee_754_float}{3}{-Bits, ?Word, ?Float}
+Performs two-way pack and unpack for IEEE 754 floating-point numbers
+represented as words.
+
+Not designed for performance. Uses CLP(FD) for bit manipulation. and
+hence remains within the integer domain. \arg{Float} arithmetic applies
+outside the finite-domain constraints.
+
+\begin{arguments}
+\arg{Word} & is a non-negative integer. This implementation does not
+handle negative integers. Negative support implies a non-determinate
+solution for packing. A positive and negative answer exists for any
+given \arg{Float}. \\
+\arg{Sig} & is the floating-point significand between plus and minus 1.
+Uses Sig rather than Mantissa; Sig short for Significand, another
+word for mantissa. \\
+\end{arguments}
 \end{description}
 
 \chapter{library(linear/algebra): Linear algebra}\label{sec:algebra}
