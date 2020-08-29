@@ -41,7 +41,8 @@ byte(Byte) -->
 %
 %   Example as follows: four octets to one big-endian 32-bit word.
 %
-%       ?- phrase(big_endian(32, A), [4, 3, 2, 1]), format('~16r~n', [A]).
+%       ?- phrase(big_endian(32, A), [4, 3, 2, 1]),
+%          format('~16r~n', [A]).
 %       4030201
 
 big_endian(16, Word16) -->
