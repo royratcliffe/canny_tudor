@@ -1,0 +1,29 @@
+\documentclass[11pt]{report}
+\usepackage{times}
+\usepackage{pl}
+\usepackage{html}
+\sloppy
+\makeindex
+
+\begin{document}
+
+\begin{titlepage}
+    \raggedleft
+    \rule{1pt}{\textheight}
+    \hspace{0.05\textwidth}
+    \parbox[b]{0.75\textwidth}{
+        {\Huge\bfseries Canny Bag o' Tudor}
+        \\[2\baselineskip]
+        {\large\textit{An experimental Prolog `pack' comprising technical spikes, or
+        otherwise useful, Prolog predicates that do not seem to fit anywhere else}}
+        \\[4\baselineskip]
+        {\Large\textsc{Roy Ratcliffe}}
+
+        \vspace{0.5\textheight}
+        {\noindent SWI-Prolog}\\[\baselineskip]
+    }
+\end{titlepage}
+
+\include{doc}
+\printindex
+\end{document}
