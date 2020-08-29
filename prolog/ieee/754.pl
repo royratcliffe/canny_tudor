@@ -5,11 +5,25 @@
 :- use_module(library(canny/maths)).
 :- use_module(library(canny/bits)).
 
+%!  ieee(Bits, ExpBits, ExpBias) is semidet.
+%
+%   IEEE 754 has, for  floating-point  numbers   of  Bits  wide, ExpBits
+%   exponent bits with bias of ExpBias. The bias applies to the integral
+%   base-2 exponent and determines its zero value.
+%
+%   Supports binary formats only. Does *not* support decimal formats.
+
 ieee(16, 5, 15).
 ieee(32, 8, 127).
 ieee(64, 11, 1023).
 ieee(128, 15, 16383).
 ieee(256, 19, 262143).
+
+%!  inf(Bits, Inf) is semidet.
+%
+%   Infinity has all exponent bits set and  a zero significand. IEEE 754
+%   distinguishes between positive and negative  infinity using the sign
+%   bit.
 
 inf(Bits, Inf) :-
     ieee(Bits, ExpBits, _),
@@ -17,6 +31,22 @@ inf(Bits, Inf) :-
 
 %!  ieee_754_float(+Bits, ?Word, ?Float) is det.
 %!  ieee_754_float(-Bits, ?Word, ?Float) is nondet.
+%
+%   Performs two-way pack and unpack for IEEE 754 floating-point numbers
+%   represented as words.
+%
+%   Not designed for performance. Uses CLP(FD) for bit manipulation. and
+%   hence remains within the integer   domain.  Float arithmetic applies
+%   outside the finite-domain constraints.
+%
+%   @arg Word is a non-negative integer.   This  implementation does not
+%   handle negative integers. Negative support implies a non-determinate
+%   solution for packing. A positive and  negative answer exists for any
+%   given Float.
+%
+%   @arg Sig is the floating-point significand between plus and minus 1.
+%   Uses Sig rather than Mantissa; Sig   short  for Significand, another
+%   word for mantissa.
 
 ieee_754_float(Bits, Word, Float) :-
     var(Float),
