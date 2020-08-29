@@ -36,6 +36,13 @@ byte(Byte) -->
     [Octet].
 
 %!  big_endian(?Width:integer, ?Word:integer)// is semidet.
+%
+%   Unifies big-endian words with octets.
+%
+%   Example as follows: four octets to one big-endian 32-bit word.
+%
+%       ?- phrase(big_endian(32, A), [4, 3, 2, 1]), format('~16r~n', [A]).
+%       4030201
 
 big_endian(16, Word16) -->
     { high_low(16, High, Low, Word16)
@@ -54,6 +61,8 @@ big_endian(64, Word64) -->
     big_endian(32, Low).
 
 %!  little_endian(?Width:integer, ?Word:integer)// is semidet.
+%
+%   Unifies little-endian words with octet stream.
 
 little_endian(16, Word16) -->
     { high_low(16, High, Low, Word16)
