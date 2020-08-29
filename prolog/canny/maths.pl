@@ -44,4 +44,13 @@ epsilon_equal(Epsilons, X, Y) :- Epsilons * epsilon >= abs(X - Y).
 
 frexp(X, Y, Exp) :- float_parts(X, Y, 2, Exp).
 
+%!  ldexp(+X:number, -Y:number, +Exp:integer) is det.
+%
+%   Loads exponent. Multiplies X by 2 to  the power Exp giving Y. Mimics
+%   the C math ldexp(x, exp) function.
+%
+%   @arg X is some floating-point value.
+%   @arg Y is X times 2 to the power Exp.
+%   @arg Exp is the exponent, typically an integer.
+
 ldexp(X, Y, Exp) :- Y is X * 2 ** Exp.
