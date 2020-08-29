@@ -46,6 +46,7 @@ visible(Prefix, Suffix, Args, M:Head) :-
     predicate_property(M:Head, visible).
 
 %!  apply_to(+Apply, :To) is nondet.
+%!  apply_to(+Applies, :To) is semidet.
 %
 %   @arg Applies is a list of  Apply   terms.  It  succeeds when all its
 %   Apply terms succeed, and fails when   the  first one fails, possibly
