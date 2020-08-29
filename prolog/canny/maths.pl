@@ -57,7 +57,7 @@ frexp(X, Y, Exp) :- float_parts(X, Y, 2, Exp).
 %   the C math ldexp(x, exp) function.
 %
 %   Uses an unusual argument order. Ordering aligns   X,  Y and Exp with
-%   frexp/3.
+%   frexp/3. Uses ** rather than ^ operator. Exp is an integer.
 %
 %   @arg X is some floating-point value.
 %   @arg Y is X times 2 to the power Exp.
