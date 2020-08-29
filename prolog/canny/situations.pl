@@ -86,6 +86,10 @@
 %   The second argument Apply can be a list of terms to apply, including
 %   nested lists of terms. All terms apply   in order first to last, and
 %   depth first.
+%
+%   @arg Now is the state of a Situation  at some point in time. The Now
+%   term must be non-variable but   not necessarily ground. Dictionaries
+%   with unbound tags can exist within the situation calculus.
 
 situation_apply(Situation, Apply) :- applies(Apply, Situation).
 
