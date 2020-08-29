@@ -23,4 +23,16 @@ test(situations, []) :-
     situation_property(x, previously(b, _)),
     situation_apply(x, fix).
 
+test(nonvar, true(Current =@= _{})) :-
+    situation_apply(nonvar, fix(_{})),
+    situation_property(nonvar, currently(Current)).
+
+test(for, true(Seconds >= 0)) :-
+    situation_apply(for, fix(now)),
+    situation_property(for, currently(now, for(Seconds))).
+test(for, true(Seconds =:= 10)) :-
+    situation_apply(for, fix(was, 1)),
+    situation_apply(for, fix(now, 11)),
+    situation_property(for, previously(was, for(Seconds))).
+
 :- end_tests(canny_situations).
