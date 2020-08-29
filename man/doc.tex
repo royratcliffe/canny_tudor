@@ -98,6 +98,29 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.8.0] - 2020-08-29}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item canny_payloads module
+    \item canny_endian module
+    \item canny_bits module
+    \item ieee_754 module
+    \item LaTeX generator for PDF manual
+\end{shortlist}
+
+\subsection{Fixed}
+
+\begin{itemize}
+    \item Situations now permit non-variable Now terms. This allows for dictionaries
+with unbound tags.
+    \item Situations also now support time-differential calculations with \verb$for(Seconds)$
+in place of When. Current and previous situations compute the time delay
+between historic situation samples: the difference in time between the current
+and now, or the time delay between the previous and the current.
+\end{itemize}
+
 \section{[0.7.2] - 2020-07-25}
 
 \subsection{Added}
