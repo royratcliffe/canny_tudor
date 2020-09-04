@@ -98,6 +98,15 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.8.1] - 2020-09-04}
+
+\section{Fixed}
+
+\begin{itemize}
+    \item Maths predicate \predref{remainder}{3} to \predref{frem}{3}; avoids clash with \dcgref{remainder}{1}
+    \item LaTeX manual; omits undocumented modules
+\end{itemize}
+
 \section{[0.8.0] - 2020-08-29}
 
 \subsection{Added}
@@ -343,7 +352,7 @@ Unifies little-endian words with octet stream.
 \chapter{library(canny/maths)}\label{sec:maths}
 
 \begin{description}
-    \predicate[det]{remainder}{3}{+X:number, +Y:number, -Z:number}
+    \predicate[det]{frem}{3}{+X:number, +Y:number, -Z:number}
 \arg{Z} is the remainder after dividing \arg{X} by \arg{Y}, calculated by \arg{X} - N * \arg{Y}
 where N is the nearest integral to \arg{X} / \arg{Y}.
 
@@ -388,19 +397,19 @@ only peek and pop perform non-deterministically for all thread-local
 payloads.
 
 \begin{shortlist}
-    \item reset is det
-    \item push is semi-det
+    \item \const{reset} is det
+    \item \const{push} is semi-det
     \item \verb$peek(Payload)$ is non-det
     \item \verb$pop(Payload)$ is non-det
-    \item [Apply0\Sbar{}Applies] is semi-det
-    \item Apply is semi-det for payload
+    \item \verb$[Apply0|Applies]$ is semi-det
+    \item \arg{Apply} is semi-det for payload
 \end{shortlist}
 
 Properties as follows.
 
 \begin{shortlist}
     \item \verb$top(Property)$ is semi-det for payload
-    \item Property is semi-det for payload
+    \item \arg{Property} is semi-det for payload
 \end{shortlist}
 
 The first form \predref{top}{1} peeks at the latest payload once. It behaves
@@ -576,7 +585,7 @@ history comes first. Filters out single-element histories for the
 sake of noise minimisation.
 \end{description}
 
-\chapter{library(canny_tudor)}\label{sec:cannytudor}\chapter{library(docker/random_names)}\label{sec:randomnames}
+\chapter{library(docker/random_names)}\label{sec:randomnames}
 
 \begin{description}
     \predicate[nondet]{random_name}{1}{?Name}
@@ -910,7 +919,7 @@ Shuts down an \arg{App}. Shuts down multiple apps non-deterministically if
 the \arg{App} compound matches more than one app definition.
 \end{description}
 
-\chapter{library(os/apps_debugging)}\label{sec:appsdebugging}\chapter{library(os/apps_testing)}\label{sec:appstesting}\chapter{library(os/file_searches): File searches}\label{sec:filesearches}
+\chapter{library(os/file_searches): File searches}\label{sec:filesearches}
 
 By design, the following extensions for Windows avoid underscores
 in order not to clash with existing standard paths, e.g. \verb$app_path$
@@ -976,7 +985,7 @@ identify a proper separator-delimited variable.
 operating system; colon elsewhere.
 \end{description}
 
-\chapter{library(power_shell/get_content)}\label{sec:getcontent}\chapter{library(print/(table))}\label{sec:table}
+\chapter{library(print/(table))}\label{sec:table}
 
 \begin{description}
     \predicate[det]{print_table}{1}{:Goal}
