@@ -9,17 +9,17 @@
  * only peek and pop perform  non-deterministically for all thread-local
  * payloads.
  *
- *     - reset is det
- *     - push is semi-det
+ *     - `reset` is det
+ *     - `push` is semi-det
  *     - peek(Payload) is non-det
  *     - pop(Payload) is non-det
- *     - [Apply0|Applies] is semi-det
- *     - Apply is semi-det for payload
+ *     - `[Apply0|Applies]` is semi-det
+ *     - `Apply` is semi-det for payload
  *
  * Properties as follows.
  *
  *     - top(Property) is semi-det for payload
- *     - Property is semi-det for payload
+ *     - `Property` is semi-det for payload
  *
  * The first form top/1 peeks at  the   latest  payload once. It behaves
  * semi-deterministically for the top-most payload.
