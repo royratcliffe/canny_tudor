@@ -1,5 +1,5 @@
 :- module(canny_maths,
-          [   remainder/3,
+          [   frem/3,
               fmod/3,
 
               epsilon_equal/2,
@@ -9,12 +9,12 @@
               ldexp/3
           ]).
 
-%!  remainder(+X:number, +Y:number, -Z:number) is det.
+%!  frem(+X:number, +Y:number, -Z:number) is det.
 %
 %   Z is the remainder after dividing X by Y,   calculated  by X - N * Y
 %   where N is the nearest integral to X / Y.
 
-remainder(X, Y, Z) :- Z is X - round(X / Y) * Y.
+frem(X, Y, Z) :- Z is X - round(X / Y) * Y.
 
 %!  fmod(+X:number, +Y:number, -Z:number) is det.
 %
@@ -24,7 +24,7 @@ remainder(X, Y, Z) :- Z is X - round(X / Y) * Y.
 fmod(X, Y, Z) :-
     X_ is abs(X),
     Y_ is abs(Y),
-    remainder(X_, Y_, Z_),
+    frem(X_, Y_, Z_),
     (   sign(Z_) < 0
     ->  Z0 is Z_ + Y_
     ;   Z0 = Z_
