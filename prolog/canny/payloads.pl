@@ -9,17 +9,17 @@
  * only peek and pop perform  non-deterministically for all thread-local
  * payloads.
  *
- *     - reset is det
- *     - push is semi-det
+ *     - `reset` is det
+ *     - `push` is semi-det
  *     - peek(Payload) is non-det
  *     - pop(Payload) is non-det
- *     - [Apply0|Applies] is semi-det
- *     - Apply is semi-det for payload
+ *     - `[Apply0|Applies]` is semi-det
+ *     - `Apply` is semi-det for payload
  *
  * Properties as follows.
  *
  *     - top(Property) is semi-det for payload
- *     - Property is semi-det for payload
+ *     - `Property` is semi-det for payload
  *
  * The first form top/1 peeks at  the   latest  payload once. It behaves
  * semi-deterministically for the top-most payload.
@@ -28,11 +28,11 @@
 
 :- thread_local payload/2.
 
-%!  visible(+Prefix, +Suffix, +Args, :Term) is semidet.
+%!  visible(+Prefix, +Suffix, +Args, :Head) is semidet.
 %
 %   Finds visible predicates named by  concatenating Prefix with Suffix,
 %   with Args specifying the  number  of   arguments  and  also residing
-%   within a given module, M. Unifies the result at Term.
+%   within a given module, M. Unifies the result at Head.
 %
 %   @arg Prefix atom, either `apply_to_` or `property_of_`.
 %
