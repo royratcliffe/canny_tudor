@@ -3,6 +3,11 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.8.1] - 2020-09-04
+## Fixed
+- Maths predicate remainder/3 to frem/3; avoids clash with remainder//1
+- LaTeX manual; omits undocumented modules
+
 ## [0.8.0] - 2020-08-29
 ### Added
 - canny_payloads module
