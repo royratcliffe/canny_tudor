@@ -2,7 +2,7 @@
 
 %!  arities(?Arities0:compound, ?Arities:list) is semidet.
 %
-%   Suppose that you want to accept arity   arguments of the form {A, …}
+%   Suppose that you want to accept arity arguments of the form {A, ...}
 %   where A is the first integer element   of  a comma-separated list of
 %   arity numbers. The Arities0 form is  a compound term enclosed within
 %   braces, comprising integers  delimited  by   commas.  The  arities/2
