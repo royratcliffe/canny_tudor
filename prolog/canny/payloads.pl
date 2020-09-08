@@ -1,6 +1,19 @@
-:- module(canny_payloads, [apply_to/2, property_of/2]).
+:- module(canny_payloads,
+          [ payload/1,                  % +M:Payload/{ToArity, OfArity}
+            apply_to/1,                 % +M:To/Arity or +M:To/Arities
+            apply_to/2,                 % +Apply, +M:To
+            property_of/1,              % +M:Of/Arity or +M:Of/Arities
+            property_of/2               % +Property, +M:Of
+          ]).
 
-:- meta_predicate apply_to(+, :), property_of(+, :).
+:- meta_predicate
+    payload(:),
+    apply_to(:),
+    apply_to(+, :),
+    property_of(:),
+    property_of(+, :).
+
+:- use_module(arity).
 
 /** <module> Local Payloads
  *
@@ -28,6 +41,10 @@
 
 :- thread_local payload/2.
 
+payload(M:Payload/{ToArity, OfArity}) :-
+    apply_to(M:Payload/ToArity),
+    property_of(M:Payload/OfArity).
+
 %!  visible(+Prefix, +Suffix, +Args, :Head) is semidet.
 %
 %   Finds visible predicates named by  concatenating Prefix with Suffix,
@@ -44,6 +61,16 @@ visible(Prefix, Suffix, Args, M:Head) :-
     atomic_concat(Prefix, Suffix, Name),
     Head =.. [Name|Args],
     predicate_property(M:Head, visible).
+
+apply_to(M:To/Arity) :-
+    integer(Arity),
+    !,
+    atomic_concat(apply_to_, To, Name),
+    multifile(M:Name/Arity),
+    public(M:Name/Arity).
+apply_to(M:To/Arities) :-
+    arities(Arities, Arities_),
+    forall(member(Arity, Arities_), apply_to(M:To/Arity)).
 
 %!  apply_to(+Apply, :To) is nondet.
 %!  apply_to(+Applies, :To) is semidet.
@@ -75,6 +102,16 @@ apply_to(Applies, M:To) :-
 apply_to(Apply, M:To) :- to(M:To, [Apply], Head), M:Head.
 
 to(M:To, Args, Head) :- visible(apply_to_, To, Args, M:Head).
+
+property_of(M:Of/Arity) :-
+    integer(Arity),
+    !,
+    atomic_concat(property_of_, Of, Name),
+    multifile(M:Name/Arity),
+    public(M:Name/Arity).
+property_of(M:Of/Arities) :-
+    arities(Arities, Arities_),
+    forall(member(Arity, Arities_), property_of(M:Of/Arity)).
 
 %!  property_of(+Property, :Of) is nondet.
 
