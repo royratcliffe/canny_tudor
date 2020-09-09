@@ -41,6 +41,15 @@
 
 :- thread_local payload/2.
 
+%!  payload(:PI) is det.
+%
+%   Makes public multi-file apply-to and   property-of  predicates using
+%   the predicate indicator PI of  the form M:Payload/{ToArity, OfArity}
+%   where arity specifications  define  the  arity   or  arities  for  a
+%   payload.   Defines   predicates     M:apply_to_Payload/ToArity   and
+%   M:property_of_Payload/OfArity for module M.   Allows comma-separated
+%   lists of arities.
+
 payload(M:Payload/{ToArity, OfArity}) :-
     apply_to(M:Payload/ToArity),
     property_of(M:Payload/OfArity).
@@ -114,6 +123,12 @@ property_of(M:Of/Arities) :-
     forall(member(Arity, Arities_), property_of(M:Of/Arity)).
 
 %!  property_of(+Property, :Of) is nondet.
+%
+%   Finds Property of some  payload  where   the  second  argument  M:Of
+%   defines the module M and payload atom Of.
+%
+%   Property top/1 peeks semi-deterministically at  the top-most payload
+%   for some given property.
 
 property_of(Property, _M:_Of) :- var(Property), !, fail.
 property_of(top(Property), M:Of) :-
