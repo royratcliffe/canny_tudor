@@ -98,6 +98,15 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.8.2] - 2020-09-09}
+
+\section{Added}
+
+\begin{itemize}
+    \item canny_arity module
+    \item \predref{payload}{1}, \predref{apply_to}{1} and \predref{property_of}{1} for canny_payloads
+\end{itemize}
+
 \section{[0.8.1] - 2020-09-04}
 
 \section{Fixed}
@@ -289,6 +298,21 @@ and now, or the time delay between the previous and the current.
 \begin{shortlist}
     \item Initial spike
 \end{shortlist}
+
+\chapter{library(canny/arity)}\label{sec:arity}
+
+\begin{description}
+    \predicate[semidet]{arities}{2}{?Arities0:compound, ?Arities:list}
+Suppose that you want to accept arity arguments of the form \{A, …\}
+where A is the first integer element of a comma-separated list of
+arity numbers. The \arg{Arities0} form is a compound term enclosed within
+braces, comprising integers delimited by commas. The \predref{arities}{2}
+predicate extracts the arities as a list.
+
+Empty lists fail. Also, lists containing non-integers fail to unify.
+The implementation works forwards and backwards: arity compound to
+arity list or vice versa, mode (+, -) or mode (-, +).
+\end{description}
 
 \chapter{library(canny/bits)}\label{sec:bits}
 
