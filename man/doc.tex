@@ -303,7 +303,7 @@ and now, or the time delay between the previous and the current.
 
 \begin{description}
     \predicate[semidet]{arities}{2}{?Arities0:compound, ?Arities:list}
-Suppose that you want to accept arity arguments of the form \{A, …\}
+Suppose that you want to accept arity arguments of the form \{A, ...\}
 where A is the first integer element of a comma-separated list of
 arity numbers. The \arg{Arities0} form is a compound term enclosed within
 braces, comprising integers delimited by commas. The \predref{arities}{2}
@@ -440,6 +440,14 @@ The first form \predref{top}{1} peeks at the latest payload once. It behaves
 semi-deterministically for the top-most payload.\vspace{0.7cm}
 
 \begin{description}
+    \predicate[det]{payload}{1}{:PI}
+Makes public multi-file apply-to and property-of predicates using
+the predicate indicator \arg{PI} of the form M:Payload/\{ToArity, OfArity\}
+where arity specifications define the arity or arities for a
+payload. Defines predicates M:apply_to_Payload/ToArity and
+M:property_of_Payload/OfArity for module M. Allows comma-separated
+lists of arities.
+
     \predicate[nondet]{apply_to}{2}{+Apply, :To}
 \nodescription
     \predicate[semidet]{apply_to}{2}{+Applies, :To}
@@ -453,6 +461,11 @@ predicates. \\
 \end{arguments}
 
     \predicate[nondet]{property_of}{2}{+Property, :Of}
+Finds \arg{Property} of some payload where the second argument M:\arg{Of}
+defines the module M and payload atom \arg{Of}.
+
+\arg{Property} \predref{top}{1} peeks semi-deterministically at the top-most payload
+for some given property.
 \end{description}
 
 \chapter{library(canny/permutations)}\label{sec:permutations}
