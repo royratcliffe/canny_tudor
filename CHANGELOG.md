@@ -3,6 +3,11 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.8.2] - 2020-09-09
+## Added
+- canny_arity module
+- payload/1, apply_to/1 and property_of/1 for canny_payloads
+
 ## [0.8.1] - 2020-09-04
 ## Fixed
 - Maths predicate remainder/3 to frem/3; avoids clash with remainder//1
