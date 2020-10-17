@@ -17,4 +17,23 @@ test(restyle_identifier_ex, [fail]) :-
 test(restyle_identifier_ex, [true(A=='ABC')]) :-
     restyle_identifier_ex(one_two, [65, 66, 67], A).
 
+test(prefix_atom_suffix, [true(A==abc)]) :-
+    prefix_atom_suffix(a, b, c, A).
+test(prefix_atom_suffix, [true(A==a)]) :-
+    prefix_atom_suffix(A, b, c, abc).
+test(prefix_atom_suffix, [all(A-B==[''-ab, a-b, ab-''])]) :-
+    prefix_atom_suffix(A, B, c, abc).
+test(prefix_atom_suffix, [all(v(A, B, C)==[ v('', '', abc),
+                                            v('', a, bc),
+                                            v(a, '', bc),
+                                            v('', ab, c),
+                                            v(a, b, c),
+                                            v(ab, '', c),
+                                            v('', abc, ''),
+                                            v(a, bc, ''),
+                                            v(ab, c, ''),
+                                            v(abc, '', '')
+                                          ])]) :-
+    prefix_atom_suffix(A, B, C, abc).
+
 :- end_tests(swi_atoms).
