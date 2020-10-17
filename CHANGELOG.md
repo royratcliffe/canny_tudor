@@ -3,6 +3,14 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.8.3] - 2020-10-17
+## Added
+- canny_files module
+- Refactored latex_for_pack/3
+- pengine_collect/2, pengine_collect/4 and pengine_wait/1 (swi_pengines module)
+- os_file_searches refactored to os_windows
+- prefix_atom_suffix/4
+
 ## [0.8.2] - 2020-09-09
 ## Added
 - canny_arity module

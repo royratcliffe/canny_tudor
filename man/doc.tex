@@ -98,6 +98,18 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.8.3] - 2020-10-17}
+
+\section{Added}
+
+\begin{itemize}
+    \item canny_files module
+    \item Refactored \predref{latex_for_pack}{3}
+    \item \predref{pengine_collect}{2}, \predref{pengine_collect}{4} and \predref{pengine_wait}{1} (swi_pengines module)
+    \item os_file_searches refactored to os_windows
+    \item \predref{prefix_atom_suffix}{4}
+\end{itemize}
+
 \section{[0.8.2] - 2020-09-09}
 
 \section{Added}
@@ -373,6 +385,28 @@ Example as follows: four octets to one big-endian 32-bit word.
 Unifies little-endian words with octet stream.
 \end{description}
 
+\chapter{library(canny/files)}\label{sec:files}
+
+\begin{description}
+    \predicate[nondet]{absolute_directory}{2}{+Absolute, -Directory}
+Finds the directories of \arg{Absolute} by walking up the absolute path
+until it reaches the root. Operates on paths only; it does not check
+that \arg{Absolute} actually exists. \arg{Absolute} can be a directory or file
+path.
+
+Fails if \arg{Absolute} is not an absolute file name, according to
+\predref{is_absolute_file_name}{2}. Works correctly for Unix and Windows paths.
+However, it finally unifies with the drive letter under Windows, and
+the root directory (/) on Unix.
+
+\begin{arguments}
+\arg{Absolute} & specifies an absolute path name. On Windows it must
+typically include a driver letter, else not absolute in the complete
+sense under Microsoft Windows since its file system supports
+multiple root directories on different mounted drives. \\
+\end{arguments}
+\end{description}
+
 \chapter{library(canny/maths)}\label{sec:maths}
 
 \begin{description}
@@ -620,6 +654,12 @@ history lengths. Uses \verb$=$ when sorting; do not remove duplicates.
 Prints a table of situations by their history length, longest
 history comes first. Filters out single-element histories for the
 sake of noise minimisation.
+\end{description}
+
+\chapter{library(doc/latex)}\label{sec:latex}
+
+\begin{description}
+    \predicate[det]{latex_for_pack}{3}{+Spec, +OutFile, +Options}
 \end{description}
 
 \chapter{library(docker/random_names)}\label{sec:randomnames}
@@ -956,11 +996,7 @@ Shuts down an \arg{App}. Shuts down multiple apps non-deterministically if
 the \arg{App} compound matches more than one app definition.
 \end{description}
 
-\chapter{library(os/file_searches): File searches}\label{sec:filesearches}
-
-By design, the following extensions for Windows avoid underscores
-in order not to clash with existing standard paths, e.g. \verb$app_path$
-which Prolog defines by default.\vspace{0.7cm}\chapter{library(os/lc)}\label{sec:lc}
+\chapter{library(os/lc)}\label{sec:lc}
 
 \begin{description}
     \predicate[det]{lc_r}{1}{+Extensions:list}
@@ -1022,7 +1058,27 @@ identify a proper separator-delimited variable.
 operating system; colon elsewhere.
 \end{description}
 
-\chapter{library(print/(table))}\label{sec:table}
+\chapter{library(os/windows): Microsoft Windows Operating System}\label{sec:windows}
+
+By design, the following extensions for Windows avoid underscores
+in order not to clash with existing standard paths, e.g. \verb$app_path$
+which Prolog defines by default.
+
+\begin{code}
+userprofile
+onedrive
+onedrivecommercial
+onedrivepersonal
+programfiles
+temp
+documents
+savedgames
+appdata
+applocal
+localprograms
+\end{code}
+
+\vspace{0.7cm}\chapter{library(print/(table))}\label{sec:table}
 
 \begin{description}
     \predicate[det]{print_table}{1}{:Goal}
@@ -1088,6 +1144,13 @@ text, including codes, but does not throw.
 \arg{Text} & string, atom or codes. \\
 \arg{Atom} & restyled. \\
 \end{arguments}
+
+    \predicate[nondet]{prefix_atom_suffix}{4}{?Prefix, ?Atom0, ?Suffix, ?Atom}
+Non-deterministically unifies \arg{Prefix}, \arg{Atom0} and \arg{Suffix} with \arg{Atom}.
+Applies two \predref{atom_concat}{3} predicates in succession. Unifies from
+prefix to suffix for modes (?, ?, ?, -) else backwards from suffix
+to prefix. Empty atom is a valid atom and counts as a \arg{Prefix}, \arg{Suffix}
+or any other argument if unbound.
 \end{description}
 
 \chapter{library(swi/codes)}\label{sec:codes}
@@ -1347,6 +1410,46 @@ extras to \arg{Goal}.
     \tag{See also}
 \predref{apply}{2}
 \end{tags}
+\end{description}
+
+\chapter{library(swi/pengines)}\label{sec:pengines}
+
+\begin{description}
+    \predicate[det]{pengine_collect}{2}{-Results, +Options}
+\nodescription
+    \predicate[det]{pengine_collect}{4}{?Template, +Goal, -Results, +Options}
+Collects Prolog engine results. Repackages the collect predicate
+used by the Prolog engine tests. There is only one minor difference.
+The number of replies maps to \predref{replies}{1} in \arg{Options}. Succeeds if not
+provided but unites with the integer number of replies from all
+engines whenever passed to \arg{Options}. \arg{Options} partitions into three
+sub-sets: next options, state options and ask options.
+
+The implementation utilises a mutable state dictionary to pass
+event-loop arguments and accumulate results. So quite useful. Note
+also that the second \arg{Goal} argument is \textbf{not} module sensitive. There
+consequently is no meta-predicate declaration for it.
+
+The arity-2 form of pengine_collect expects that the pengine_create
+options have asked a query. Otherwise the collect waits indefinitely
+for the engines to stop.
+
+\begin{arguments}
+\arg{Results} & are the result terms, a list of successful \arg{Goal} results
+accumulated by appending results from all the running engines. \\
+\end{arguments}
+
+    \predicate[semidet]{pengine_wait}{1}{Options}
+Waits for Prolog engines to die. It takes time to die. If alive,
+wait for the engines by sampling the current engine and child
+engines periodically. \arg{Options} allows you to override the default
+number of retries (10) and the default number of retry delays (10
+milliseconds). Fails if times out while waiting for engines to die;
+failure means that engines remain alive (else something when wrong).
+
+The implementation makes internal assumptions about the pengines
+module. It accesses the dynamic and volatile predicates
+\predref{current_pengine}{6} and \predref{child}{2}. The latter is thread local.
 \end{description}
 
 \chapter{library(swi/streams)}\label{sec:streams}
