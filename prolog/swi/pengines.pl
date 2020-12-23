@@ -46,6 +46,7 @@ state_option(stop_after(_)).
 collect_handler(Template, Goal, State, create(Id, _)) :-
     Goal \== (-),
     !,
+    pengine_property(Id, self(Id)),
     pengine_ask(Id, Goal, [template(Template)|State.options.ask]).
 collect_handler(_, _, State, success(Id, Results, More)) :-
     append(State.results, Results, Results1),
