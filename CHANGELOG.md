@@ -3,6 +3,12 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.9.0] - 2020-12-30
+## Added
+- pairs/2 predicate
+## Fixed
+- pengine_collect/4 filters using pengine_property(Id, self(Id))
+
 ## [0.8.3] - 2020-10-17
 ## Added
 - canny_files module
