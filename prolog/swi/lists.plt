@@ -10,6 +10,15 @@ test(zip) :-
 test(zip, [true(A-B==[1, 3]-[2, 4])]) :-
     zip(A, B, [[1, 2], [3, 4]]).
 
+test(pairs, [true(A==[1-2])]) :-
+    pairs([1, 2], A).
+test(pairs, [fail]) :-
+    pairs([1, 2, 3], _).
+test(pairs, [true(A==[1, 2])]) :-
+    pairs(A, [1-2]).
+test(pairs, [true(A==[1, 2, 3, 4])]) :-
+    pairs(A, [1-2, 3-4]).
+
 test(indexed_pairs) :-
     indexed_pairs([], 1, []).
 test(indexed_pairs, [true(A-B==[1]-1)]) :-

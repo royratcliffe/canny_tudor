@@ -1,4 +1,5 @@
 :- module(swi_lists, [ zip/3,
+                       pairs/2,         % ?Items, ?Pairs
                        indexed_pairs/2,
                        indexed_pairs/3,
                        take_at_most/3,
@@ -19,6 +20,19 @@
 zip([], [], []).
 zip([H1|T1], [H2|T2], [[H1, H2]|T]) :-
     zip(T1, T2, T).
+
+%!  pairs(?Items:list, ?Pairs:list(pair)) is semidet.
+%
+%   Pairs up list elements, or unpairs them   in  (-, +) mode. Pairs are
+%   First-Second terms where First  and   Second  match  two consecutive
+%   Items. Unifies a list with its paired list.
+%
+%   There needs to be an even number  of list elements. This requirement
+%   proceeds from the definition of pairing;   it  pairs the entire list
+%   including the last. The predicate fails otherwise.
+
+pairs([], []).
+pairs([H1, H2|T0], [H1-H2|T]) :- pairs(T0, T).
 
 %!  indexed_pairs(?Items:list, ?Pairs:list(pair)) is semidet.
 %!  indexed_pairs(?List1:list, ?Index:integer, ?List2:list) is semidet.
