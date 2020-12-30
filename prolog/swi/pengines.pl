@@ -21,6 +21,13 @@
 %   options have asked a query. Otherwise the collect waits indefinitely
 %   for the engines to stop.
 %
+%   It is possible that the  engine   could  exit *before* the collector
+%   asks for results. Prolog engines operate asynchronously. The collect
+%   handler pre-empts failure and avoids   an ask-triggered exception by
+%   only asking existing engines for results.   This  does not eliminate
+%   the possibility entirely. It only narrows  the window of opportunity
+%   to the interval in-between checking for existence and asking.
+%
 %   @arg Results are the result terms, a list of successful Goal results
 %   accumulated by appending results from all the running engines.
 
