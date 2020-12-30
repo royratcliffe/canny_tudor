@@ -18,8 +18,7 @@
 %   Only succeeds if the lists and sub-lists have matching lengths.
 
 zip([], [], []).
-zip([H1|T1], [H2|T2], [[H1, H2]|T]) :-
-    zip(T1, T2, T).
+zip([H1|T1], [H2|T2], [[H1, H2]|T]) :- zip(T1, T2, T).
 
 %!  pairs(?Items:list, ?Pairs:list(pair)) is semidet.
 %
