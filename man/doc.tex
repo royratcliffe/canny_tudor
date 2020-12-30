@@ -41,26 +41,26 @@ app_stop(App)
 \end{code}
 
 App is some compound that identifies which app to start and stop. You define an
-App using \verb$os:property_for_app/2$ multi-file predicate. You must at least define
+App using \qpredref{os}{property_for_app}{2} multi-file predicate. You must at least define
 an app's path using, as an example:
 
 \begin{code}
 os:property_for_app(path(path(mspaint)), mspaint) :- !.
 \end{code}
 
-Note that the Path is a path Spec used by \verb$process_create/3$, so can include a
+Note that the Path is a path Spec used by \predref{process_create}{3}, so can include a
 path-relative term as above. This is enough to launch the Microsoft Paint app on
 Windows. No need for arguments and options for this example. Starting a \textit{running}
 app does not start a new instance. Rather, it succeeds for the existing
 instance. The green cut prevents unnecessary backtracking.
 
-You can start and continuously restart apps using \verb$app_up/1$, and subsequently
-shut them down with \verb$app_down/1$.
+You can start and continuously restart apps using \predref{app_up}{1}, and subsequently
+shut them down with \predref{app_down}{1}.
 
 \subsection{Apps testing}
 
 On a Windows system, try the following for example. It launches Microsoft Paint.
-Exit the Paint app after \verb$app_up/1$ below and it will relaunch automatically.
+Exit the Paint app after \predref{app_up}{1} below and it will relaunch automatically.
 
 \begin{code}
 ?- [library(os/apps), library(os/apps_testing)].
@@ -98,15 +98,35 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.9.0] - 2020-12-30}
+
+\section{Added}
+
+\begin{shortlist}
+    \item \predref{pairs}{2} predicate
+\end{shortlist}
+
+\section{Changed}
+
+\begin{shortlist}
+    \item \predref{indexed_pairs}{2} renamed to \predref{indexed}{2}
+\end{shortlist}
+
+\section{Fixed}
+
+\begin{shortlist}
+    \item \predref{pengine_collect}{4} filters using \verb$pengine_property(Id, self(Id))$
+\end{shortlist}
+
 \section{[0.8.3] - 2020-10-17}
 
 \section{Added}
 
 \begin{itemize}
-    \item canny_files module
+    \item \verb$canny_files$ module
     \item Refactored \predref{latex_for_pack}{3}
     \item \predref{pengine_collect}{2}, \predref{pengine_collect}{4} and \predref{pengine_wait}{1} (swi_pengines module)
-    \item os_file_searches refactored to os_windows
+    \item \verb$os_file_searches$ refactored to \verb$os_windows$
     \item \predref{prefix_atom_suffix}{4}
 \end{itemize}
 
@@ -115,7 +135,7 @@ log}.
 \section{Added}
 
 \begin{itemize}
-    \item canny_arity module
+    \item \verb$canny_arity$ module
     \item \predref{payload}{1}, \predref{apply_to}{1} and \predref{property_of}{1} for canny_payloads
 \end{itemize}
 
@@ -133,10 +153,10 @@ log}.
 \subsection{Added}
 
 \begin{shortlist}
-    \item canny_payloads module
-    \item canny_endian module
-    \item canny_bits module
-    \item ieee_754 module
+    \item \verb$canny_payloads$ module
+    \item \verb$canny_endian$ module
+    \item \verb$canny_bits$ module
+    \item \verb$ieee_754$ module
     \item LaTeX generator for PDF manual
 \end{shortlist}
 
@@ -167,7 +187,7 @@ and now, or the time delay between the previous and the current.
 \subsection{Added}
 
 \begin{shortlist}
-    \item indexed_pairs/\{2,3\}
+    \item \verb$indexed_pairs/{2,3}$
     \item \predref{list_dict}{3}
     \item \predref{dict_leaf}{2}
     \item \predref{split_lines}{2}
@@ -236,7 +256,7 @@ and now, or the time delay between the previous and the current.
 \subsection{Fixed}
 
 \begin{shortlist}
-    \item Situation mutator renamed \verb$situation_apply/2$
+    \item Situation mutator renamed \predref{situation_apply}{2}
 \end{shortlist}
 
 \section{[0.5.0] - 2019-12-03}
@@ -260,31 +280,31 @@ and now, or the time delay between the previous and the current.
 
 \begin{shortlist}
     \item Canny situations
-    \item \verb$random_temporary_module/1$ predicate
-    \item \verb$zip/3$ predicate (swi_lists)
-    \item \verb$print_table/1$ predicate
+    \item \predref{random_temporary_module}{1} predicate
+    \item \predref{zip}{3} predicate (swi_lists)
+    \item \predref{print_table}{1} predicate
 \end{shortlist}
 
 \subsection{Fixed}
 
 \begin{shortlist}
-    \item \verb$with_output_to/3$ uses \verb$random_name_chk/1$
+    \item \predref{with_output_to}{3} uses \predref{random_name_chk}{1}
 \end{shortlist}
 
 \section{[0.3.0] - 2019-09-06}
 
 \subsection{Added}
 
-\begin{shortlist}
-    \item \verb$random_name_chk/1$ versus non-deterministic \verb$random_name/1$
-\end{shortlist}
+\begin{itemize}
+    \item \predref{random_name_chk}{1} versus non-deterministic \predref{random_name}{1}
+\end{itemize}
 
 \section{[0.2.1] - 2019-09-03}
 
 \subsection{Fixed}
 
 \begin{itemize}
-    \item Fix the fix; \verb$dict_member/2$ unifies with empty dictionary leaf nodes
+    \item Fix the fix; \predref{dict_member}{2} unifies with empty dictionary leaf nodes
 \end{itemize}
 
 \section{[0.2.0] - 2019-09-02}
@@ -292,7 +312,7 @@ and now, or the time delay between the previous and the current.
 \subsection{Fixed}
 
 \begin{shortlist}
-    \item Allow dictionary leaf values for \verb$dict_member/2$
+    \item Allow dictionary leaf values for \predref{dict_member}{2}
 \end{shortlist}
 
 \section{[0.1.1] - 2019-08-02}
@@ -1376,9 +1396,18 @@ unzips one list of lists into two lists.
 
 Only succeeds if the lists and sub-lists have matching lengths.
 
-    \predicate[semidet]{indexed_pairs}{2}{?Items:list, ?Pairs:list(pair)}
+    \predicate[semidet]{pairs}{2}{?Items:list, ?Pairs:list(pair)}
+\arg{Pairs} up list elements, or unpairs them in (-, +) mode. \arg{Pairs} are
+First-Second terms where First and Second match two consecutive
+\arg{Items}. Unifies a list with its paired list.
+
+There needs to be an even number of list elements. This requirement
+proceeds from the definition of pairing; it pairs the entire list
+including the last. The predicate fails otherwise.
+
+    \predicate[semidet]{indexed}{2}{?Items:list, ?Pairs:list(pair)}
 \nodescription
-    \predicate[semidet]{indexed_pairs}{3}{?List1:list, ?Index:integer, ?List2:list}
+    \predicate[semidet]{indexed}{3}{?List1:list, ?Index:integer, ?List2:list}
 Unifies \arg{List1} of items with \arg{List2} of pairs where the first pair
 element is an increasing integer index. \arg{Index} has some arbitrary
 starting point, or defaults to 1 for one-based indexing. Unification
@@ -1433,6 +1462,13 @@ consequently is no meta-predicate declaration for it.
 The arity-2 form of pengine_collect expects that the pengine_create
 options have asked a query. Otherwise the collect waits indefinitely
 for the engines to stop.
+
+It is possible that the engine could exit \textbf{before} the collector
+asks for results. Prolog engines operate asynchronously. The collect
+handler pre-empts failure and avoids an ask-triggered exception by
+only asking existing engines for results. This does not eliminate
+the possibility entirely. It only narrows the window of opportunity
+to the interval in-between checking for existence and asking.
 
 \begin{arguments}
 \arg{Results} & are the result terms, a list of successful \arg{Goal} results
