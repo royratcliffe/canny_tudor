@@ -3,17 +3,25 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.9.0] - 2020-12-30
+## Added
+- pairs/2 predicate
+## Changed
+- indexed_pairs/2 renamed to indexed/2
+## Fixed
+- pengine_collect/4 filters using pengine_property(Id, self(Id))
+
 ## [0.8.3] - 2020-10-17
 ## Added
-- canny_files module
+- `canny_files` module
 - Refactored latex_for_pack/3
 - pengine_collect/2, pengine_collect/4 and pengine_wait/1 (swi_pengines module)
-- os_file_searches refactored to os_windows
+- `os_file_searches` refactored to `os_windows`
 - prefix_atom_suffix/4
 
 ## [0.8.2] - 2020-09-09
 ## Added
-- canny_arity module
+- `canny_arity` module
 - payload/1, apply_to/1 and property_of/1 for canny_payloads
 
 ## [0.8.1] - 2020-09-04
@@ -23,10 +31,10 @@ log](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.8.0] - 2020-08-29
 ### Added
-- canny_payloads module
-- canny_endian module
-- canny_bits module
-- ieee_754 module
+- `canny_payloads` module
+- `canny_endian` module
+- `canny_bits` module
+- `ieee_754` module
 - LaTeX generator for PDF manual
 ### Fixed
 - Situations now permit non-variable Now terms. This allows for dictionaries
@@ -45,7 +53,7 @@ log](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.7.1] - 2020-06-14
 ### Added
-- indexed_pairs/{2,3}
+- `indexed_pairs/{2,3}`
 - list_dict/3
 - dict_leaf/2
 - split_lines/2
