@@ -6,6 +6,8 @@ log](https://keepachangelog.com/en/1.0.0/).
 ## [0.9.0] - 2020-12-30
 ## Added
 - pairs/2 predicate
+## Changed
+- indexed_pairs/2 renamed to indexed/2
 ## Fixed
 - pengine_collect/4 filters using pengine_property(Id, self(Id))
 

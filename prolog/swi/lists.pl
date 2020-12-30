@@ -1,7 +1,7 @@
 :- module(swi_lists, [ zip/3,
                        pairs/2,         % ?Items, ?Pairs
-                       indexed_pairs/2,
-                       indexed_pairs/3,
+                       indexed/2,
+                       indexed/3,
                        take_at_most/3,
                        select1/3,       % +Indices, +List0, -List
                        select_apply1/3  % +Indices, :Goal, +Extra
@@ -34,20 +34,20 @@ zip([H1|T1], [H2|T2], [[H1, H2]|T]) :-
 pairs([], []).
 pairs([H1, H2|T0], [H1-H2|T]) :- pairs(T0, T).
 
-%!  indexed_pairs(?Items:list, ?Pairs:list(pair)) is semidet.
-%!  indexed_pairs(?List1:list, ?Index:integer, ?List2:list) is semidet.
+%!  indexed(?Items:list, ?Pairs:list(pair)) is semidet.
+%!  indexed(?List1:list, ?Index:integer, ?List2:list) is semidet.
 %
 %   Unifies List1 of items with List2  of   pairs  where  the first pair
 %   element is an increasing integer  index.   Index  has some arbitrary
 %   starting point, or defaults to 1 for one-based indexing. Unification
 %   works in all modes.
 
-indexed_pairs(Items, Pairs) :- indexed_pairs(Items, 1, Pairs).
+indexed(Items, Pairs) :- indexed(Items, 1, Pairs).
 
-indexed_pairs([], _, []).
-indexed_pairs([H|T0], Index0, [Index0-H|T]) :-
+indexed([], _, []).
+indexed([H|T0], Index0, [Index0-H|T]) :-
     Index is Index0 + 1,
-    indexed_pairs(T0, Index, T).
+    indexed(T0, Index, T).
 
 %!  take_at_most(+Length:integer, +List0, -List) is semidet.
 %
