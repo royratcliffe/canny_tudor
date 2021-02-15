@@ -98,6 +98,15 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.10.0] - 2021-02-15}
+
+\section{Added}
+
+\begin{shortlist}
+    \item \predref{select_options}{4} predicate
+    \item \predref{comb2}{2} predicate
+\end{shortlist}
+
 \section{[0.9.0] - 2020-12-30}
 
 \section{Added}
@@ -1439,6 +1448,43 @@ extras to \arg{Goal}.
     \tag{See also}
 \predref{apply}{2}
 \end{tags}
+
+    \predicate[nondet]{comb2}{2}{?List1, ?List2}
+Unifies \arg{List2} with all combinations of \arg{List1}. The length of \arg{List2}
+defines the number of elements in \arg{List1} to take at one time. It
+follows that length of \arg{List1} must not be less than \arg{List2}. Fails
+otherwise.
+
+\begin{tags}
+    \tag{See also}
+\url{http://kti.ms.mff.cuni.cz/~bartak/prolog/combinatorics.html}
+\end{tags}
+\end{description}
+
+\chapter{library(swi/options)}\label{sec:options}
+
+\begin{description}
+    \predicate[det]{select_options}{4}{+Options, +RestOptions0, -RestOptions, +Defaults}
+Applies multiple \predref{select_option}{4} predicate calls to a list of
+\arg{Options}. Applies the list of \arg{Options} using a list of \arg{Defaults}.
+Argument terms from \arg{Options} unify with \arg{RestOptions0}.
+
+\arg{Defaults} are unbound if not present. The implementation selects an
+option's Default from the given list of \arg{Defaults} using
+\predref{select_option}{4}. Option terms must have one variable. This is
+because \predref{select_option}{4}'s fourth argument is a single argument. It
+never unifies with multiple variables even though it succeeds, e.g.
+\verb$select_option(a(A, B), [], Rest, 1)$ unifies A with 1, leaving B
+unbound.
+
+There is a naming issue. What to call the incoming list of Option
+arguments and the \arg{Options} argument with which the Option terms
+unify? One possibility: name the \arg{Options} argument \arg{RestOptions0} since
+they represent the initial set of \arg{RestOptions} from which \arg{Options}
+select. This clashes with \predref{select_option}{4}'s naming convention since
+\arg{Options} is the argument name for \arg{RestOptions0}'s role in the
+option-selection process. Nevertheless, this version follows this
+renamed argument convention.
 \end{description}
 
 \chapter{library(swi/pengines)}\label{sec:pengines}
