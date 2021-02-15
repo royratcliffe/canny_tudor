@@ -96,6 +96,6 @@ select_apply1(Indices, Goal, Extra) :-
 %
 %   @see http://kti.ms.mff.cuni.cz/~bartak/prolog/combinatorics.html
 
-comb2(_, []).
 comb2([H|T0], [H|T]) :- comb2(T0, T).
 comb2([_|T0], [H|T]) :- comb2(T0, [H|T]).
+comb2(_, []).
