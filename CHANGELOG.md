@@ -3,6 +3,11 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.10.0] - 2021-02-15
+## Added
+- select_options/4 predicate
+- comb2/2 predicate
+
 ## [0.9.0] - 2020-12-30
 ## Added
 - pairs/2 predicate
