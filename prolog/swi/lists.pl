@@ -89,6 +89,11 @@ select_apply1(Indices, Goal, Extra) :-
 
 %!  comb2(?List1, ?List2) is nondet.
 %
+%   Unifies List2 with all combinations of   List1.  The length of List2
+%   defines the number of elements in  List1   to  take  at one time. It
+%   follows that length of List1 must  not   be  less  than List2. Fails
+%   otherwise.
+%
 %   @see http://kti.ms.mff.cuni.cz/~bartak/prolog/combinatorics.html
 
 comb2(_, []).
