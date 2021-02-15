@@ -4,7 +4,8 @@
                        indexed/3,
                        take_at_most/3,
                        select1/3,       % +Indices, +List0, -List
-                       select_apply1/3  % +Indices, :Goal, +Extra
+                       select_apply1/3, % +Indices, :Goal, +Extra
+                       comb2/2          % ?List1, ?List2
                      ]).
 
 :- meta_predicate select_apply1(+, :, +).
@@ -85,3 +86,16 @@ select1_(List, Index, Elem) :- nth1(Index, List, Elem).
 select_apply1(Indices, Goal, Extra) :-
     select1(Indices, Extra, Extra1),
     apply(Goal, Extra1).
+
+%!  comb2(?List1, ?List2) is nondet.
+%
+%   Unifies List2 with all combinations of   List1.  The length of List2
+%   defines the number of elements in  List1   to  take  at one time. It
+%   follows that length of List1 must  not   be  less  than List2. Fails
+%   otherwise.
+%
+%   @see http://kti.ms.mff.cuni.cz/~bartak/prolog/combinatorics.html
+
+comb2([H|T0], [H|T]) :- comb2(T0, T).
+comb2([_|T0], [H|T]) :- comb2(T0, [H|T]).
+comb2(_, []).

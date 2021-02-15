@@ -42,4 +42,11 @@ test(select1, [true(A==[c, b, a])]) :-
 test(select1, [true(A==[a])]) :-
     select1([1], [a, b, c], A).
 
+test(comb2, all(A-B==[1-2, 1-3, 1-4, 2-3, 2-4, 3-4])) :-
+    comb2([1, 2, 3, 4], [A, B]).
+test(comb2, all(A==[1, 2, 3])) :-
+    comb2([1, 2, 3], [A]).
+test(comb2, []) :-
+    comb2([1, 2, 3], []).
+
 :- end_tests(swi_lists).

@@ -1,5 +1,7 @@
 # Canny bag o' Tudor
 
+See [PDF](https://github.com/royratcliffe/canny_tudor/blob/master/man/canny_tudor.pdf) for details.
+
 This is an experimental SWI-Prolog 'pack' comprising technical spikes, or
 otherwise useful, Prolog predicates that do not seem to fit anywhere else.
 
