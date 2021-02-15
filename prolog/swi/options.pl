@@ -1,5 +1,5 @@
 :- module(swi_options,
-          [ select_options/4
+          [ select_options/4    % +Options,+RestOptions0,-RestOptions,+Defaults
           ]).
 :- autoload(library(option), [select_option/4]).
 
