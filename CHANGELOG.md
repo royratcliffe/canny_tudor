@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.11.0] - 2021-02-18
+## Added
+- columns_to_rows/2 predicate
+
 ## [0.10.0] - 2021-02-15
 ## Added
 - select_options/4 predicate
