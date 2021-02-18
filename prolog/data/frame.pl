@@ -1,11 +1,10 @@
 :- module(data_frame,
-          [ columns_to_rows/2                   % +ListOfColumns,-ListOfRows
+          [ columns_to_rows/2                   % ?ListOfColumns,?ListOfRows
           ]).
 :- autoload(library(apply), [maplist/4, maplist/3]).
-:- use_module(library(clpfd), [transpose/2]).
-:- use_module(library(swi/lists)).
+:- use_module(library(linear/algebra)).
 
-%!  columns_to_rows(+ListOfColumns, -ListOfRows) is semidet.
+%!  columns_to_rows(?ListOfColumns, ?ListOfRows) is semidet.
 %
 %   Transforms ListOfColumns to ListOfRows, where a row is a list of
 %   key-value pairs, one for each cell. By example,
@@ -26,10 +25,20 @@
 %       D = [_{a:1, b:3}, _{a:2, b:4}].
 
 columns_to_rows(ListOfColumns, ListOfRows) :-
-    maplist([Key=Column, Key, Column]>>true, ListOfColumns, Keys, Columns),
-    transpose(Columns, Rows),
-    maplist(columns_to_rows_(Keys), Rows, ListOfRows).
+    var(ListOfColumns),
+    !,
+    rows(Keys, Rows, ListOfRows),
+    matrix_transpose(Columns, Rows),
+    columns(ListOfColumns, Keys, Columns).
+columns_to_rows(ListOfColumns, ListOfRows) :-
+    columns(ListOfColumns, Keys, Columns),
+    matrix_transpose(Columns, Rows),
+    rows(Keys, Rows, ListOfRows).
 
-columns_to_rows_(Keys, Row0, Row) :-
-    zip(Keys, Row0, Row_),
-    maplist([[Key, Value], Key-Value]>>true, Row_, Row).
+columns(ListOfColumns, Keys, Columns) :-
+    maplist([Key=Column, Key, Column]>>true, ListOfColumns, Keys, Columns).
+
+rows(Keys, Rows, ListOfRows) :- maplist(zip(Keys), Rows, ListOfRows).
+
+zip([], [], []).
+zip([H1|T1], [H2|T2], [H1-H2|T]) :- zip(T1, T2, T).
