@@ -3,6 +3,8 @@
 
 \chapter{Canny bag o' Tudor}
 
+See \href{https://github.com/royratcliffe/canny_tudor/blob/master/man/canny_tudor.pdf}{PDF} for details.
+
 This is an experimental SWI-Prolog 'pack' comprising technical spikes, or
 otherwise useful, Prolog predicates that do not seem to fit anywhere else.
 
@@ -683,6 +685,36 @@ history lengths. Uses \verb$=$ when sorting; do not remove duplicates.
 Prints a table of situations by their history length, longest
 history comes first. Filters out single-element histories for the
 sake of noise minimisation.
+\end{description}
+
+\chapter{library(data/frame)}\label{sec:frame}
+
+\begin{description}
+    \predicate[semidet]{columns_to_rows}{2}{?ListOfColumns, ?ListOfRows}
+Transforms \arg{ListOfColumns} to \arg{ListOfRows}, where a row is a list of
+key-value pairs, one for each cell. By example,
+
+\begin{code}
+[a=[1, 2], b=[3, 4]]
+\end{code}
+
+becomes
+
+\begin{code}
+[[a-1, b-3], [a-2, b-4]]
+\end{code}
+
+Else fails if rows or columns do not match. The output list of lists
+suitably conforms to \predref{dict_create}{3} Data payloads from which you can
+build dictionaries.
+
+\begin{code}
+?- columns_to_rows([a=[1, 2], b=[3, 4]], A),
+   maplist([B, C]>>dict_create(C, _, B), A, D).
+A = [[a-1, b-3], [a-2, b-4]],
+D = [_{a:1, b:3}, _{a:2, b:4}].
+\end{code}
+
 \end{description}
 
 \chapter{library(doc/latex)}\label{sec:latex}
