@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.12.0] - 2021-03-13
+## Added
+- pop_lsbs/2 predicate
+
 ## [0.11.0] - 2021-02-18
 ## Added
 - columns_to_rows/2 predicate
