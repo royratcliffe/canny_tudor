@@ -100,6 +100,22 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.12.0] - 2021-03-13}
+
+\section{Added}
+
+\begin{shortlist}
+    \item \predref{pop_lsbs}{2} predicate
+\end{shortlist}
+
+\section{[0.11.0] - 2021-02-18}
+
+\section{Added}
+
+\begin{shortlist}
+    \item \predref{columns_to_rows}{2} predicate
+\end{shortlist}
+
 \section{[0.10.0] - 2021-02-15}
 
 \section{Added}
@@ -553,6 +569,20 @@ Permutations always preserve the order of elements from first to
 last.
 \end{description}
 
+\chapter{library(canny/pop)}\label{sec:pop}
+
+\begin{description}
+    \predicate[det]{pop_lsbs}{2}{+A:nonneg, -L:list}
+Unifies non-negative integer \arg{A} with its set bits \arg{L} in
+least-significate priority order. Defined only for non-negative \arg{A}.
+Throws a domain error otherwise.
+
+\begin{tags}
+    \tag{Errors}
+\verb$domain_error(not_less_than_one, A)$ if \arg{A} less than 0.
+\end{tags}
+\end{description}
+
 \chapter{library(canny/situations)}\label{sec:situations}
 
 \begin{description}
@@ -710,9 +740,9 @@ build dictionaries.
 
 \begin{code}
 ?- columns_to_rows([a=[1, 2], b=[3, 4]], A),
-   maplist([B, C]>>dict_create(C, _, B), A, D).
+   maplist([B, C]>>dict_create(C, row, B), A, D).
 A = [[a-1, b-3], [a-2, b-4]],
-D = [_{a:1, b:3}, _{a:2, b:4}].
+D = [row{a:1, b:3}, row{a:2, b:4}].
 \end{code}
 
 \end{description}
