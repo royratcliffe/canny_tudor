@@ -20,9 +20,9 @@
 %   build dictionaries.
 %
 %       ?- columns_to_rows([a=[1, 2], b=[3, 4]], A),
-%          maplist([B, C]>>dict_create(C, _, B), A, D).
+%          maplist([B, C]>>dict_create(C, row, B), A, D).
 %       A = [[a-1, b-3], [a-2, b-4]],
-%       D = [_{a:1, b:3}, _{a:2, b:4}].
+%       D = [row{a:1, b:3}, row{a:2, b:4}].
 
 columns_to_rows(ListOfColumns, ListOfRows) :-
     var(ListOfColumns),
