@@ -100,6 +100,14 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.12.0] - 2021-03-13}
+
+\section{Added}
+
+\begin{shortlist}
+    \item \predref{pop_lsbs}{2} predicate
+\end{shortlist}
+
 \section{[0.11.0] - 2021-02-18}
 
 \section{Added}
@@ -564,7 +572,7 @@ last.
 \chapter{library(canny/pop)}\label{sec:pop}
 
 \begin{description}
-    \predicate[det]{poplsbs}{2}{+A:nonneg, -L:list}
+    \predicate[det]{pop_lsbs}{2}{+A:nonneg, -L:list}
 Unifies non-negative integer \arg{A} with its set bits \arg{L} in
 least-significate priority order. Defined only for non-negative \arg{A}.
 Throws a domain error otherwise.
