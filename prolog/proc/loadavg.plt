@@ -13,6 +13,7 @@ test(loadavg) :-
     number(C),
     integer(D),
     integer(E),
+    D =< E,
     integer(F).
 :- endif.
 
