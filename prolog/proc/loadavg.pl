@@ -12,5 +12,10 @@ loadavg(Avg1, Avg5, Avg15, Runnables/Processes, LastPID) -->
     integer(Processes), whites,
     integer(LastPID), blanks_to_nl.
 
-loadavg(Avg1, Avg5, Avg15, RunnablesRatio, LastPID) :-
-    phrase_from_file(loadavg(Avg1, Avg5, Avg15, RunnablesRatio, LastPID), '/proc/loadavg').
+%!  loadavg(-Avg1, -Avg5, -Avg15,
+%!          -RunnablesRatio, -LastPID) is det.
+
+loadavg(Avg1, Avg5, Avg15,
+        RunnablesRatio, LastPID) :-
+    phrase_from_file(loadavg(Avg1, Avg5, Avg15,
+                             RunnablesRatio, LastPID), '/proc/loadavg').
