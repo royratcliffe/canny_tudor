@@ -1549,6 +1549,23 @@ option-selection process. Nevertheless, this version follows this
 renamed argument convention.
 \end{description}
 
+\chapter{library(swi/ord)}\label{sec:ord}
+
+\begin{description}
+    \predicate[det]{iud}{5}{+Existing:list, +Incoming:list, -Inserts:list, -Updates:list, -Deletes:list}
+Take two payload lists, \arg{Existing} and \arg{Incoming}. First convert to
+element-unique sets. The sets overlap.
+
+\begin{code}
+Inserts = Incoming \ Existing
+Updates = Existing /\ Incoming
+Deletes = Existing \ Incoming
+\end{code}
+
+Their intersection defines the update set; the set subtraction terms
+define inserts and deletes respectively.
+\end{description}
+
 \chapter{library(swi/pengines)}\label{sec:pengines}
 
 \begin{description}
