@@ -1,4 +1,4 @@
-:- module(proc_handlers, []).
+:- module(proc_http_handlers, []).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
 :- use_module(loadavg).
