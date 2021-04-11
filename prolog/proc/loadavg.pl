@@ -4,13 +4,13 @@
 :- use_module(library(dcg/basics)).
 :- use_module(library(pure_input)).
 
-loadavg(A, B, C, D/E, F) -->
-    number(A), whites,
-    number(B), whites,
-    number(C), whites,
-    integer(D), "/",
-    integer(E), whites,
-    integer(F), blanks_to_nl.
+loadavg(Avg1, Avg5, Avg15, Runnables/Processes, LastPID) -->
+    number(Avg1), whites,
+    number(Avg5), whites,
+    number(Avg15), whites,
+    integer(Runnables), "/",
+    integer(Processes), whites,
+    integer(LastPID), blanks_to_nl.
 
-loadavg(A, B, C, D, E) :-
-    phrase_from_file(loadavg(A, B, C, D, E), '/proc/loadavg').
+loadavg(Avg1, Avg5, Avg15, RunnablesRatio, LastPID) :-
+    phrase_from_file(loadavg(Avg1, Avg5, Avg15, RunnablesRatio, LastPID), '/proc/loadavg').
