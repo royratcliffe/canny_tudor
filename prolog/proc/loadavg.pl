@@ -1,5 +1,6 @@
 :- module(proc_loadavg,
-          [ loadavg/5
+          [ loadavg//5,
+            loadavg/5
           ]).
 :- use_module(library(dcg/basics)).
 :- use_module(library(pure_input)).
