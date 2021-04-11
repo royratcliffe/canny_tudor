@@ -7,4 +7,10 @@
 
 proc_loadavg(_Request) :-
     loadavg(A, B, C, D/E, F),
-    reply_json_dict(_{avg1:A, avg5:B, avg15:C, runnables:D, processes:E, last_pid:F}).
+    reply_json_dict(_{avg1:A,
+                      avg5:B,
+                      avg15:C,
+                      runnables:D,
+                      processes:E,
+                      last_pid:F
+                     }).
