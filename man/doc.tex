@@ -100,6 +100,15 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.13.0] - 2021-04-12}
+
+\section{Added}
+
+\begin{itemize}
+    \item \dcgref{loadavg}{5} and \predref{loadavg}{5} predicates
+    \item \predref{current_arch}{1}, \predref{current_arch_os}{2} and \predref{current_os}{1} predicates
+\end{itemize}
+
 \section{[0.12.0] - 2021-03-13}
 
 \section{Added}
@@ -357,6 +366,40 @@ and now, or the time delay between the previous and the current.
 \begin{shortlist}
     \item Initial spike
 \end{shortlist}
+
+\chapter{library(canny/arch)}\label{sec:arch}
+
+\begin{description}
+    \predicate[semidet]{current_arch}{1}{?Arch:pair}
+Unifies \arg{Arch} with the current host's architecture and operating
+system. Usefully reads the pair as a Prolog term with which you can
+unify its component parts.
+
+The Prolog \const{arch} flag combines both the architecture and the
+operating system as a dash-separated pair. The predicate splits
+these two components apart by reading the underlying atom as a
+Prolog term. This makes an assumption about the format of the \const{arch}
+flag.
+
+    \predicate[semidet]{current_arch_os}{2}{?Arch, ?OS}
+Unifies \arg{OS} with the current operating system. Splits the host
+architecture into its two components: the bit-wise sub-architecture
+and the operating system. Operating system is one of: \const{win32} or
+\const{win64} for Windows, \const{darwin} for macOS, or \const{linux} for Linux. Maps
+architecture bit-width to an atomic \arg{Arch} token for contemporary
+64-bit hosts, one of: \const{x64}, \verb$x86_64$. Darwin and Linux report the
+latter, Windows the former.
+
+    \predicate[semidet]{current_os}{1}{?OS}
+Succeeds for current \arg{OS}, one of:
+
+\begin{shortlist}
+    \item \const{win32}
+    \item \const{win64}
+    \item \const{darwin}
+    \item \const{linux}
+\end{shortlist}
+\end{description}
 
 \chapter{library(canny/arity)}\label{sec:arity}
 
@@ -1193,6 +1236,48 @@ on a teletype like terminal. Ignores any exceptions by design.
 +------+----------+
 \end{code}
 
+\end{description}
+
+\chapter{library(proc/loadavg)}\label{sec:loadavg}
+
+\begin{description}
+    \dcg[semidet]{loadavg}{5}{-Avg1, -Avg5, -Avg15, -RunnablesRatio, -LastPID}
+Parses the Linux \verb$/proc/loadavg$ process pseudo-file. One space
+separates all fields except the runnable processes and total
+processes, a forward slash separates these two figures.
+
+Load-average statistics comprise: three floating point numbers, one
+integer ratio and one process identifier.
+
+\begin{itemize}
+    \item Load average for last minute
+    \item Load average for last five minutes
+    \item Load average for last 15 minutes
+    \item Number of currently-runnable processes, meaning either
+actually running or ready to run
+    \item Total number of processes
+    \item Last created process identifier
+\end{itemize}
+
+It follows logically that runnable processes is always less than or
+equal to total processes.
+
+One space separates all fields except the runnable processes and
+total processes, a forward slash separates these two figures. The
+implementation applies this requirement explicitly. The grammar
+fails if more than one space exists, or if finds the terminating
+newline missing. This approach allows you to reverse the grammar to
+generate the load-average codes from the load-average figures.
+
+    \predicate[det]{loadavg}{5}{-Avg1, -Avg5, -Avg15, -RunnablesRatio, -LastPID}
+Captures and parses the current processor load average statistics on
+Linux systems. Does \textbf{not} work on Windows systems.
+
+\begin{tags}
+    \tag{throws}
+\verb$existence_error(source_sink, '/proc/loadavg')$ on Windows, or
+other operating systems that do not have a \const{proc} subsystem.
+\end{tags}
 \end{description}
 
 \chapter{library(random/temporary)}\label{sec:temporary}

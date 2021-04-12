@@ -3,6 +3,11 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.13.0] - 2021-04-12
+## Added
+- loadavg//5 and loadavg/5 predicates
+- current_arch/1, current_arch_os/2 and current_os/1 predicates
+
 ## [0.12.0] - 2021-03-13
 ## Added
 - pop_lsbs/2 predicate
