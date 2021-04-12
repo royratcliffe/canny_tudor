@@ -24,12 +24,12 @@
 %       - Last created process identifier
 
 loadavg(Avg1, Avg5, Avg15, Runnables/Processes, LastPID) -->
-    number(Avg1), whites,
-    number(Avg5), whites,
-    number(Avg15), whites,
+    number(Avg1), " ",
+    number(Avg5), " ",
+    number(Avg15), " ",
     integer(Runnables), "/",
-    integer(Processes), whites,
-    integer(LastPID), blanks_to_nl.
+    integer(Processes), " ",
+    integer(LastPID), "\n".
 
 %!  loadavg(-Avg1, -Avg5, -Avg15,
 %!          -RunnablesRatio, -LastPID) is det.
