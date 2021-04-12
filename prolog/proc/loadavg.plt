@@ -6,7 +6,7 @@
 test(loadavg_phrase, [true(A==`1 1 1 1/1 1\n`)]) :-
     phrase(loadavg(1, 1, 1, 1/1, 1), A).
 
-:- if(current_arch(_-linux)).
+:- if(current_os(linux)).
 test(loadavg) :-
     loadavg(A, B, C, D/E, F),
     number(A),
