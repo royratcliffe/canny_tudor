@@ -33,5 +33,12 @@ current_arch(Arch) :-
 current_arch_os(Arch, OS) :- current_arch(Arch-OS).
 
 %!  current_os(?OS) is semidet.
+%
+%   Succeeds for current OS, one of:
+%
+%       - `win32`
+%       - `win64`
+%       - `darwin`
+%       - `linux`
 
 current_os(OS) :- current_arch_os(_, OS).
