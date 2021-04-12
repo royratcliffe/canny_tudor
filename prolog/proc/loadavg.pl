@@ -22,6 +22,16 @@
 %         actually running or ready to run
 %       - Total number of processes
 %       - Last created process identifier
+%
+%   It follows logically that runnable processes  is always less than or
+%   equal to total processes.
+%
+%   One space separates all fields  except   the  runnable processes and
+%   total processes, a forward slash separates   these  two figures. The
+%   implementation applies this  requirement   explicitly.  The  grammar
+%   fails if more than one space  exists,   or  if finds the terminating
+%   newline missing. This approach allows you  to reverse the grammar to
+%   generate the load-average codes from the load-average figures.
 
 loadavg(Avg1, Avg5, Avg15, Runnables/Processes, LastPID) -->
     number(Avg1), " ",
