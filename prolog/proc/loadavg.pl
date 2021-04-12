@@ -8,7 +8,7 @@
 %!  loadavg(-Avg1, -Avg5, -Avg15,
 %!          -RunnablesRatio, -LastPID)// is semidet.
 %
-%   Parses the Linux =|/proc/loadavg|= process   pseudo  file. One space
+%   Parses the Linux =|/proc/loadavg|= process   pseudo-file.  One space
 %   separates  all  fields  except  the  runnable  processes  and  total
 %   processes, a forward slash separates these two figures.
 %
