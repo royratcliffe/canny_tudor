@@ -17,6 +17,8 @@ jobs:
       - name: Run tests
         run: |
           :- attach_packs(..).
+          :- [library(canny/pack)].
+          :- load_pack(canny_tudor).
           :- load_test_files([]).
           :- run_tests.
         shell: swipl -s {0} -t halt
