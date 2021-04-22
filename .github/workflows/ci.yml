@@ -16,6 +16,7 @@ jobs:
 
       - name: Run tests
         run: |
+          :- pwd.
           :- attach_packs(.).
           :- [library(canny/pack)].
           :- load_pack(canny_tudor, _).
