@@ -22,7 +22,7 @@ bits(Shift, Width, Word, Bits, Rest) :-
     Bits0 #= Word /\ Mask,
     Rest #= Word xor Bits0,
     Word #= Bits0 /\ Mask \/ Rest,
-    Bits #= Bits0 >> Shift,
+    Bits #= Bits0 // (1 << Shift),
     Bits0 #= Bits << Shift.
 
 bits(Shift-Width, Word, Bits, Rest) :- bits(Shift, Width, Word, Bits, Rest).
