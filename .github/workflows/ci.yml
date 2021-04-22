@@ -20,5 +20,4 @@ jobs:
           :- [library(canny/pack)].
           :- load_pack(canny_tudor, _).
           :- load_test_files([]).
-          :- run_tests.
-        shell: swipl -s {0} -t halt
+        shell: swipl -s {0} -t run_tests
