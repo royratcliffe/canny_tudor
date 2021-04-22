@@ -16,10 +16,10 @@ jobs:
 
       - name: Run tests
         run: |
-          :- pwd.
-          :- attach_packs(..).
-          :- pack_list_installed.
-          :- [library(canny/pack)].
-          :- load_pack(canny_tudor, _).
-          :- load_test_files([]).
-        shell: swipl -s {0} -t run_tests
+          :- initialization(up, program).
+          up :-
+              pack_list_installed,
+              [library(canny/pack)],
+              load_pack(canny_tudor, _),
+              load_test_files([]).
+        shell: swipl -g 'attach_packs(..)' -s {0} -t run_tests
