@@ -19,4 +19,4 @@ jobs:
           :- attach_packs(..).
           :- load_test_files([]).
           :- run_tests.
-        shell: swipl -s {0}
+        shell: swipl -s {0} -t halt
