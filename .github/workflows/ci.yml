@@ -13,3 +13,10 @@ jobs:
           sudo apt-add-repository ppa:swi-prolog/devel
           sudo apt-get update
           sudo apt-get install swi-prolog
+
+      - name: Run tests
+        run: |
+          :- attach_packs(..).
+          :- load_test_files([]).
+          :- run_tests.
+        shell: swipl -s {0}
