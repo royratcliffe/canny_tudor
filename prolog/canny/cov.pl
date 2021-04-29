@@ -35,5 +35,12 @@ print_covs(Covs) :-
                        fail:Fail
                    }, SortedCovs), [Module, Clauses, Cov, Fail]).
 
-compare_cov(<, _-Coverage1, _-Coverage2) :- Coverage1.cov < Coverage2.cov, !.
+compare_cov(Order, _-Coverage1, _-Coverage2) :-
+    compare(Order0, Coverage1.cov, Coverage2.cov),
+    compare_fail(Order, Order0, Coverage1.fail, Coverage2.fail),
+    !.
 compare_cov(>, _, _).
+
+compare_fail(<, <, _, _) :- !.
+compare_fail(<, =, Fail1, Fail2) :- compare(>, Fail1, Fail2), !.
+compare_fail(>, _, _, _).
