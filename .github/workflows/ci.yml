@@ -26,4 +26,4 @@ jobs:
         shell: swipl -s {0} -t run_tests
 
       - name: Coverage
-        shell: swipl -g "attach_packs(..)" -g "[library(canny/cov)]" -t halt
+        run: swipl -g "attach_packs(..)" -g "[library(canny/cov)]" -t halt
