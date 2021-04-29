@@ -26,7 +26,7 @@ covs(Covs) :-
         Covs).
 
 print_covs(Covs) :-
-    sort(Covs, SortedCovs),
+    predsort(compare_cov, Covs, SortedCovs),
     print_table(
         member(
             Module-coverage{
@@ -34,3 +34,6 @@ print_covs(Covs) :-
                        cov:Cov,
                        fail:Fail
                    }, SortedCovs), [Module, Clauses, Cov, Fail]).
+
+compare_cov(<, _-Coverage1, _-Coverage2) :- Coverage1.cov < Coverage2.cov, !.
+compare_cov(>, _, _).
