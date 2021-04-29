@@ -1,12 +1,12 @@
 :- module(canny_pack,
-          [ load_pack/2,
+          [ load_pack_modules/2,
             load_prolog_source/2
           ]).
 :- autoload(library(filesex), [directory_member/3]).
 :- autoload(library(prolog_pack), [pack_property/2]).
 :- use_module(library(plunit), [load_test_files/1]).
 
-load_pack(Pack, Modules) :-
+load_pack_modules(Pack, Modules) :-
     pack_property(Pack, directory(Directory)),
     findall(Module, load_prolog_source(Directory, Module), Modules),
     load_test_files([]).
