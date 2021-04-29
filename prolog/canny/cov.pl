@@ -26,10 +26,11 @@ covs(Covs) :-
         Covs).
 
 print_covs(Covs) :-
+    sort(Covs, SortedCovs),
     print_table(
         member(
             Module-coverage{
                        clauses:Clauses,
                        cov:Cov,
                        fail:Fail
-                   }, Covs), [Module, Clauses, Cov, Fail]).
+                   }, SortedCovs), [Module, Clauses, Cov, Fail]).
