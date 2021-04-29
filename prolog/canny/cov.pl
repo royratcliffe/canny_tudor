@@ -6,13 +6,7 @@
 
 cov :-
     covs(Covs),
-    print_table(
-        member(
-            Module-coverage{
-                       clauses:Clauses,
-                       cov:Cov,
-                       fail:Fail
-                   }, Covs), [Module, Clauses, Cov, Fail]),
+    print_covs(Covs),
     aggregate_all(
         v(sum(Clauses), sum(Cov), sum(Fail), count),
         member(_-coverage{clauses:Clauses, cov:Cov, fail:Fail}, Covs),
@@ -30,3 +24,12 @@ covs(Covs) :-
         Module-Coverage,
         coverage_for_modules(run_tests, Modules, Module, Coverage),
         Covs).
+
+print_covs(Covs) :-
+    print_table(
+        member(
+            Module-coverage{
+                       clauses:Clauses,
+                       cov:Cov,
+                       fail:Fail
+                   }, Covs), [Module, Clauses, Cov, Fail]).
