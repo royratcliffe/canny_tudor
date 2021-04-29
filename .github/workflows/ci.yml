@@ -14,16 +14,5 @@ jobs:
           sudo apt-get update
           sudo apt-get install swi-prolog
 
-      - name: Run tests
-        run: |
-          :- initialization(up, program).
-          up :-
-              attach_packs(..),
-              pack_list_installed,
-              [library(canny/pack)],
-              load_pack_modules(canny_tudor, _),
-              load_test_files([]).
-        shell: swipl -s {0} -t run_tests
-
       - name: Coverage
         run: swipl -g "attach_packs(..)" -g "[library(canny/cov)]" -t halt
