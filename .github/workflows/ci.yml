@@ -24,3 +24,11 @@ jobs:
               load_pack(canny_tudor, _),
               load_test_files([]).
         shell: swipl -s {0} -t run_tests
+
+      - name: Coverage
+        run: |
+          :- initialization(up, program).
+          up :-
+              attach_packs(..),
+              [library(canny/cov)].
+        shell: swipl -s {0} -t halt
