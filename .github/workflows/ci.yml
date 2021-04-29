@@ -14,5 +14,5 @@ jobs:
           sudo apt-get update
           sudo apt-get install swi-prolog
 
-      - name: Coverage
+      - name: Test coverage
         run: swipl -g "attach_packs(..)" -g "[library(canny/cov)]" -t halt
