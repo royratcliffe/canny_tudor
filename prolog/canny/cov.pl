@@ -5,11 +5,15 @@
 :- initialization(cov).
 
 cov :-
-    covs(Covs),
-    print_covs(Covs),
+    module_coverages(ModuleCoverages),
+    print_module_coverages(ModuleCoverages),
     aggregate_all(
         v(sum(Clauses), sum(Cov), sum(Fail), count),
-        member(_-coverage{clauses:Clauses, cov:Cov, fail:Fail}, Covs),
+        member(_-coverage{
+                     clauses:Clauses,
+                     cov:Cov,
+                     fail:Fail
+                 }, ModuleCoverages),
         v(AllClauses, AllCov, AllFail, AllModule)),
     AvgCov is AllCov / AllModule,
     AvgFail is AllFail / AllModule,
@@ -18,22 +22,22 @@ cov :-
     format('Cov:~t~f~40|%~n', [AvgCov]),
     format('Fail:~t~f~40|%~n', [AvgFail]).
 
-covs(Covs) :-
+module_coverages(ModuleCoverages) :-
     load_pack_modules(canny_tudor, Modules),
     findall(
         Module-Coverage,
         coverage_for_modules(run_tests, Modules, Module, Coverage),
-        Covs).
+        ModuleCoverages).
 
-print_covs(Covs) :-
-    predsort(compare_cov, Covs, SortedCovs),
+print_module_coverages(ModuleCoverages) :-
+    predsort(compare_cov, ModuleCoverages, SortedModuleCoverages),
     print_table(
         member(
             Module-coverage{
                        clauses:Clauses,
                        cov:Cov,
                        fail:Fail
-                   }, SortedCovs), [Module, Clauses, Cov, Fail]).
+                   }, SortedModuleCoverages), [Module, Clauses, Cov, Fail]).
 
 compare_cov(Order, _-Coverage1, _-Coverage2) :-
     compare(Order0, Coverage1.cov, Coverage2.cov),
