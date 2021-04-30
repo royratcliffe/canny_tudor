@@ -30,7 +30,7 @@ module_coverages(ModuleCoverages) :-
         ModuleCoverages).
 
 print_module_coverages(ModuleCoverages) :-
-    predsort(compare_cov, ModuleCoverages, SortedModuleCoverages),
+    predsort(compare_cov_fail, ModuleCoverages, SortedModuleCoverages),
     print_table(
         member(
             Module-coverage{
@@ -39,11 +39,11 @@ print_module_coverages(ModuleCoverages) :-
                        fail:Fail
                    }, SortedModuleCoverages), [Module, Clauses, Cov, Fail]).
 
-compare_cov(Order, _-Coverage1, _-Coverage2) :-
+compare_cov_fail(Order, _-Coverage1, _-Coverage2) :-
     compare(Order0, Coverage1.cov, Coverage2.cov),
     compare_fail(Order, Order0, Coverage1.fail, Coverage2.fail),
     !.
-compare_cov(>, _, _).
+compare_cov_fail(>, _, _).
 
 compare_fail(<, <, _, _) :- !.
 compare_fail(<, =, Fail1, Fail2) :- compare(>, Fail1, Fail2), !.
