@@ -1,6 +1,6 @@
 :- module(canny_pack,
-          [ load_pack_modules/2,
-            load_prolog_source/2
+          [ load_pack_modules/2,                % +Pack,-Modules
+            load_prolog_source/2                % +Directory,-Module
           ]).
 :- autoload(library(filesex), [directory_member/3]).
 :- autoload(library(prolog_pack), [pack_property/2]).
