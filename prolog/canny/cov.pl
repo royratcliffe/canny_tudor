@@ -8,13 +8,13 @@ cov :-
     module_coverages(ModuleCoverages),
     print_module_coverages(ModuleCoverages),
     aggregate_all(
-        v(sum(Clauses), sum(Cov), sum(Fail), count),
+        all(sum(Clauses), sum(Cov), sum(Fail), count),
         member(_-coverage{
                      clauses:Clauses,
                      cov:Cov,
                      fail:Fail
                  }, ModuleCoverages),
-        v(AllClauses, AllCov, AllFail, AllModule)),
+        all(AllClauses, AllCov, AllFail, AllModule)),
     AvgCov is AllCov / AllModule,
     AvgFail is AllFail / AllModule,
     format('Modules:~t~d~40|~n', [AllModule]),
