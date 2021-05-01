@@ -1,6 +1,6 @@
 :- module(canny_pack,
           [ load_pack_modules/2,                % +Pack,-Modules
-            load_prolog_source/2                % +Directory,-Module
+            load_prolog_module/2                % +Directory,-Module
           ]).
 :- autoload(library(filesex), [directory_member/3]).
 :- autoload(library(prolog_pack), [pack_property/2]).
@@ -14,10 +14,10 @@
 
 load_pack_modules(Pack, Modules) :-
     pack_property(Pack, directory(Directory)),
-    findall(Module, load_prolog_source(Directory, Module), Modules),
+    findall(Module, load_prolog_module(Directory, Module), Modules),
     load_test_files([]).
 
-%!  load_prolog_source(+Directory, -Module) is nondet.
+%!  load_prolog_module(+Directory, -Module) is nondet.
 %
 %   Loads Prolog source recursively at Directory  for Module. Does *not*
 %   load non-module sources, e.g.  scripts   without  a module. Operates
@@ -26,7 +26,7 @@ load_pack_modules(Pack, Modules) :-
 %   directory. You can find the File from  which the module loaded using
 %   module properties, i.e. `module_property(Module, file(File))`.
 
-load_prolog_source(Directory, Module) :-
+load_prolog_module(Directory, Module) :-
     directory_member(Directory, File, [file_type(prolog), recursive(true)]),
     catch(load_files(File, [must_be_module(true)]), _, fail),
     module_property(Module, file(File)).
