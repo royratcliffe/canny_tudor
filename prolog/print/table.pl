@@ -1,11 +1,16 @@
-:- module(print_table, [print_table/1]).
+:- module(print_table,
+          [ print_table/1,                      % :Goal
+            print_table/2                       % :Goal,+Variables:list
+          ]).
 
 :- meta_predicate print_table(0).
+:- meta_predicate print_table(0, +).
 
 :- use_module(library(clpfd), [transpose/2]).
 :- use_module(library(swi/lists)).
 
 %!  print_table(:Goal) is det.
+%!  print_table(:Goal, +Variables:list) is det.
 %
 %   Prints all the variables  within   the  given non-deterministic Goal
 %   term  formatted  as   a   table    of   centre-padded   columns   to
@@ -27,6 +32,9 @@
 
 print_table(Goal) :-
     term_variables(Goal, Variables),
+    print_table(Goal, Variables).
+
+print_table(Goal, Variables) :-
     findall(Variables, Goal, Rows0),
     maplist(
         maplist(
