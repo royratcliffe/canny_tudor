@@ -28,7 +28,7 @@ cov :-
     format('Clauses:~t~d~40|~n', [AllClauses]),
     format('Cov:~t~f~40|%~n', [AvgCov]),
     format('Fail:~t~f~40|%~n', [AvgFail]),
-    (   getenv(canny_cov_gist_id, GistID)
+    (   getenv('CANNY_COV_GIST_ID', GistID)
     ->  shield_files([cov-AvgCov, fail-AvgFail], Files),
         ghapi_update_gist(GistID, json(json([files=Files])), _, [])
     ;   true
