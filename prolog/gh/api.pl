@@ -48,7 +48,7 @@ ghapi_update_gist(GistID, Data, Reply, Options) :-
 %
 %   Accesses the GitHub API. Supports JSON terms and dictionaries. For
 %   example, the following goal accesses the GitHub Gist API looking for
-%   a particular Gist by its identifier and unifies A with a JSON term
+%   a particular Gist by its identifier and unifies `A` with a JSON term
 %   representing the Gist's current contents and state.
 %
 %       ghapi_get([gists, ec92ac84832950815861d35c2f661953], A, []).
