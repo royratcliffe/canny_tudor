@@ -70,7 +70,8 @@ shield_files(Pairs, json(Files)) :-
                                                label=Label,
                                                message=Message,
                                                color=Color
-                                             ]), [])
+                                             ]), []),
+                format('raw/~s~n', [File])
             ), Pairs, Files).
 
 shield_color(Percent, red) :- Percent < 20, !.
