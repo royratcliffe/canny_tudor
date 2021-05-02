@@ -55,12 +55,12 @@ ghapi_update_gist(GistID, Data, Reply, Options) :-
 %
 %   Supports all HTTP methods despite the predicate name. The "get"
 %   mirrors the underlying http_get/3 method which also supports all
-%   methods. POST and PATCH send data using the post/1 option and
-%   override the default HTTP verb using the method/1 option. Similarly
-%   here.
+%   methods. POST and PATCH send data using the `post/1` option and
+%   override the default HTTP verb using the `method/1` option.
+%   Similarly here.
 %
 %   Handles authentication via settings, and from the system environment
-%   indirectly. Option ghapi_access_token/1 overrides both. Order of
+%   indirectly. Option `ghapi_access_token/1` overrides both. Order of
 %   overriding proceeds as: option, setting, environment, none. Empty
 %   atom counts as none.
 %
