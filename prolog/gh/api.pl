@@ -15,7 +15,7 @@
  * @author Roy Ratcliffe
  */
 
-:- setting(access_token, atom, env(ghapi_access_token, ''),
+:- setting(access_token, atom, env('GHAPI_ACCESS_TOKEN', ''),
            'GitHub API personal access token').
 
 %!  ghapi_update_gist(+GistID, +Data, -Reply, +Options) is det.
