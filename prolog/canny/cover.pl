@@ -1,6 +1,6 @@
 :- module(canny_cover,
-          [ coverages_by_module/2,              % :Goal,-Coverages:dict
-            coverage_for_modules/4              % :Goal,+Modules,-Module,-Coverage
+          [ coverages_by_module/2,      % :Goal,-Coverages:dict
+            coverage_for_modules/4      % :Goal,+Modules,-Module,-Coverage
           ]).
 :- autoload(library(apply), [convlist/3]).
 :- autoload(library(strings), [string_lines/2]).
@@ -9,6 +9,16 @@
 :- autoload(library(dcg/basics), [whites/2, integer/3, number/3, string/3]).
 
 %!  coverages_by_module(:Goal, -Coverages:dict) is det.
+%
+%   Calls Goal within show_coverage/1  while   capturing  the  resulting
+%   lines of output; Goal  is  typically   run_tests/0  for  running all
+%   loaded tests. Parses the lines for   coverage  statistics by module.
+%   Ignores lines that do not represent coverage, and also ignores lines
+%   that cover non-module files.  Automatically matches prefix-truncated
+%   coverage paths as well as full paths.
+%
+%   @arg Coverages is a  module-keyed   dictionary  of  sub-dictionaries
+%   carrying three keys: clauses, cov and fail.
 
 coverages_by_module(Goal, Coverages) :-
     with_output_to(string(String), show_coverage(Goal)),
@@ -47,6 +57,11 @@ cover_file(Module) -->
     string(Codes).
 
 %!  coverage_for_modules(:Goal, +Modules, -Module, -Coverage) is nondet.
+%
+%   Non-deterministically finds Coverage dictionaries   for all Modules.
+%   Bypasses those modules excluded from   the  required list, typically
+%   the list of modules belonging to a particular pack and excluding all
+%   system and other supporting modules.
 
 coverage_for_modules(Goal, Modules, Module, Coverage) :-
     coverages_by_module(Goal, Coverages),
