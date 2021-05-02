@@ -20,7 +20,12 @@ cov :-
     format('Modules:~t~d~40|~n', [AllModule]),
     format('Clauses:~t~d~40|~n', [AllClauses]),
     format('Cov:~t~f~40|%~n', [AvgCov]),
-    format('Fail:~t~f~40|%~n', [AvgFail]).
+    format('Fail:~t~f~40|%~n', [AvgFail]),
+    (   getenv(canny_cov_gist_id, GistID)
+    ->  shield_files([cov-AvgCov, fail-AvgFail], Files),
+        ghapi_update_gist(GistID, json(json([files=Files])), _, [])
+    ;   true
+    ).
 
 module_coverages(ModuleCoverages) :-
     load_pack_modules(canny_tudor, Modules),
@@ -48,3 +53,21 @@ compare_cov_fail(>, _, _).
 compare_fail(<, <, _, _) :- !.
 compare_fail(<, =, Fail1, Fail2) :- compare(>, Fail1, Fail2), !.
 compare_fail(>, _, _, _).
+
+shield_files(Pairs, json(Files)) :-
+    maplist([Label-Percent, File=json([content=Content])]>>
+            (   atom_concat(Label, '.json', File),
+                format(atom(Message), '~1f%', [Percent]),
+                shield_color(Percent, Color),
+                atom_json_term(Content, json([ schemaVersion=1,
+                                               label=Label,
+                                               message=Message,
+                                               color=Color
+                                             ]), [])
+            ), Pairs, Files).
+
+shield_color(Percent, red) :- Percent < 20, !.
+shield_color(Percent, orange) :- Percent < 40, !.
+shield_color(Percent, yellow) :- Percent < 60, !.
+shield_color(Percent, yellowgreen) :- Percent < 80, !.
+shield_color(_, green).
