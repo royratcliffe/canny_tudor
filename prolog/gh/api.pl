@@ -24,6 +24,14 @@
 %   as a JSON object, or dictionary if you include json_object(dict) in
 %   Options. Reply is the updated Gist in JSON on success.
 %
+%   The example below illustrates a Gist update using a JSON term.
+%   Notice the doubly-nested `json/1` terms. The first sets up the HTTP
+%   request for JSON while the inner term specifies a JSON _object_
+%   payload. In this example, the update adds or replaces the `cov.json`
+%   file with content of "{}" as serialised JSON. Update requests for
+%   Gists have a `files` object with a nested filename-object comprising
+%   a content string for the new contents of the file.
+%
 %       ghapi_update_gist(
 %           ec92ac84832950815861d35c2f661953,
 %           json(json([ files=json([ 'cov.json'=json([ content='{}'
