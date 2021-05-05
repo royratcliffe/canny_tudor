@@ -42,6 +42,23 @@
 %   throws a type_error. Always therefore assigns at least one thread
 %   which amounts to reusing the calling thread.
 %
+%   All the `std` terms above can also take a stream options, so can
+%   encode the process pipes. The following example illustrates. It
+%   sends a friendly "hello" in Mandarin Chinese through the Unix `tee`
+%   command which relays the stream to standard output and tees it off
+%   to =|/dev/stderr|= or standard error for that process. Note that
+%   exe/3 decodes the output and error separately, one as an atom but
+%   the other as a string.
+%
+%       exe(path(tee),
+%           [ '/dev/stderr'
+%           ],
+%           [ stdin(atom(你好, [encoding(utf8)])),
+%             stdout(atom(A, [encoding(utf8)])),
+%             stderr(string(B, [encoding(utf8)])),
+%             status(exit(0))
+%           ]).
+%
 %   Do *not* use status(Status) option unless you have stdin(null)
 %   on Windows because the process goals never complete.
 %
