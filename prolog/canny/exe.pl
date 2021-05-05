@@ -81,9 +81,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %             status(exit(0))
 %           ]).
 %
-%   Do *not* use status(Status) option unless you have stdin(null)
-%   on Windows because the process goals never complete.
-%
 %   Important to close the input stream immediately after writing and
 %   during the call phase. Do *not* wait for the clean-up phase to close
 %   the input stream, otherwise the process will never terminate. It
@@ -99,6 +96,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   this reason, the number of concurrent threads matches the number of
 %   concurrent goals. This abviates the sequencing of the goals because
 %   all goals implicitly execute concurrently.
+%
+%   @tbd Do *not* use status(Status) option unless you have stdin(null)
+%   on Windows because the process goals never complete.
 
 exe(Executable, Arguments, Options) :-
     exe(Options, Options_, Calls, Cleanups),
