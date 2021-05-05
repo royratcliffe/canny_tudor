@@ -1,3 +1,5 @@
+:- encoding(utf8).
+
 /*  File:    canny/exe.pl
     Author:  Roy Ratcliffe
     Created: May  5 2021
