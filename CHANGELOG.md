@@ -3,6 +3,14 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.14.0] - 2021-05-05
+## Added
+- Continuous Integration using GitHub Actions
+- Test coverage shields
+- Prototype for GitHub API
+## Fixed
+- Patches for test coverage
+
 ## [0.13.0] - 2021-04-12
 ## Added
 - loadavg//5 and loadavg/5 predicates
