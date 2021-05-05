@@ -1,4 +1,4 @@
-:- encoding(utf8).
+﻿:- encoding(utf8).
 
 /*  File:    canny/exe.pl
     Author:  Roy Ratcliffe

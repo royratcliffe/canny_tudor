@@ -1,4 +1,4 @@
-:- encoding(utf8).
+﻿:- encoding(utf8).
 :- begin_tests(canny_exe).
 
 :- use_module(exe).
