@@ -37,7 +37,10 @@
 %   reading standard output and waiting for the process status happens
 %   at the same time. Same goes for writing to standard input. The
 %   number of concurrent threads exactly matches the number of
-%   concurrent process goals.
+%   concurrent process goals. This goes for clean-up goals as well.
+%   Predicate concurrent/3 does not allow zero threads however; it
+%   throws a type_error. Always therefore assigns at least one thread
+%   which amounts to reusing the calling thread.
 %
 %   Do *not* use status(Status) option unless you have stdin(null)
 %   on Windows because the process goals never complete.
@@ -60,11 +63,18 @@
 
 exe(Executable, Arguments, Options) :-
     exe(Options, Options_, Calls, Cleanups),
-    length(Calls, Threads),
+    threads(Calls, CallThreads),
+    threads(Cleanups, CleanupThreads),
     setup_call_cleanup(
         process_create(Executable, Arguments, Options_),
-        concurrent(Threads, Calls, []),
-        concurrent(Threads, Cleanups, [])).
+        concurrent(CallThreads, Calls, []),
+        concurrent(CleanupThreads, Cleanups, [])).
+
+threads(Goals, NumberOfGoals) :-
+    length(Goals, NumberOfGoals),
+    NumberOfGoals >= 1,
+    !.
+threads(_, 1).
 
 exe([], [], [], []).
 exe([Option0|Options0], [Option|Options], [Call|Calls], [Cleanup|Cleanups]) :-
