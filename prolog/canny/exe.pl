@@ -82,6 +82,14 @@ opt(stdin(Compound), stdin(pipe(Stream)),
     compound_name_arguments(Compound, Name, [S]),
     s(Name),
     !.
+opt(stdin(Compound), stdin(pipe(Stream, Options)),
+    (   format(Stream, '~s', [S]),
+        close(Stream)
+    ), true) :-
+    compound(Compound),
+    compound_name_arguments(Compound, Name, [S, Options]),
+    s(Name),
+    !.
 opt(Compound0, Compound, Call, Cleanup) :-
     compound(Compound0),
     compound_name_arguments(Compound0, Name, [Argument0]),
@@ -105,6 +113,16 @@ std(atom(Atom), pipe(Stream),
         atom_codes(Atom, Codes)
     ), close(Stream)).
 std(string(String), pipe(Stream),
+    (   read_stream_to_codes(Stream, Codes),
+        string_codes(String, Codes)
+    ), close(Stream)).
+std(codes(Codes, Options), pipe(Stream, Options),
+    read_stream_to_codes(Stream, Codes), close(Stream)).
+std(atom(Atom, Options), pipe(Stream, Options),
+    (   read_stream_to_codes(Stream, Codes),
+        atom_codes(Atom, Codes)
+    ), close(Stream)).
+std(string(String, Options), pipe(Stream, Options),
     (   read_stream_to_codes(Stream, Codes),
         string_codes(String, Codes)
     ), close(Stream)).
