@@ -1,5 +1,8 @@
 # Canny bag o' Tudor
 
+![cov](https://shields.io/endpoint?url=https://gist.githubusercontent.com/royratcliffe/ec92ac84832950815861d35c2f661953/raw/cov.json)
+![fail](https://shields.io/endpoint?url=https://gist.githubusercontent.com/royratcliffe/ec92ac84832950815861d35c2f661953/raw/fail.json)
+
 See [PDF](https://github.com/royratcliffe/canny_tudor/blob/master/man/canny_tudor.pdf) for details.
 
 This is an experimental SWI-Prolog 'pack' comprising technical spikes, or

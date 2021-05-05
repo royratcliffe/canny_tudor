@@ -3,6 +3,9 @@
 
 \chapter{Canny bag o' Tudor}
 
+!\href{https://shields.io/endpoint?url=https://gist.githubusercontent.com/royratcliffe/ec92ac84832950815861d35c2f661953/raw/cov.json}{cov}
+!\href{https://shields.io/endpoint?url=https://gist.githubusercontent.com/royratcliffe/ec92ac84832950815861d35c2f661953/raw/fail.json}{fail}
+
 See \href{https://github.com/royratcliffe/canny_tudor/blob/master/man/canny_tudor.pdf}{PDF} for details.
 
 This is an experimental SWI-Prolog 'pack' comprising technical spikes, or
@@ -99,6 +102,22 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
+
+\section{[0.14.0] - 2021-05-05}
+
+\section{Added}
+
+\begin{shortlist}
+    \item Continuous Integration using GitHub Actions
+    \item Test coverage shields
+    \item Prototype for GitHub API
+\end{shortlist}
+
+\section{Fixed}
+
+\begin{shortlist}
+    \item Patches for test coverage
+\end{shortlist}
 
 \section{[0.13.0] - 2021-04-12}
 
@@ -436,6 +455,29 @@ fails. \\
 \end{arguments}
 \end{description}
 
+\chapter{library(canny/cover)}\label{sec:cover}
+
+\begin{description}
+    \predicate[det]{coverages_by_module}{2}{:Goal, -Coverages:dict}
+Calls \arg{Goal} within \predref{show_coverage}{1} while capturing the resulting
+lines of output; \arg{Goal} is typically \predref{run_tests}{0} for running all
+loaded tests. Parses the lines for coverage statistics by module.
+Ignores lines that do not represent coverage, and also ignores lines
+that cover non-module files. Automatically matches prefix-truncated
+coverage paths as well as full paths.
+
+\begin{arguments}
+\arg{Coverages} & is a module-keyed dictionary of sub-dictionaries
+carrying three keys: clauses, cov and fail. \\
+\end{arguments}
+
+    \predicate[nondet]{coverage_for_modules}{4}{:Goal, +Modules, -Module, -Coverage}
+Non-deterministically finds \arg{Coverage} dictionaries for all \arg{Modules}.
+Bypasses those modules excluded from the required list, typically
+the list of modules belonging to a particular pack and excluding all
+system and other supporting modules.
+\end{description}
+
 \chapter{library(canny/endian): Big- and little-endian grammars}\label{sec:endian}
 
 The endian predicates unify big- and little-endian words, longs and
@@ -535,6 +577,23 @@ Uses an unusual argument order. Ordering aligns \arg{X}, \arg{Y} and \arg{Exp} w
 \arg{Y} & is \arg{X} times 2 to the power \arg{Exp}. \\
 \arg{Exp} & is the exponent, typically an integer. \\
 \end{arguments}
+\end{description}
+
+\chapter{library(canny/pack)}\label{sec:pack}
+
+\begin{description}
+    \predicate[semidet]{load_pack_modules}{2}{+Pack, -Modules}
+Finds and loads all Prolog module sources for \arg{Pack}. Also loads test
+files having once loaded the pack. \arg{Modules} becomes a list of
+successfully-loaded pack modules.
+
+    \predicate[nondet]{load_prolog_module}{2}{+Directory, -Module}
+Loads Prolog source recursively at \arg{Directory} for \arg{Module}. Does \textbf{not}
+load non-module sources, e.g. scripts without a module. Operates
+non-deterministically for \arg{Module}. Finds and loads all the modules
+within a given directory; typically amounts to a pack root
+directory. You can find the File from which the module loaded using
+module properties, i.e. \verb$module_property(Module, file(File))$.
 \end{description}
 
 \chapter{library(canny/payloads): Local Payloads}\label{sec:payloads}
@@ -840,6 +899,69 @@ randomised selection. Unifies semi-deterministically for ground
 atoms in order to work correctly for non-variable arguments. It
 collapses to failure if the argument cannot unify with random-name
 possibilities.
+\end{description}
+
+\chapter{library(gh/api): GitHub API}\label{sec:api}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+\end{tags}
+
+You need a personal access token for updates. You do \textbf{not} require
+them for public access.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{ghapi_update_gist}{4}{+GistID, +Data, -Reply, +Options}
+Updates a Gist by its unique identifier. \arg{Data} is the patch payload
+as a JSON object, or dictionary if you include \verb$json_object(dict)$ in
+\arg{Options}. \arg{Reply} is the updated Gist in JSON on success.
+
+The example below illustrates a Gist update using a JSON term.
+Notice the doubly-nested \predref{json}{1} terms. The first sets up the HTTP
+request for JSON while the inner term specifies a JSON \textit{object}
+payload. In this example, the update adds or replaces the \verb$cov.json$
+file with content of "\Scurl{}" as serialised JSON. Update requests for
+Gists have a \const{files} object with a nested filename-object comprising
+a content string for the new contents of the file.
+
+\begin{code}
+ghapi_update_gist(
+    ec92ac84832950815861d35c2f661953,
+    json(json([ files=json([ 'cov.json'=json([ content='{}'
+                                             ])
+                           ])
+              ])), _, []).
+\end{code}
+
+\begin{tags}
+    \tag{See also}
+\url{https://docs.github.com/en/rest/reference/gists#update-a-gist}
+\end{tags}
+
+    \predicate[det]{ghapi_get}{3}{+PathComponents, +Data, +Options}
+Accesses the GitHub API. Supports JSON terms and dictionaries. For
+example, the following goal accesses the GitHub Gist API looking for
+a particular Gist by its identifier and unifies \arg{A} with a JSON term
+representing the Gist's current contents and state.
+
+\begin{code}
+ghapi_get([gists, ec92ac84832950815861d35c2f661953], A, []).
+\end{code}
+
+Supports all HTTP methods despite the predicate name. The "get"
+mirrors the underlying \predref{http_get}{3} method which also supports all
+methods. POST and PATCH send data using the \predref{post}{1} option and
+override the default HTTP verb using the \predref{method}{1} option.
+Similarly here.
+
+Handles authentication via settings, and from the system environment
+indirectly. Option \predref{ghapi_access_token}{1} overrides both. Order of
+overriding proceeds as: option, setting, environment, none. Empty
+atom counts as none.
+
+Abstracts away the path using path components. Argument
+\arg{PathComponents} is an atomic list specifying the URL path.
 \end{description}
 
 \chapter{library(html/scrapes)}\label{sec:scrapes}
@@ -1216,6 +1338,8 @@ localprograms
 
 \begin{description}
     \predicate[det]{print_table}{1}{:Goal}
+\nodescription
+    \predicate[det]{print_table}{2}{:Goal, +Variables:list}
 Prints all the variables within the given non-deterministic \arg{Goal}
 term formatted as a table of centre-padded columns to
 \verb$current_output$. One \arg{Goal} solution becomes one line of text.

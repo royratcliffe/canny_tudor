@@ -392,6 +392,6 @@ dict_compound_key(Key0, Key) :-
 %   solutions exist.
 
 list_dict(List, Tag, Dict) :-
-    indexed_pairs(List, 1, Pairs),
+    indexed(List, 1, Pairs),
     dict_create(Dict, Tag, Pairs),
     !.
