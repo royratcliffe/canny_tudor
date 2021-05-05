@@ -1,5 +1,5 @@
 /*  File:    canny/exe.pl
-    Author:  r0y
+    Author:  Roy Ratcliffe
     Created: May  5 2021
     Purpose: Canny Executables
 
