@@ -38,10 +38,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 %!  exe(+Executable, +Arguments, +Options) is semidet.
 %
-%   Implements an experimental approach to process_create/3 using
-%   concurrent/3. It operates concurrent pipe reads, pipe writes
-%   and process waits. New Options terms offer additional pipe streaming
-%   arguments. See fully-enumerated list below.
+%   Implements an experimental  approach   to  wrapping process_create/3
+%   using concurrent/3. It operates concurrent   pipe reads, pipe writes
+%   and process waits. Predicate parameters   match process_create/3 but
+%   with a few minor  but  key   improvements.  New  Options terms offer
+%   additional    enhanced    pipe     streaming      arguments.     See
+%   partially-enumerated list below.
 %
 %       * stdin(codes(Codes))
 %       * stdin(atom(Atom))
@@ -54,23 +56,24 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %       * stderr(string(String))
 %       * status(Status)
 %
-%   If Options specifies any of these terms, process goals prepare to
-%   write, read and wait concurrently as necessary. This implies that
-%   reading standard output and waiting for the process status happens
-%   at the same time. Same goes for writing to standard input. The
-%   number of concurrent threads exactly matches the number of
-%   concurrent process goals. This goes for clean-up goals as well.
-%   Predicate concurrent/3 does not allow zero threads however; it
-%   throws a type_error. Always therefore assigns at least one thread
-%   which amounts to reusing the calling thread.
+%   If Options specifies any of the above terms, exe/3 prepares goals to
+%   write, read and wait concurrently  as   necessary  according  to the
+%   required configuration. This implies that   reading  standard output
+%   and waiting for the process status happens   at  the same time. Same
+%   goes for writing to standard input. The number of concurrent threads
+%   therefore exactly matches the number   of  concurrent process goals.
+%   This goes for clean-up goals as   well.  Predicate concurrent/3 does
+%   not allow zero threads  however;  it   throws  a  `type_error`.  The
+%   implementation always assigns at least one   thread which amounts to
+%   reusing the calling thread non-concurrently.
 %
-%   All the `std` terms above can also take a stream options, so can
-%   encode the process pipes. The following example illustrates. It
-%   sends a friendly "hello" in Mandarin Chinese through the Unix `tee`
-%   command which relays the stream to standard output and tees it off
-%   to =|/dev/stderr|= or standard error for that process. Note that
-%   exe/3 decodes the output and error separately, one as an atom but
-%   the other as a string.
+%   All the `std` terms above can also   take  a stream options list, so
+%   can override default encoding on the   process  pipes. The following
+%   example illustrates. It sends a friendly "hello" in Mandarin Chinese
+%   through the Unix `tee` command which   relays the stream to standard
+%   output and tees it off to =|/dev/stderr|= or standard error for that
+%   process. Note that exe/3 decodes the   output  and error separately,
+%   one as an atom but the other as a string.
 %
 %       exe(path(tee),
 %           [ '/dev/stderr'
@@ -81,24 +84,27 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %             status(exit(0))
 %           ]).
 %
-%   Important to close the input stream immediately after writing and
-%   during the call phase. Do *not* wait for the clean-up phase to close
-%   the input stream, otherwise the process will never terminate. It
-%   will hang while waiting for standard input to close, assuming it
-%   reads the input.
+%   ---+++ Implementation Notes
 %
-%   This leads to a key caveat when using a single concurrent thread.
-%   A single callee thread executes the primary read-write goals in
-%   sequential order. The current implementation preserves the Options
-%   ordering. Hence output should always preceed input, i.e. writing to
-%   standard input should go first before attempting to read from
+%   Important to close the input stream   immediately  after writing and
+%   during the call phase. Do *not* wait for the clean-up phase to close
+%   the input stream, otherwise the  process   will  never terminate. It
+%   will hang while waiting for standard   input  to close, assuming the
+%   sub-process reads the input.
+%
+%   This leads to a key caveat when  using a single concurrent thread. A
+%   single callee thread  executes  the   primary  read-write  goals  in
+%   sequential order. The current implementation   preserves the Options
+%   ordering. Hence output should always preceed  input, i.e. writing to
+%   standard input should go  first  before   attempting  to  read  from
 %   standard output. Otherwise the sequence will block indefinitely. For
-%   this reason, the number of concurrent threads matches the number of
-%   concurrent goals. This abviates the sequencing of the goals because
+%   this reason, the number of concurrent  threads matches the number of
+%   concurrent goals. This abviates the sequencing  of the goals because
 %   all goals implicitly execute concurrently.
 %
-%   @tbd Do *not* use status(Status) option unless you have stdin(null)
-%   on Windows because the process goals never complete.
+%   @tbd Take care when using the  status(Status) option unless you have
+%   stdin(null) on Windows because, for   some  sub-processes, the goals
+%   never complete.
 
 exe(Executable, Arguments, Options) :-
     exe(Options, Options_, Calls, Cleanups),
