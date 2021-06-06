@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.15.0] - 2021-06-06
+## Added
+- `canny_exe` module
+
 ## [0.14.0] - 2021-05-05
 ## Added
 - Continuous Integration using GitHub Actions
