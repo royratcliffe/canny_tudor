@@ -1,5 +1,7 @@
 :- use_module(library(doc/latex)).
 
+:- set_prolog_flag(encoding, utf8).
+
 :- initialization doc.
 
 doc :- latex_for_pack(., 'doc.tex', [ stand_alone(false),

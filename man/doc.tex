@@ -103,6 +103,14 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.15.0] - 2021-06-06}
+
+\section{Added}
+
+\begin{shortlist}
+    \item \verb$canny_exe$ module
+\end{shortlist}
+
 \section{[0.14.0] - 2021-05-05}
 
 \section{Added}
@@ -515,6 +523,86 @@ Example as follows: four octets to one big-endian 32-bit word.
 
     \dcg[semidet]{little_endian}{2}{?Width:integer, ?Word:integer}
 Unifies little-endian words with octet stream.
+\end{description}
+
+\chapter{library(canny/exe)}\label{sec:exe}
+
+\begin{description}
+    \predicate[semidet]{exe}{3}{+Executable, +Arguments, +Options}
+Implements an experimental approach to wrapping \predref{process_create}{3}
+using \predref{concurrent}{3}. It operates concurrent pipe reads, pipe writes
+and process waits. Predicate parameters match \predref{process_create}{3} but
+with a few minor but key improvements. New \arg{Options} terms offer
+additional enhanced pipe streaming arguments. See
+partially-enumerated list below.
+
+\begin{shortlist}
+    \item \verb$stdin(codes(Codes))$
+    \item \verb$stdin(atom(Atom))$
+    \item \verb$stdin(string(String))$
+    \item \verb$stdout(codes(Codes))$
+    \item \verb$stdout(atom(Atom))$
+    \item \verb$stdout(string(String))$
+    \item \verb$stderr(codes(Codes))$
+    \item \verb$stderr(atom(Atom))$
+    \item \verb$stderr(string(String))$
+    \item \verb$status(Status)$
+\end{shortlist}
+
+If \arg{Options} specifies any of the above terms, \predref{exe}{3} prepares goals to
+write, read and wait concurrently as necessary according to the
+required configuration. This implies that reading standard output
+and waiting for the process status happens at the same time. Same
+goes for writing to standard input. The number of concurrent threads
+therefore exactly matches the number of concurrent process goals.
+This goes for clean-up goals as well. Predicate \predref{concurrent}{3} does
+not allow zero threads however; it throws a \verb$type_error$. The
+implementation always assigns at least one thread which amounts to
+reusing the calling thread non-concurrently.
+
+All the \const{std} terms above can also take a stream options list, so
+can override default encoding on the process pipes. The following
+example illustrates. It sends a friendly "hello" in Mandarin Chinese
+through the Unix \const{tee} command which relays the stream to standard
+output and tees it off to \verb$/dev/stderr$ or standard error for that
+process. Note that \predref{exe}{3} decodes the output and error separately,
+one as an atom but the other as a string.
+
+\begin{code}
+exe(path(tee),
+    [ '/dev/stderr'
+    ],
+    [ stdin(atom(你好, [encoding(utf8)])),
+      stdout(atom(A, [encoding(utf8)])),
+      stderr(string(B, [encoding(utf8)])),
+      status(exit(0))
+    ]).
+\end{code}
+
+\subsection{Implementation Notes}
+
+Important to close the input stream immediately after writing and
+during the call phase. Do \textbf{not} wait for the clean-up phase to close
+the input stream, otherwise the process will never terminate. It
+will hang while waiting for standard input to close, assuming the
+sub-process reads the input.
+
+This leads to a key caveat when using a single concurrent thread. A
+single callee thread executes the primary read-write goals in
+sequential order. The current implementation preserves the \arg{Options}
+ordering. Hence output should always preceed input, i.e. writing to
+standard input should go first before attempting to read from
+standard output. Otherwise the sequence will block indefinitely. For
+this reason, the number of concurrent threads matches the number of
+concurrent goals. This abviates the sequencing of the goals because
+all goals implicitly execute concurrently.
+
+\begin{tags}
+    \tag{To be done}
+Take care when using the \verb$status(Status)$ option unless you have
+\verb$stdin(null)$ on Windows because, for some sub-processes, the goals
+never complete.
+\end{tags}
 \end{description}
 
 \chapter{library(canny/files)}\label{sec:files}
