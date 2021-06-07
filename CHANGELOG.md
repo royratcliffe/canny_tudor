@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.16.0] - 2021-06-07
+## Added
+- `canny_a` module for a_star/3
+
 ## [0.15.0] - 2021-06-06
 ## Added
 - `canny_exe` module

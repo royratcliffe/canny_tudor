@@ -103,6 +103,14 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.16.0] - 2021-06-07}
+
+\section{Added}
+
+\begin{shortlist}
+    \item \verb$canny_a$ module for \predref{a_star}{3}
+\end{shortlist}
+
 \section{[0.15.0] - 2021-06-06}
 
 \section{Added}
@@ -393,6 +401,51 @@ and now, or the time delay between the previous and the current.
 \begin{shortlist}
     \item Initial spike
 \end{shortlist}
+
+\chapter{library(canny/a)}\label{sec:a}
+
+\begin{description}
+    \predicate[det]{a_star}{3}{+Heuristics0, -Heuristics, +Options}
+Offers a static non-Constraint Handling Rules interface to \predref{a_star}{4}.
+Performs a simplified A* search using CHR where the input is a list
+of \textit{all the possible} arcs along with their cost. Each element in
+\arg{Heuristics0} is a \predref{h}{3} term specifying source of the heuristic arc,
+the arc's destination node and the cost of traversing in-between.
+Nodes specify distinct but arbitrary terms. Only terms \const{initial} and
+\const{final} have semantic significance. You can override these using
+\arg{Options} for \const{initially} and \const{finally}. For \arg{Options} see below.
+
+Simplifies the CHR implementation by accepting \predref{h}{3} terms as a list
+rather than using predicates to expand nodes. We match heuristic
+terms using \predref{member}{2} from the list of heuristics. This interface does
+\textbf{not} replace \predref{a_star}{4} since having a pre-loaded list of
+heuristics is not always possible or feasible, for example when the
+number of arcs is very large such as when traversing a grid of arcs.
+
+Here is a simple example.
+
+\begin{code}
+?- a_star([h(a, b, 1)], A, [initially(a), finally(b)]).
+A = [h(a, b, 1)].
+\end{code}
+
+\arg{Options} include:
+
+\begin{itemize}
+    \item \verb$initially(Initial)$ defines the initial node, defaults to
+atom \const{initial}.
+    \item \verb$finally(Final)$ defines the final node, atom \const{final} by default.
+    \item \verb$reverse(Boolean)$ reverses the outgoing selected \arg{Heuristics} so that
+the order reflects the forward order of traverse. The underlying
+expansion pushes path nodes to the head of the list resulting in a
+final-to-initial traversal by default.
+\end{itemize}
+
+\begin{tags}
+    \tag{See also}
+\url{https://rosettacode.org/wiki/A*_search_algorithm}
+\end{tags}
+\end{description}
 
 \chapter{library(canny/arch)}\label{sec:arch}
 
