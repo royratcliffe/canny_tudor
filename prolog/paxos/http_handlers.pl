@@ -80,28 +80,26 @@ B = 200.
 ```
 
 Note that the initial GET fails. It replies with the empty atom since no
-content exists. Empty atom is not valid Prolog-encoding for JSON. Status
-code of 204 indicates no content. The Paxos ledger does not contain data
-for that key.
+content exists. Predicate paxos_get/2 is semi-deterministic; it can
+fail. Empty atom is not valid Prolog-encoding for JSON. Status code of
+204 indicates no content. The Paxos ledger does not contain data for
+that key.
 
 Thereafter, POST writes a string value for the key and a repeated GET
 attempt now answers the new consensus data. Status code 200 indicates a
 successful ledger concensus.
 
----++ How to Reply for Fail
-
-Predicate paxos_get/2 is semi-deterministic; it can fail.
-
 ---++ Serialisation
 
 Serialises unknowns. Paxos ledgers may contain non-JSON compatible data.
 Anything that does not correctly serialise as JSON becomes an atomicly
-rendered Prolog. Take a consensus value of term a(1) for example; GET
-requests see "a(1)" as rendered Prolog string. The ledger comprises
-Prolog terms fundamentally rather than JSON-encoded strings.
+rendered Prolog term. Take a consensus value of term a(1) for example;
+GET requests see "a(1)" as a rendered Prolog string. The ledger
+comprises Prolog terms, fundamentally, rather than JSON-encoded strings.
 
-Setting a Paxos value reads JSON from the POST request. It can be an
-valid JSON value including atomic values as well as objects and arrays.
+Setting a Paxos value reads JSON from the POST request body. It can be
+any valid JSON value including atomic values as well as objects and
+arrays.
 
 */
 
