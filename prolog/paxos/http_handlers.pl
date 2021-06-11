@@ -114,7 +114,8 @@ arrays.
 %   Paxos properties request. The paxos_property/1 predicate answers
 %   terms non-deterministically. Finds all the terms and relies on the
 %   JSON serialiser to convert the node, quorum and failed terms to
-%   correct JSON object key-value pairs.
+%   correct JSON object key-value pairs. The JSON serialiser accepts
+%   one-arity functors as pairs.
 
 properties(_) :-
     findall(Property, paxos_property(Property), Properties),
@@ -125,7 +126,7 @@ properties(_) :-
 %   By design, the GET method reply represents failure as a no-content
 %   status-204 response. This serves to disambiguate between a fail
 %   response and a successful false response. JSON of false is a valid
-%   quorum ledger data value.
+%   quorum ledger data value, as in this example.
 %
 %   ```prolog
 %   ?- http_post('http://localhost:8080/paxos/hello',
@@ -136,6 +137,10 @@ properties(_) :-
 %
 %   The POST method simply replies true or false in JSON when
 %   paxos_set/2 succeeds or fails respectively.
+%
+%   Also note that Paxos gets and sets are **not** instantaneous.
+%   Getting a key's value involves communication with the quorum since
+%   the enquiring node does not necessarily carry the key at first.
 
 key(get, Key, _) :-
     (   paxos_get(Key, Data)
