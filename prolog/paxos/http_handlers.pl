@@ -111,7 +111,7 @@ arrays.
 
 %!  properties(+Request) is semidet.
 %
-%   Paxos properties request. The paxos_property/1 perdicates answers
+%   Paxos properties request. The paxos_property/1 predicate answers
 %   terms non-deterministically. Finds all the terms and relies on the
 %   JSON serialiser to convert the node, quorum and failed terms to
 %   correct JSON object key-value pairs.
