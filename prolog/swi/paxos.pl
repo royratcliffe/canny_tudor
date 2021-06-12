@@ -39,6 +39,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %
 %   Nodes is a list of Paxos consensus nodes who are members of the
 %   quorum. Fails if Paxos not yet initialised.
+%
+%   @arg Nodes is a list of node indices in low-to-high order.
 
 paxos_quorum_nodes(Nodes) :-
     paxos_property(quorum(Quorum)),
