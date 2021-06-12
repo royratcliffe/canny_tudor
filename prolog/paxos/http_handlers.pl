@@ -39,6 +39,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
               reply_json/2,
               http_read_json/2
             ]).
+:- use_module(library(swi/paxos)).
 
 /** <module> Paxos HTTP Handlers
 
@@ -108,6 +109,7 @@ arrays.
                 [ method(Method),
                   methods([get, post])
                 ]).
+:- http_handler(root(paxos/quorum), quorum, []).
 
 %!  properties(+Request) is semidet.
 %
@@ -154,3 +156,9 @@ key(post, Key, Request) :-
     ;   Reply = false
     ),
     reply_json(@(Reply)).
+
+quorum(_) :-
+    paxos_property(node(Node)),
+    paxos_quorum_nodes(Nodes),
+    once(nth1(Nth1, Nodes, Node)),
+    reply_json(json([nodes=Nodes, nth1=Nth1])).
