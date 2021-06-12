@@ -74,17 +74,13 @@ services:
 
 */
 
-:- setting(host, atom,
-           env('PAXOS_UDP_BROADCAST_HOST', '0.0.0.0'),
+:- setting(host, atom, env('PAXOS_UDP_BROADCAST_HOST', '0.0.0.0'),
            'UDP broadcast host for Paxos').
-:- setting(port, nonneg,
-           env('PAXOS_UDP_BROADCAST_PORT', 20005),
+:- setting(port, nonneg, env('PAXOS_UDP_BROADCAST_PORT', 20005),
            'UDP broadcast port for Paxos').
-:- setting(node, integer,
-           env('PAXOS_UDP_BROADCAST_NODE', -1),
+:- setting(node, integer, env('PAXOS_UDP_BROADCAST_NODE', -1),
            'UDP broadcast node for Paxos').
-:- setting(scope, atom,
-           env('PAXOS_UDP_BROADCAST_SCOPE', paxos),
+:- setting(scope, atom, env('PAXOS_UDP_BROADCAST_SCOPE', paxos),
            'UDP broadcast scope for Paxos').
 
 :- multifile paxos:paxos_message_hook/3.
