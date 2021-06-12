@@ -144,18 +144,47 @@ properties(_) :-
 %   Getting a key's value involves communication with the quorum since
 %   the enquiring node does not necessarily carry the key at first.
 
-key(get, Key, _) :-
-    (   paxos_get(Key, Data)
+key(get, Key, Request) :-
+    request_options(Request, Options),
+    (   paxos_get(Key, Data, Options)
     ->  reply_json(Data, [serialize_unknown(true)])
     ;   throw(http_reply(no_content))
     ).
 key(post, Key, Request) :-
     http_read_json(Request, Data),
-    (   paxos_set(Key, Data)
+    request_options(Request, Options),
+    (   paxos_set(Key, Data, Options)
     ->  Reply = true
     ;   Reply = false
     ),
     reply_json(@(Reply)).
+
+%!  request_options(+Request, -Options) is det.
+%
+%   Finds HTTP Request parameters:
+%
+%       * reply(Replies:nonneg)
+%       * timeout(Seconds:number)
+%
+%   Seconds must be in-between one millisecond and 10 seconds. These
+%   arbitrary limits intend to strike a reasonable balance between
+%   resource usages.
+
+request_options(Request, Options) :-
+    findall(Option, request_option(Request, Option), Options).
+
+request_option(Request, retry(Retries)) :-
+    http_parameters(Request,
+                    [retry(Retries, [nonneg, optional(true)])]),
+    nonvar(Retries).
+request_option(Request, timeout(Seconds)) :-
+    http_parameters(Request,
+                    [ timeout(Seconds,
+                              [ between(0.001, 10),
+                                optional(true)
+                              ])
+                    ]),
+    nonvar(Seconds).
 
 quorum(_) :-
     paxos_property(node(Node)),
