@@ -88,7 +88,7 @@ services:
 paxos:paxos_message_hook(A, -, udp(Scope, A)) :- !, setting(scope, Scope).
 paxos:paxos_message_hook(A, B, udp(Scope, A, B)) :- setting(scope, Scope).
 
-:- initialization
+initialize :-
     setting(host, Host),
     setting(port, Port),
     setting(scope, Scope),
