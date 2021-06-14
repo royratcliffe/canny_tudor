@@ -27,7 +27,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-:- module(paxos_udp_broadcast, []).
+:- module(paxos_udp_broadcast,
+          [ paxos_udp_broadcast_initialise/0
+          ]).
 :- autoload(library(paxos), [paxos_initialize/1]).
 :- autoload(library(udp_broadcast), [udp_broadcast_initialize/2]).
 :- autoload(library(socket), [tcp_host_to_address/2]).
@@ -88,7 +90,7 @@ services:
 paxos:paxos_message_hook(A, -, udp(Scope, A)) :- !, setting(scope, Scope).
 paxos:paxos_message_hook(A, B, udp(Scope, A, B)) :- setting(scope, Scope).
 
-initialize :-
+paxos_udp_broadcast_initialise :-
     setting(host, Host),
     setting(port, Port),
     setting(scope, Scope),
