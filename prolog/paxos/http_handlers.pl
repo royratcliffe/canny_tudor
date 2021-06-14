@@ -30,8 +30,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- module(paxos_http_handlers, []).
 :- autoload(library(paxos),
             [ paxos_property/1,
-              paxos_get/2,
-              paxos_set/2
+              paxos_get/3,
+              paxos_set/3
             ]).
 :- autoload(library(http/http_dispatch), [http_handler/3]).
 :- autoload(library(http/http_json),
@@ -39,6 +39,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
               reply_json/2,
               http_read_json/2
             ]).
+:- autoload(library(http/http_parameters), [http_parameters/2]).
+:- autoload(library(lists), [nth1/3]).
 :- use_module(library(swi/paxos)).
 
 /** <module> Paxos HTTP Handlers
