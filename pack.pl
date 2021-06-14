@@ -1,5 +1,5 @@
 name(canny_tudor).
-version('0.16.2').
+version('0.16.3').
 title('Canny bag o'' Tudor').
 
 author('Roy Ratcliffe', 'royratcliffe@me.com').
