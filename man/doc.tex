@@ -103,6 +103,14 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.17.0] - 2021-06-15}
+
+\section{Added}
+
+\begin{shortlist}
+    \item \verb$paxos_udp_broadcast$ module for Paxos over UDP broadcast
+\end{shortlist}
+
 \section{[0.16.0] - 2021-06-07}
 
 \section{Added}
@@ -1475,6 +1483,106 @@ applocal
 localprograms
 \end{code}
 
+\vspace{0.7cm}\chapter{library(paxos/http_handlers): Paxos HTTP Handlers}\label{sec:httphandlers}
+
+These handlers spool up a JSON-based HTTP interface to the Paxos
+predicates, namely
+
+\begin{itemize}
+    \item \predref{paxos_property}{1} as JSON object on GET at /paxos/properties,
+    \item \predref{paxos_get}{2} as arbitrary JSON on GET at /paxos/Key and
+    \item \predref{paxos_set}{2} as arbitrary JSON on POST at /paxos/Key
+\end{itemize}
+
+Take the example below. Uses \predref{http_server}{1} to start a HTTP server
+on some given port.
+
+\begin{code}
+?- [library(http/http_server), library(http/http_client)].
+true.
+
+?- http_server([port(8080)]).
+% Started server at http://localhost:8080/
+true.
+
+?- http_get('http://localhost:8080/paxos/properties', A, []).
+A = json([node=0, quorum=1, failed=0]).
+\end{code}
+
+Getting and setting using JSON encoding works as follows.
+
+\begin{code}
+?- http_get('http://localhost:8080/paxos/hello', A, [status_code(B)]).
+A = '',
+B = 204.
+
+?- http_post('http://localhost:8080/paxos/hello', json(world), A, []).
+A = @true.
+
+?- http_get('http://localhost:8080/paxos/hello', A, [status_code(B)]).
+A = world,
+B = 200.
+\end{code}
+
+Note that the initial GET fails. It replies with the empty atom since no
+content exists. Predicate \predref{paxos_get}{2} is semi-deterministic; it can
+fail. Empty atom is not valid Prolog-encoding for JSON. Status code of
+204 indicates no content. The Paxos ledger does not contain data for
+that key.
+
+Thereafter, POST writes a string value for the key and a repeated GET
+attempt now answers the new consensus data. Status code 200 indicates a
+successful ledger concensus.
+
+\section{Serialisation}
+
+Serialises unknowns. Paxos ledgers may contain non-JSON compatible data.
+Anything that does not correctly serialise as JSON becomes an atomicly
+rendered Prolog term. Take a consensus value of term \verb$a(1)$ for example;
+GET requests see "\verb$a(1)$" as a rendered Prolog string. The ledger
+comprises Prolog terms, fundamentally, rather than JSON-encoded strings.
+
+Setting a Paxos value reads JSON from the POST request body. It can be
+any valid JSON value including atomic values as well as objects and
+arrays.\vspace{0.7cm}\chapter{library(paxos/udp_broadcast): Paxos on UDP}\label{sec:udpbroadcast}
+
+Sets up Paxos over UDP broadcast on port 20005. Hooks up Paxos messaging
+to UDP broadcast bridging using the \const{paxos} scope.
+
+Initialisation order affects success. First initialises UDP
+broadcasting then initialises Paxos. The result is two additional
+threads: the UDP inbound proxy and the Paxos replicator.
+
+You can override the UDP host, port and broadcast scope. Load settings
+first if you want to override using file-based settings. Back-up
+defaults derive from the environment and finally fall on hard-wired
+values of 0.0.0.0, port 20005 via \const{paxos} scope. You can also override
+the automatic Paxos node ordinal; it defaults to -1 meaning automatic
+discovering of unique node number. Numbers start at 0 and increase by
+one, translating to binary power indices for the quorum bit mask.
+
+Note that environment defaults require upper-case variable names for
+Linux. Variable names match case-sensitively on Unix platforms.
+
+\section{Docker Stack}
+
+For Docker in production mode, your nodes want to interact using the UDP
+broadcast port. This port is not automatically available unless you
+publish it. See example snippet below. The \const{ports} setting lists port
+20005 for UDP broadcasts across the stack.
+
+\begin{code}
+version: "3"
+
+services:
+
+  my-service:
+    image: my/image
+    ports:
+      - 20005:20005/udp
+      - 8080:8080/tcp
+\end{code}
+
 \vspace{0.7cm}\chapter{library(print/(table))}\label{sec:table}
 
 \begin{description}
@@ -1897,6 +2005,23 @@ select. This clashes with \predref{select_option}{4}'s naming convention since
 \arg{Options} is the argument name for \arg{RestOptions0}'s role in the
 option-selection process. Nevertheless, this version follows this
 renamed argument convention.
+\end{description}
+
+\chapter{library(swi/paxos)}\label{sec:paxos}
+
+\begin{description}
+    \predicate[semidet]{paxos_quorum_nodes}{1}{-Nodes:list(nonneg)}
+\arg{Nodes} is a list of Paxos consensus nodes who are members of the
+quorum. Fails if Paxos not yet initialised.
+
+\begin{arguments}
+\arg{Nodes} & is a list of node indices in low-to-high order. \\
+\end{arguments}
+
+    \predicate[semidet]{paxos_quorum_nth1}{1}{?Nth1:nonneg}
+Unifies \arg{Nth1} with the \textit{order} of this node within the quorum.
+Answers 1 if this node comes first in the known quorum of
+consensus nodes, for example.
 \end{description}
 
 \chapter{library(swi/pengines)}\label{sec:pengines}
