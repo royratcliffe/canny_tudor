@@ -27,8 +27,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(swi_settings,
-          [ local_settings_file/1               % -LocalFile:atom
+          [ local_settings_file/1,              % -LocalFile:atom
+            setting/3                           % :Name,?Value,:Goal
           ]).
+:- meta_predicate setting(:, ?, :).
 :- ensure_loaded(library(settings)).
 
 %!  local_settings_file(-LocalFile:atom) is semidet.
@@ -44,3 +46,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   utilised by the next save_settings/1 predicate call.
 
 local_settings_file(LocalFile) :- once(settings:local_file(LocalFile)).
+
+%!  setting(:Name, ?Value, :Goal) is semidet.
+%
+%   Semi-deterministic version of setting/2. Succeeds only if Value
+%   succeeds for Goal; fails otherwise. Calls Goal with Value.
+%
+%   Take the following example where you only want the setting
+%   predicate to succeed when it does _not_ match the empty atom.
+%
+%       setting(http:public_host, A, \==(''))
+
+setting(Name, Value, Goal) :- setting(Name, Value), call(Goal, Value).
