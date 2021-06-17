@@ -21,6 +21,11 @@ frld(A) :- frld(A, A).
 test(frexp_ldexp) :- frld(1.1).
 test(frexp_ldexp) :- frld(123.123).
 
-test(frexp, [true(A-B==1.0Inf-0)]) :- frexp(1.0Inf, A, B).
+test(frexp, [true(A-B==C)]) :-
+    frexp(1.0Inf, A, B),
+    (   current_os(win64)
+    ->  C = 1.5NaN- -1
+    ;   C = 1.0Inf-0
+    ).
 
 :- end_tests(canny_maths).
