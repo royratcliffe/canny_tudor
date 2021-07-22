@@ -4,7 +4,7 @@
     Purpose: SWI Zip Files
 */
 
-:- module(zip,
+:- module(swi_zip,
           [ zip_file_info/4,                     % +File,-Name,-Attrs,-Zipper
             zipper_codes/3                       % +Zipper,-Codes,+Options
           ]).
