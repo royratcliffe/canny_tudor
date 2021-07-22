@@ -37,7 +37,7 @@ file_info(Zipper, Name, Attrs) :-
 
 %!  zipper_codes(+Zipper, -Codes, +Options) is semidet.
 %
-%   Reads the current Zipper file as codes. Options may be:
+%   Reads the current Zipper file as Codes. Options may be:
 %
 %       - encoding(utf8) for UTF-8 encoded text, or
 %       - type(binary) for binary octets, and so on.
