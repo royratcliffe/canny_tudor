@@ -1,4 +1,4 @@
-/*  File:    settings.pl
+/*  File:    swi/settings.pl
     Author:  Roy Ratcliffe
     Created: Jun 15 2021
     Purpose: SWI Settings
