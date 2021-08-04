@@ -3,6 +3,11 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.18.0] - 2021-08-04
+## Added
+- swi_settings module
+- swi_zip module
+
 ## [0.17.0] - 2021-06-15
 ## Added
 - `paxos_udp_broadcast` module for Paxos over UDP broadcast
