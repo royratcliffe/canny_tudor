@@ -103,6 +103,15 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.18.0] - 2021-08-04}
+
+\section{Added}
+
+\begin{shortlist}
+    \item \verb$swi_settings$ module
+    \item \verb$swi_zip$ module
+\end{shortlist}
+
 \section{[0.17.0] - 2021-06-15}
 
 \section{Added}
@@ -2071,12 +2080,64 @@ module. It accesses the dynamic and volatile predicates
 \predref{current_pengine}{6} and \predref{child}{2}. The latter is thread local.
 \end{description}
 
+\chapter{library(swi/settings)}\label{sec:settings}
+
+\begin{description}
+    \predicate[semidet]{local_settings_file}{1}{-LocalFile:atom}
+Breaks the module interface by asking for the current local settings
+file from the settings module. The \predref{local_file}{1} dynamic predicate
+retains the path of the current local file based on loading. Loading
+a new settings file using \predref{load_settings}{1} pushes a \textbf{new} local
+file without replacing the old one, so that the next \predref{save_settings}{0}
+keeps saving to the original file.
+
+\begin{arguments}
+\arg{LocalFile} & is the absolute path of the local settings file to be
+utilised by the next \predref{save_settings}{1} predicate call. \\
+\end{arguments}
+
+    \predicate[semidet]{setting}{3}{:Name, ?Value, :Goal}
+Semi-deterministic version of \predref{setting}{2}. Succeeds only if \arg{Value}
+succeeds for \arg{Goal}; fails otherwise. Calls \arg{Goal} with \arg{Value}.
+
+Take the following example where you only want the setting
+predicate to succeed when it does \textit{not} match the empty atom.
+
+\begin{code}
+setting(http:public_host, A, \==(''))
+\end{code}
+
+\end{description}
+
 \chapter{library(swi/streams)}\label{sec:streams}
 
 \begin{description}
     \predicate[det]{close_streams}{2}{+Streams:list, -Catchers:list}
 Closes zero or more \arg{Streams} while accumulating any exceptions at
 \arg{Catchers}.
+\end{description}
+
+\chapter{library(swi/zip)}\label{sec:zip}
+
+\begin{description}
+    \predicate[nondet]{zip_file_info}{4}{+File, -Name, -Attrs, -Zipper}
+Non-deterministically walks through the members of a zip \arg{File},
+moving the \arg{Zipper} current member. It does \textit{not} read the contents of
+the zip members, by design. You can use the \arg{Name} argument to select
+a member or members before reading.
+
+\begin{arguments}
+\arg{Zipper} & unifies with the open \arg{Zipper} for reading using
+\predref{zipper_codes}{3} or \predref{zipper_open_current}{3}. \\
+\end{arguments}
+
+    \predicate[semidet]{zipper_codes}{3}{+Zipper, -Codes, +Options}
+Reads the current \arg{Zipper} file as \arg{Codes}. \arg{Options} may be:
+
+\begin{shortlist}
+    \item \verb$encoding(utf8)$ for UTF-8 encoded text, or
+    \item \verb$type(binary)$ for binary octets, and so on.
+\end{shortlist}
 \end{description}
 
 \chapter{library(with/output)}\label{sec:output}
