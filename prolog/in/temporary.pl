@@ -30,6 +30,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           [ ask_in_temporary/3                  % +Codes,-Heads,+Options
           ]).
 :- autoload(library(modules), [in_temporary_module/3]).
+:- autoload(library(charsio), [open_chars_stream/2]).
+:- autoload(library(sandbox), [safe_call/1]).
 
 %!  ask_in_temporary(+Codes, -Heads, +Options) is det.
 %
@@ -55,5 +57,5 @@ ask_in_temporary(Codes, Heads, Options) :-
             load_files(M:M, [stream(Stream), module(M)|Options]),
             close(Stream)
         ),
-        bagof(H, predicate_property(M:H, public) -> M:H, Heads)
+        findall(H, predicate_property(M:H, public) -> safe_call(M:H), Heads)
     ).
