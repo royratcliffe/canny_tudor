@@ -1,4 +1,4 @@
-/*  File:    memfilesio.pl
+/*  File:    swi/memfilesio.pl
     Author:  Roy Ratcliffe
     Created: Feb 26 2022
     Purpose: I/O on Memory Files
@@ -26,7 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-:- module(memfilesio,
+:- module(swi_memfilesio,
           [ with_output_to_memory_file/3,       % :Goal,+MemoryFile,+Options
             memory_file_bytes/2,                % ?MemoryFile,?Bytes:list
             put_bytes/1                         % +Bytes:list
