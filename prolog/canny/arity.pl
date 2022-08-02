@@ -22,6 +22,6 @@ arities_((Arity0, Arity), [Arity0, Arity]) :-
     integer(Arity),
     !.
 arities_(Arities0, [H|T]) :-
-    Arities0 =.. [(,), H, T0],
+    Arities0 =.. [',', H, T0],
     integer(H),
     arities_(T0, T).
