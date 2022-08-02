@@ -1,4 +1,4 @@
-:- begin_tests(memfilesio).
+:- begin_tests(swi_memfilesio).
 :- use_module(memfilesio).
 
 test(with_io_error,
@@ -32,3 +32,4 @@ test(same_memory_file, fail) :-
     memory_file_bytes(B, []),
     same_memory_file(A, B).
 
+:- end_tests(swi_memfilesio).
