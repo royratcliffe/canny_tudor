@@ -23,4 +23,12 @@ test(memory_file_bytes, [true(Bytes == [1, 2, 3])]) :-
     memory_file_bytes(MemoryFile, [1, 2, 3]),
     memory_file_bytes(MemoryFile, Bytes).
 
-:- end_tests(memfilesio).
+test(same_memory_file) :-
+    memory_file_bytes(A, []),
+    memory_file_bytes(B, []),
+    same_memory_file(A, B).
+test(same_memory_file, fail) :-
+    memory_file_bytes(A, [0]),
+    memory_file_bytes(B, []),
+    same_memory_file(A, B).
+

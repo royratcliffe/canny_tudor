@@ -29,7 +29,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- module(swi_memfilesio,
           [ with_output_to_memory_file/3,       % :Goal,+MemoryFile,+Options
             memory_file_bytes/2,                % ?MemoryFile,?Bytes:list
-            put_bytes/1                         % +Bytes:list
+            put_bytes/1,                        % +Bytes:list
+            same_memory_file/2                  % +MemoryFile1,+MemoryFile2
           ]).
 :- meta_predicate
     with_output_to_memory_file(0, +, +).
@@ -90,3 +91,28 @@ memory_file_bytes(MemoryFile, Bytes) =>
 
 put_bytes([]) => true.
 put_bytes([Byte|Bytes]) => put_byte(Byte), put_bytes(Bytes).
+
+%!  same_memory_file(+MemoryFile1, +MemoryFile2) is semidet.
+%
+%   Succeeds if, and only if, two memory files compare equal by
+%   content. Comparison operates byte-by-byte and so ignores any
+%   underlying encoding.
+
+same_memory_file(MemoryFile1, MemoryFile2) :-
+    setup_call_cleanup(
+        open_memory_file(MemoryFile1, read, In1, [encoding(octet)]),
+        setup_call_cleanup(
+            open_memory_file(MemoryFile2, read, In2, [encoding(octet)]),
+            same_bytes(In1, In2),
+            close(In2)
+        ),
+        close(In1)
+    ).
+
+same_bytes(In1, In2) :-
+    get_byte(In1, Byte),
+    get_byte(In2, Byte),
+    (   Byte == -1
+    ->  true
+    ;   same_bytes(In1, In2)
+    ).
