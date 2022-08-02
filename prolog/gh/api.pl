@@ -6,6 +6,7 @@
 :- autoload(library(url), [parse_url/2]).
 :- autoload(library(http/http_client), [http_get/3]).
 :- use_module(library(settings), [setting/4, setting/2]).
+:- ensure_loaded(library(http/http_json)).
 
 /** <module> GitHub API
  *
