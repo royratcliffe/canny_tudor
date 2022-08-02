@@ -4,58 +4,58 @@ Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.18.0] - 2021-08-04
-## Added
+### Added
 - `swi_settings` module
 - `swi_zip` module
 
 ## [0.17.0] - 2021-06-15
-## Added
+### Added
 - `paxos_udp_broadcast` module for Paxos over UDP broadcast
 
 ## [0.16.0] - 2021-06-07
-## Added
+### Added
 - `canny_a` module for a_star/3
 
 ## [0.15.0] - 2021-06-06
-## Added
+### Added
 - `canny_exe` module
 
 ## [0.14.0] - 2021-05-05
-## Added
+### Added
 - Continuous Integration using GitHub Actions
 - Test coverage shields
 - Prototype for GitHub API
-## Fixed
+### Fixed
 - Patches for test coverage
 
 ## [0.13.0] - 2021-04-12
-## Added
+### Added
 - loadavg//5 and loadavg/5 predicates
 - current_arch/1, current_arch_os/2 and current_os/1 predicates
 
 ## [0.12.0] - 2021-03-13
-## Added
+### Added
 - pop_lsbs/2 predicate
 
 ## [0.11.0] - 2021-02-18
-## Added
+### Added
 - columns_to_rows/2 predicate
 
 ## [0.10.0] - 2021-02-15
-## Added
+### Added
 - select_options/4 predicate
 - comb2/2 predicate
 
 ## [0.9.0] - 2020-12-30
-## Added
+### Added
 - pairs/2 predicate
-## Changed
+### Changed
 - indexed_pairs/2 renamed to indexed/2
-## Fixed
+### Fixed
 - pengine_collect/4 filters using pengine_property(Id, self(Id))
 
 ## [0.8.3] - 2020-10-17
-## Added
+### Added
 - `canny_files` module
 - Refactored latex_for_pack/3
 - pengine_collect/2, pengine_collect/4 and pengine_wait/1 (swi_pengines module)
@@ -63,12 +63,12 @@ log](https://keepachangelog.com/en/1.0.0/).
 - prefix_atom_suffix/4
 
 ## [0.8.2] - 2020-09-09
-## Added
+### Added
 - `canny_arity` module
 - payload/1, apply_to/1 and property_of/1 for canny_payloads
 
 ## [0.8.1] - 2020-09-04
-## Fixed
+### Fixed
 - Maths predicate remainder/3 to frem/3; avoids clash with remainder//1
 - LaTeX manual; omits undocumented modules
 
