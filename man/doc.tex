@@ -103,9 +103,17 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.19.0] - 2022-08-03}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item \verb$swi_memfilesio$ module
+\end{shortlist}
+
 \section{[0.18.0] - 2021-08-04}
 
-\section{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \verb$swi_settings$ module
@@ -114,7 +122,7 @@ log}.
 
 \section{[0.17.0] - 2021-06-15}
 
-\section{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \verb$paxos_udp_broadcast$ module for Paxos over UDP broadcast
@@ -122,7 +130,7 @@ log}.
 
 \section{[0.16.0] - 2021-06-07}
 
-\section{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \verb$canny_a$ module for \predref{a_star}{3}
@@ -130,7 +138,7 @@ log}.
 
 \section{[0.15.0] - 2021-06-06}
 
-\section{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \verb$canny_exe$ module
@@ -138,7 +146,7 @@ log}.
 
 \section{[0.14.0] - 2021-05-05}
 
-\section{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item Continuous Integration using GitHub Actions
@@ -146,7 +154,7 @@ log}.
     \item Prototype for GitHub API
 \end{shortlist}
 
-\section{Fixed}
+\subsection{Fixed}
 
 \begin{shortlist}
     \item Patches for test coverage
@@ -154,7 +162,7 @@ log}.
 
 \section{[0.13.0] - 2021-04-12}
 
-\section{Added}
+\subsection{Added}
 
 \begin{itemize}
     \item \dcgref{loadavg}{5} and \predref{loadavg}{5} predicates
@@ -163,7 +171,7 @@ log}.
 
 \section{[0.12.0] - 2021-03-13}
 
-\section{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \predref{pop_lsbs}{2} predicate
@@ -171,7 +179,7 @@ log}.
 
 \section{[0.11.0] - 2021-02-18}
 
-\section{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \predref{columns_to_rows}{2} predicate
@@ -179,7 +187,7 @@ log}.
 
 \section{[0.10.0] - 2021-02-15}
 
-\section{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \predref{select_options}{4} predicate
@@ -188,19 +196,19 @@ log}.
 
 \section{[0.9.0] - 2020-12-30}
 
-\section{Added}
+\subsection{Added}
 
 \begin{shortlist}
     \item \predref{pairs}{2} predicate
 \end{shortlist}
 
-\section{Changed}
+\subsection{Changed}
 
 \begin{shortlist}
     \item \predref{indexed_pairs}{2} renamed to \predref{indexed}{2}
 \end{shortlist}
 
-\section{Fixed}
+\subsection{Fixed}
 
 \begin{shortlist}
     \item \predref{pengine_collect}{4} filters using \verb$pengine_property(Id, self(Id))$
@@ -208,7 +216,7 @@ log}.
 
 \section{[0.8.3] - 2020-10-17}
 
-\section{Added}
+\subsection{Added}
 
 \begin{itemize}
     \item \verb$canny_files$ module
@@ -220,7 +228,7 @@ log}.
 
 \section{[0.8.2] - 2020-09-09}
 
-\section{Added}
+\subsection{Added}
 
 \begin{itemize}
     \item \verb$canny_arity$ module
@@ -229,7 +237,7 @@ log}.
 
 \section{[0.8.1] - 2020-09-04}
 
-\section{Fixed}
+\subsection{Fixed}
 
 \begin{itemize}
     \item Maths predicate \predref{remainder}{3} to \predref{frem}{3}; avoids clash with \dcgref{remainder}{1}
@@ -1988,6 +1996,51 @@ otherwise.
     \tag{See also}
 \url{http://kti.ms.mff.cuni.cz/~bartak/prolog/combinatorics.html}
 \end{tags}
+\end{description}
+
+\chapter{library(swi/memfilesio): I/O on Memory Files}\label{sec:memfilesio}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+\end{tags}
+
+\section{Bytes and octets}
+
+Both terms apply herein. Variable names reflect the subtle
+but essential distinction. All octets are bytes but not all bytes are
+octets. Byte is merely eight bits, nothing more implied, whereas octet
+implies important inter-byte ordering according to some big- or
+little-endian convention.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{with_output_to_memory_file}{3}{:Goal, +MemoryFile, +Options}
+Opens \arg{MemoryFile} for writing. Calls \arg{Goal} using \predref{once}{1}, writing to
+\verb$current_output$ collected in \arg{MemoryFile} according to the encoding
+within \arg{Options}. Defaults to UTF-8 encoding.
+
+    \predicate[det]{memory_file_bytes}{2}{?MemoryFile, ?Bytes:list}
+Unifies \arg{MemoryFile} with \arg{Bytes}.
+
+    \predicate[det]{put_bytes}{1}{+Bytes:list}
+Puts zero or more \arg{Bytes} to current output.
+
+A good reason exists for \textit{putting bytes} rather than writing codes.
+The \predref{put_byte}{1} predicate throws with permission error when writing
+to a text stream. \arg{Bytes} are \textbf{not} Unicode text; they have an
+entirely different ontology.
+
+\begin{tags}
+    \tag{See also}
+Character representation manual section
+at \url{https://www.swi-prolog.org/pldoc/man?section=chars} for more
+details about the difference between codes, characters and bytes.
+\end{tags}
+
+    \predicate[semidet]{same_memory_file}{2}{+MemoryFile1, +MemoryFile2}
+Succeeds if, and only if, two memory files compare equal by
+content. Comparison operates byte-by-byte and so ignores any
+underlying encoding.
 \end{description}
 
 \chapter{library(swi/options)}\label{sec:options}
