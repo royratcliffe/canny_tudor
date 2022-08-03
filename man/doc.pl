@@ -1,3 +1,7 @@
+:- if(\+ prolog_pack:current_pack(canny_tudor)).
+:- attach_packs(../..).
+:- endif.
+
 :- use_module(library(doc/latex)).
 
 :- set_prolog_flag(encoding, utf8).
