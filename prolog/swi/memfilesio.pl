@@ -40,7 +40,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /** <module> I/O on Memory Files
 
-== Bytes and octets
+## Bytes and octets
 
 Both terms apply herein. Variable names reflect the subtle
 but essential distinction. All octets are bytes but not all bytes are
