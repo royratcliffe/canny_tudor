@@ -1,16 +1,4 @@
-:- if(\+ prolog_pack:current_pack(canny_tudor)).
-:- attach_packs(../..).
-:- endif.
-
-:- use_module(library(doc/latex)).
-
 :- set_prolog_flag(encoding, utf8).
-
-:- initialization doc.
-
-doc :- latex_for_pack(., 'doc.tex', [ stand_alone(false),
-                                      section_level(chapter)
-                                    ]).
 
 :- multifile user:file_search_path/2.
 
@@ -20,3 +8,11 @@ doc :- latex_for_pack(., 'doc.tex', [ stand_alone(false),
 %   Assumes that the current working directory is the *man* folder.
 
 user:file_search_path(library, '../prolog').
+
+:- use_module(library(doc/latex)).
+
+:- initialization doc.
+
+doc :- latex_for_pack(., 'doc.tex', [ stand_alone(false),
+                                      section_level(chapter)
+                                    ]).
