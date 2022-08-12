@@ -103,6 +103,14 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.20.0] - 2022-08-12}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item \verb$canny_z$ module
+\end{shortlist}
+
 \section{[0.19.1] - 2022-08-12}
 
 \subsection{Fixed}
@@ -992,6 +1000,28 @@ history lengths. Uses \verb$=$ when sorting; do not remove duplicates.
 Prints a table of situations by their history length, longest
 history comes first. Filters out single-element histories for the
 sake of noise minimisation.
+\end{description}
+
+\chapter{library(canny/z)}\label{sec:z}
+
+\begin{description}
+    \predicate[semidet]{enz}{2}{+Data:list, +File}
+Zips \arg{Data} to \arg{File}. Writes \verb$zip(Name:atom, Info:dict, MemFile:memory_file)$ functor triples to \arg{File} where \arg{Name} is the
+key; \arg{MemFile} is the content as a memory file. Converts the \arg{Info}
+dictionary to new-member options when building up the zipper.
+Ignores any non-valid key pairs, including offset plus compressed
+and uncompressed sizes.
+
+The implementation \textit{asserts} octet encoding for new files with a
+zipper. The predicate for creating a zipper member does \textbf{not} allow
+for an encoding option. It encodes as binary by default.
+
+    \predicate[semidet]{unz}{2}{+File, -Data:list}
+Unzips \arg{File} to \arg{Data}, a list of \const{zip} functors with \arg{Name} atom,
+\arg{Info} dictionary and \arg{MemFile} content arguments.
+
+You cannot apply \predref{unz}{2} to an empty zip \arg{File}. A bug crashes the
+entire Prolog run-time virtual machine.
 \end{description}
 
 \chapter{library(data/frame)}\label{sec:frame}

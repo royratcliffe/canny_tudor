@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.20.0] - 2022-08-12
+### Added
+- `canny_z` module
+
 ## [0.19.1] - 2022-08-12
 ### Fixed
 - Link to PDF on main branch after switch to simpler GitHub Flow
