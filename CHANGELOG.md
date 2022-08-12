@@ -3,6 +3,11 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.19.1] - 2022-08-12
+### Fixed
+- Link to PDF on main branch after switch to simpler GitHub Flow
+- Also switch to [Bookman-oriented `tgbonum` font pack](https://www.overleaf.com/learn/latex/Font_typefaces)
+
 ## [0.19.0] - 2022-08-03
 ### Added
 - `swi_memfilesio` module
