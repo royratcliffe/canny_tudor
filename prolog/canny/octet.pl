@@ -35,6 +35,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   Unifies integral eight-bit Octet with a list of Value:Width terms
 %   where the Width integers sum to eight and the Value terms unify with
 %   the shifted bit values encoded within the eight-bit byte.
+%
+%   @arg Octet an eight-bit byte by another name.
+%
+%   @arg Fields colon-separated value-width terms. The shifted value of
+%   the bits comes first before the colon followed by its integer bit
+%   width. The list of terms _specify_ an octet by sub-spans of bits, or
+%   bit _fields_.
 
 octet_bits(Octet, Fields) :-
     var(Octet),
