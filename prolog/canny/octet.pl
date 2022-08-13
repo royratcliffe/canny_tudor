@@ -27,30 +27,30 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_octet,
-          [ octet_bits/2 % ?Octet:integer,?ValuesAndWidths:list
+          [ octet_bits/2                % ?Octet:integer,?Fields:list
           ]).
 
-%!  octet_bits(?Octet:integer, ?ValuesAndWidths:list) is semidet.
+%!  octet_bits(?Octet:integer, ?Fields:list) is semidet.
 %
 %   Unifies integral eight-bit Octet with a list of Value:Width terms
 %   where the Width integers sum to eight and the Value terms unify with
 %   the shifted bit values encoded within the eight-bit byte.
 
-octet_bits(Octet, ValuesAndWidths) :-
+octet_bits(Octet, Fields) :-
     var(Octet),
     !,
-    bits(ValuesAndWidths, 8, 0, Octet).
-octet_bits(Octet, ValuesAndWidths) :-
-    bits(ValuesAndWidths, 8, Octet).
+    octet_bits(Fields, 8, 0, Octet).
+octet_bits(Octet, Fields) :-
+    octet_bits(Fields, 8, Octet).
 
-bits([], 0, _Octet).
-bits([Value:Width|T], Shift, Octet) :-
+octet_bits([], 0, _Octet).
+octet_bits([Value:Width|T], Shift, Octet) :-
     Shift_ is Shift - Width,
     Value is (Octet >> Shift_) /\ ((1 << Width) - 1),
-    bits(T, Shift_, Octet).
+    octet_bits(T, Shift_, Octet).
 
-bits([], 0, Octet, Octet).
-bits([Value:Width|T], Shift, Octet0, Octet) :-
+octet_bits([], 0, Octet, Octet).
+octet_bits([Value:Width|T], Shift, Octet0, Octet) :-
     Shift_ is Shift - Width,
     Octet_ is Octet0 \/ ((Value /\ ((1 << Width) - 1)) << Shift_),
-    bits(T, Shift_, Octet_, Octet).
+    octet_bits(T, Shift_, Octet_, Octet).
