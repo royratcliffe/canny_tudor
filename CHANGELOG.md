@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.21.0] - 2022-08-13
+### Added
+- `canny_octet` module
+
 ## [0.20.0] - 2022-08-12
 ### Added
 - `canny_z` module
