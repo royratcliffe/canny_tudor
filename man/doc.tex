@@ -103,6 +103,14 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.21.0] - 2022-08-13}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item \verb$canny_octet$ module
+\end{shortlist}
+
 \section{[0.20.0] - 2022-08-12}
 
 \subsection{Added}
@@ -759,6 +767,23 @@ Uses an unusual argument order. Ordering aligns \arg{X}, \arg{Y} and \arg{Exp} w
 \arg{X} & is some floating-point value. \\
 \arg{Y} & is \arg{X} times 2 to the power \arg{Exp}. \\
 \arg{Exp} & is the exponent, typically an integer. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(canny/octet)}\label{sec:octet}
+
+\begin{description}
+    \predicate[semidet]{octet_bits}{2}{?Octet:integer, ?Fields:list}
+Unifies integral eight-bit \arg{Octet} with a list of Value:Width terms
+where the Width integers sum to eight and the Value terms unify with
+the shifted bit values encoded within the eight-bit byte.
+
+\begin{arguments}
+\arg{Octet} & an eight-bit byte by another name. \\
+\arg{Fields} & colon-separated value-width terms. The shifted value of
+the bits comes first before the colon followed by its integer bit
+width. The list of terms \textit{specify} an octet by sub-spans of bits, or
+bit \textit{fields}. \\
 \end{arguments}
 \end{description}
 
