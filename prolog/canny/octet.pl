@@ -31,6 +31,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           ]).
 
 %!  octet_bits(?Octet:integer, ?ValuesAndWidths:list) is semidet.
+%
+%   Unifies integral eight-bit Octet with a list of Value:Width terms
+%   where the Width integers sum to eight and the Value terms unify with
+%   the shifted bit values encoded within the eight-bit byte.
 
 octet_bits(Octet, ValuesAndWidths) :-
     var(Octet),
