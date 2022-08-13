@@ -26,7 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-:- module(octet,
+:- module(canny_octet,
           [ octet_bits/2 % ?Octet:integer,?ValuesAndWidths:list
           ]).
 
