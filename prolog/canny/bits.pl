@@ -37,6 +37,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- use_module(library(clpfd)).
 
 %!  bits(+Shift, +Width, ?Word, ?Bits, ?Rest) is semidet.
+%!  bits(+ShiftWidthPair, ?Word, ?Bits, ?Rest) is semidet.
+%!  bits(+ShiftWidthPair, ?Word, ?Bits) is semidet.
 %
 %   Unifies Bits within a Word using Shift  and Width. All arguments are
 %   integers treated as words of arbitrary bit-width.
