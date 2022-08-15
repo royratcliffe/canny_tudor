@@ -29,6 +29,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- module(canny_octet,
           [ octet_bits/2                % ?Octet:integer,?Fields:list
           ]).
+:- use_module(bits).
 
 %!  octet_bits(?Octet:integer, ?Fields:list) is semidet.
 %
@@ -46,18 +47,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 octet_bits(Octet, Fields) :-
     var(Octet),
     !,
-    octet_bits(Fields, 8, 0, Octet).
+    bit_fields(Fields, 8, 0, Octet).
 octet_bits(Octet, Fields) :-
-    octet_bits(Fields, 8, Octet).
-
-octet_bits([], 0, _Octet).
-octet_bits([Value:Width|T], Shift, Octet) :-
-    Shift_ is Shift - Width,
-    Value is (Octet >> Shift_) /\ ((1 << Width) - 1),
-    octet_bits(T, Shift_, Octet).
-
-octet_bits([], 0, Octet, Octet).
-octet_bits([Value:Width|T], Shift, Octet0, Octet) :-
-    Shift_ is Shift - Width,
-    Octet_ is Octet0 \/ ((Value /\ ((1 << Width) - 1)) << Shift_),
-    octet_bits(T, Shift_, Octet_, Octet).
+    bit_fields(Fields, 8, Octet).
