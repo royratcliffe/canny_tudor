@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.21.1] - 2022-08-15
+### Changed
+- Refactored `bit_fields/3` and `bit_fields/4`
+
 ## [0.21.0] - 2022-08-13
 ### Added
 - `canny_octet` module
