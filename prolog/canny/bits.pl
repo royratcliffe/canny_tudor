@@ -71,10 +71,17 @@ bits(Shift-Width, Word, Bits) :- bits(Shift, Width, Word, Bits, _Rest).
 %
 %   Two versions of the predicate unify `Value`:`Width` bit fields with
 %   integers. The arity-3 version requires a bound Int from which to
-%   find unbound values in the Fields.
+%   find unbound values in the Fields. The arity-4 version of the
+%   predicate accumulates bit-field values by OR-wise merging shifted
+%   bits from Int0 to Int.
 %
 %   The predicates are semi-deterministic. They can fail. Failure occurs
 %   when the bit-field Width integers do *not* sum to Shift.
+%
+%   @arg Fields is a list of value and width terms.
+%
+%   @arg Shift is an integer number of total bits, e.g. 8 for eight-bit
+%   bytes, 16 for sixteen-bit words and so on.
 
 bit_fields([], 0, _Int).
 bit_fields([Value:Width|Rest], Shift, Int) :-
