@@ -103,6 +103,14 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.21.1] - 2022-08-15}
+
+\subsection{Changed}
+
+\begin{shortlist}
+    \item Refactored \predref{bit_fields}{3} and \predref{bit_fields}{4}
+\end{shortlist}
+
 \section{[0.21.0] - 2022-08-13}
 
 \subsection{Added}
@@ -550,6 +558,10 @@ arity list or vice versa, mode (+, -) or mode (-, +).
 
 \begin{description}
     \predicate[semidet]{bits}{5}{+Shift, +Width, ?Word, ?Bits, ?Rest}
+\nodescription
+    \predicate[semidet]{bits}{4}{+ShiftWidthPair, ?Word, ?Bits, ?Rest}
+\nodescription
+    \predicate[semidet]{bits}{3}{+ShiftWidthPair, ?Word, ?Bits}
 Unifies \arg{Bits} within a \arg{Word} using \arg{Shift} and \arg{Width}. All arguments are
 integers treated as words of arbitrary bit-width.
 
@@ -563,6 +575,27 @@ separately.
 \begin{arguments}
 \arg{Width} & of \arg{Bits} from \arg{Word} after \arg{Shift}. \arg{Width} of zero always
 fails. \\
+\end{arguments}
+
+    \predicate[semidet]{bit_fields}{3}{+Fields:list, +Shift:integer, +Int:integer}
+\nodescription
+    \predicate[semidet]{bit_fields}{4}{+Fields:list, +Shift:integer, +Int0:integer, -Int:integer}
+Two versions of the predicate unify \arg{Value}:\arg{Width} bit fields with
+integers. The arity-3 version requires a bound \arg{Int} from which to
+find unbound (or bound) values in the \arg{Fields}; used to extract values
+from integers else check values semi-deterministically. The arity-4
+version of the predicate accumulates bit-field values by OR-wise
+merging shifted bits from \arg{Int0} to \arg{Int}.
+
+The predicates are semi-deterministic. They can fail. Failure occurs
+when the bit-field \arg{Width} integers do \textbf{not} sum to \arg{Shift}.
+
+\begin{arguments}
+\arg{Fields} & is a list of value and width terms of the form
+\verb$Value:Width$ where \arg{Width} is an integer; \arg{Value} is either a
+variable or an integer. \\
+\arg{Shift} & is an integer number of total bits, e.g. 8 for eight-bit
+bytes, 16 for sixteen-bit words and so on. \\
 \end{arguments}
 \end{description}
 
