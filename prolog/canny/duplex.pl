@@ -36,7 +36,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %
 %   Performs a single half-duplex stream   interaction  with StreamPair.
 %   Flushes Term to the output  stream.   Reads  pending  Codes from the
-%   input stream within TimeOut seconds.
+%   input stream within TimeOut  seconds.   Succeeds  when  a write-read
+%   cycle completes without timing out; fails on time-out expiry.
 %
 %   Filling a stream buffer blocks the  calling   thread  if there is no
 %   input ready. Pending read operations also block for the same reason.
