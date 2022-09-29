@@ -55,8 +55,9 @@ redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
 %
 %   Applies range selection to Key stream. Options optionally specify
 %   the start and end stream identifiers, defaulting to `-` and `+`
-%   respectively. Option `count(Count)` limits the number of entries
-%   to read by `Count` items.
+%   respectively or in reverse if `rev(true)` included in Options list.
+%   Option `count(Count)` limits the number of entries to read by
+%   `Count` items.
 %
 %   The following always unifies Entries with `[]`.
 %
