@@ -64,12 +64,12 @@ redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
 
 xrange(Redis, Key, Entries, Options) :-
     option(rev(Rev), Options, false),
-    rev(Rev, Op, StartDefault, EndDefault),
+    rev(Rev, XRange, StartDefault, EndDefault),
     option(start(Start), Options, StartDefault),
     option(end(End), Options, EndDefault),
     (   option(count(Count), Options)
-    ->  Command =.. [Op, Key, Start, End, count, Count]
-    ;   Command =.. [Op, Key, Start, End]
+    ->  Command =.. [XRange, Key, Start, End, count, Count]
+    ;   Command =.. [XRange, Key, Start, End]
     ),
     redis(Redis, Command, Entries).
 
