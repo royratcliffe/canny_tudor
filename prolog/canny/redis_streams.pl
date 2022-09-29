@@ -61,13 +61,18 @@ redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
 %       xrange(Server, Key, Entries, [start(+)]).
 
 xrange(Redis, Key, Entries, Options) :-
-    select_option(start(Start), Options, Options1, -),
-    select_option(end(End), Options1, Options2, +),
-    (   select_option(count(Count), Options2, _)
-    ->  Command =.. [xrange, Key, Start, End, count, Count]
-    ;   Command =.. [xrange, Key, Start, End]
+    option(rev(Rev), Options, false),
+    rev(Rev, Op, StartDefault, EndDefault),
+    option(start(Start), Options, StartDefault),
+    option(end(End), Options, EndDefault),
+    (   option(count(Count), Options)
+    ->  Command =.. [Op, Key, Start, End, count, Count]
+    ;   Command =.. [Op, Key, Start, End]
     ),
     redis(Redis, Command, Entries).
+
+rev(false, xrange, -, +).
+rev(true, xrevrange, +, -).
 
 %!  xread(+Redis, +Streams:dict, -Reads:list, +Options:list) is
 %!  semidet.
