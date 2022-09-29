@@ -62,6 +62,7 @@ redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
 %   The following always unifies Entries with `[]`.
 %
 %       xrange(Server, Key, Entries, [start(+)]).
+%       xrange(Server, Key, Entries, [rev(true), start(-)]).
 
 xrange(Redis, Key, Entries, Options) :-
     option(rev(Rev), Options, false),
