@@ -56,7 +56,9 @@ redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
 %   Applies range selection to Key stream. Options optionally specify
 %   the start and end stream identifiers, defaulting to `-` and `+`
 %   respectively. Option `count(Count)` limits the number of entries
-%   to read by Count items. The following unifies Entries with `[]`.
+%   to read by `Count` items.
+%
+%   The following always unifies Entries with `[]`.
 %
 %       xrange(Server, Key, Entries, [start(+)]).
 
@@ -100,5 +102,5 @@ xread(Redis, Streams, Reads, Options) :-
     redis(Redis, Command, Reads).
 
 keys_and_stream_ids([], [], []).
-keys_and_stream_ids([A-B|T0], [A|T1], [B|T]) :-
+keys_and_stream_ids([Key-StreamId|T0], [Key|T1], [StreamId|T]) :-
     keys_and_stream_ids(T0, T1, T).
