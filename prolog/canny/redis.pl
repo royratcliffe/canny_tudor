@@ -31,6 +31,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             redis_last_stream_entry/4,          % +Streams,-StreamId,?Tag,-Fields
             redis_keys_and_stream_ids/4,        % +Streams,?Tag,-Keys,-StreamIds
             redis_keys_and_stream_ids/3,        % +Pairs,-Keys,-StreamIds,
+            redis_stream_entry/3,               % +Entries,-StreamId,-Fields
             redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Fields
             redis_stream_entry/5,               % +Reads,-Key,-StreamId,?Tag,-Fields
             redis_stream_id/1,                  % ?RedisTimeSeqPair
@@ -39,6 +40,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           ]).
 :- autoload(library(lists), [member/2]).
 :- autoload(library(redis), [redis_array_dict/3]).
+
+                /*******************************
+                *       S t r e a m s          *
+                *******************************/
 
 %!  redis_last_stream_entry(+Entries, -StreamId, -Fields) is semidet.
 %!  redis_last_stream_entry(+Entries:list(list), -StreamId:atom,
@@ -81,6 +86,7 @@ redis_keys_and_stream_ids([Key-StreamId0|T0], [Key|T1], [RedisTime-Seq|T]) :-
     redis_stream_id(StreamId0, RedisTime, Seq),
     redis_keys_and_stream_ids(T0, T1, T).
 
+%!  redis_stream_entry(+Entries, -StreamId, -Fields) is nondet.
 %!  redis_stream_entry(+Entries:list, -StreamId:pair(nonneg, nonneg),
 %!  ?Tag:atom, -Fields:dict) is nondet.
 %!  redis_stream_entry(+Reads:list, -Key:atom, -StreamId:pair(nonneg,
@@ -90,10 +96,13 @@ redis_keys_and_stream_ids([Key-StreamId0|T0], [Key|T1], [RedisTime-Seq|T]) :-
 %   dictionaries embedded with multi-stream Reads. Decodes the stream
 %   identifier and the Entry.
 
+redis_stream_entry(Entries, StreamId, Fields) :-
+    member([StreamId0, Fields], Entries),
+    redis_stream_id(StreamId0, StreamId).
+
 redis_stream_entry(Entries, StreamId, Tag, Fields) :-
-    member([StreamId0, Entry0], Entries),
-    redis_stream_id(StreamId0, StreamId),
-    redis_array_dict(Entry0, Tag, Fields).
+    redis_stream_entry(Entries, StreamId, Fields0),
+    redis_array_dict(Fields0, Tag, Fields).
 
 redis_stream_entry(Reads, Key, StreamId, Tag, Fields) :-
     member([Key, Entries], Reads),
