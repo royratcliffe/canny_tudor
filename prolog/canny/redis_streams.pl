@@ -88,7 +88,8 @@ rev(true, xrevrange, +, -).
 %!  xread(+Redis, +Streams:dict, -Reads:list, +Options:list) is
 %!  semidet.
 %
-%   Unifies Reads from Streams. Fails on time-out.
+%   Unifies Reads from Streams. Fails on time-out, if option
+%   `block(Milliseconds)` specifies a non-zero blocking delay.
 %
 %   @arg Reads by stream key. The reply has the form [Key, Entries]
 %   for each stream where each member of Entries has the form
