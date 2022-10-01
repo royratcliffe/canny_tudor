@@ -27,7 +27,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_redis,
-          [ redis_last_stream_entry/3,          % +Streams,-StreamId,-Fields
+          [ redis_last_streams/2,               % +Reads,-Streams:list
+            redis_last_streams/3,               % +Reads,?Tag,-Streams:dict
+            redis_last_stream_entry/3,          % +Streams,-StreamId,-Fields
             redis_last_stream_entry/4,          % +Streams,-StreamId,?Tag,-Fields
             redis_keys_and_stream_ids/4,        % +Streams,?Tag,-Keys,-StreamIds
             redis_keys_and_stream_ids/3,        % +Pairs,-Keys,-StreamIds,
@@ -44,6 +46,24 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 /*******************************
                 *       S t r e a m s          *
                 *******************************/
+
+%!  redis_last_streams(+Reads, -Streams:list) is det.
+%!  redis_last_streams(+Reads, ?Tag, -Streams:dict) is det.
+%
+%   Collates the last Streams for a given list of Reads, the reply from
+%   an XREAD command. The implementation assumes that each stream's read
+%   reply has one entry at least, else the stream does not present a
+%   reply.
+
+redis_last_streams(Reads, Streams) :-
+    maplist(redis_last_stream, Reads, Streams).
+
+redis_last_stream([Key, Entries], Key-StreamId) :-
+    redis_last_stream_entry(Entries, StreamId, _).
+
+redis_last_streams(Reads, Tag, Streams) :-
+    redis_last_streams(Reads, Streams0),
+    dict_create(Streams, Tag, Streams0).
 
 %!  redis_last_stream_entry(+Entries, -StreamId, -Fields) is semidet.
 %!  redis_last_stream_entry(+Entries:list(list), -StreamId:atom,
