@@ -31,8 +31,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             redis_keys_and_stream_ids/3,        % +Pairs,-Keys,-StreamIds,
             redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Entry
             redis_stream_entry/5,               % +Reads,-Key,-StreamId,?Tag,-Entry
-            redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
             redis_stream_id/1,                  % ?RedisTimeSeqPair
+            redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
             redis_stream_id/3                   % ?StreamId,?RedisTime,?Seq
           ]).
 :- autoload(library(lists), [member/2]).
@@ -81,8 +81,8 @@ redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
     member([Key, Entries], Reads),
     redis_stream_entry(Entries, StreamId, Tag, Entry).
 
-%!  redis_stream_id(?StreamId:text, ?RedisTimeSeqPair) is semidet.
 %!  redis_stream_id(?RedisTimeSeqPair) is semidet.
+%!  redis_stream_id(?StreamId:text, ?RedisTimeSeqPair) is semidet.
 %!  redis_stream_id(?StreamId:text, ?RedisTime:nonneg, ?Seq:nonneg) is
 %!  semidet.
 %
@@ -109,6 +109,11 @@ redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
 %   sequence. The Redis time equals Unix time multiplied by 1,000; in
 %   other words, Unix time in milliseconds.
 
+redis_stream_id(RedisTime-Seq) :-
+    redis_time(RedisTime),
+    integer(Seq),
+    Seq >= 0.
+
 redis_stream_id(StreamId, RedisTime-Seq) :-
     var(StreamId),
     !,
@@ -124,15 +129,6 @@ redis_stream_id(StreamId, RedisTime-Seq) :-
     number_string(Seq, Seq0),
     redis_stream_id(RedisTime-Seq).
 
-redis_stream_id(RedisTime-Seq) :-
-    redis_time(RedisTime),
-    integer(Seq),
-    Seq >= 0.
-
-redis_time(RedisTime) :-
-    integer(RedisTime),
-    RedisTime >= 0.
-
 redis_stream_id(RedisTime-Seq, RedisTime, Seq) :-
     redis_stream_id(RedisTime-Seq),
     !.
@@ -141,3 +137,7 @@ redis_stream_id(RedisTime, RedisTime, 0) :-
     !.
 redis_stream_id(StreamId, RedisTime, Seq) :-
     redis_stream_id(StreamId, RedisTime-Seq).
+
+redis_time(RedisTime) :-
+    integer(RedisTime),
+    RedisTime >= 0.
