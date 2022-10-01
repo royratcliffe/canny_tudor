@@ -26,7 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-:- module(redis_streams,
+:- module(canny_redis_streams,
           [ redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Entry
             redis_stream_entry/5,               % +Reads,-Key,-StreamId,?Tag,-Entry
             xrange/4,                           % +Redis,+Key,-Entries,+Options
