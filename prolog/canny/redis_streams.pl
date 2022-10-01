@@ -77,9 +77,10 @@ xrange(Redis, Key, Entries, Options) :-
     option(start(Start), Options, StartDefault),
     option(end(End), Options, EndDefault),
     (   option(count(Count), Options)
-    ->  Command =.. [XRange, Key, Start, End, count, Count]
-    ;   Command =.. [XRange, Key, Start, End]
+    ->  Arguments = [count, Count]
+    ;   Arguments = []
     ),
+    Command =.. [XRange, Key, Start, End|Arguments],
     redis(Redis, Command, Entries).
 
 rev(false, xrange, -, +).
