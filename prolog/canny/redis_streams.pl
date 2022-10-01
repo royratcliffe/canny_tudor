@@ -32,6 +32,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             xrange/4,                           % +Redis,+Key,-Entries,+Options
             xread/4                             % +Redis,+Streams,-Reads,+Options
           ]).
+:- autoload(library(lists), [member/2, append/3]).
+:- autoload(library(option), [option/3, option/2]).
+:- autoload(library(redis), [redis_array_dict/3, redis/3]).
+
+:- use_module(redis).
 
 %!  redis_stream_entry(+Entries:list, -StreamId:pair(nonneg, nonneg),
 %!  ?Tag:atom, -Entry:dict) is nondet.
