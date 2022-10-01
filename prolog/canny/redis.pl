@@ -33,6 +33,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             redis_last_stream_entry/4,          % +Streams,-StreamId,?Tag,-Fields
             redis_keys_and_stream_ids/4,        % +Streams,?Tag,-Keys,-StreamIds
             redis_keys_and_stream_ids/3,        % +Pairs,-Keys,-StreamIds,
+            redis_stream_read/4,                % +Reads,-Key,-StreamId,-Fields
+            redis_stream_read/5,                % +Reads,-Key,-StreamId,?Tag,-Fields
             redis_stream_entry/3,               % +Entries,-StreamId,-Fields
             redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Fields
             redis_stream_entry/5,               % +Reads,-Key,-StreamId,?Tag,-Fields
@@ -106,6 +108,19 @@ redis_keys_and_stream_ids([Key-StreamId0|T0], [Key|T1], [RedisTime-Seq|T]) :-
     redis_stream_id(StreamId0, RedisTime, Seq),
     redis_keys_and_stream_ids(T0, T1, T).
 
+%!  redis_stream_read(+Reads, -Key, -StreamId, -Fields) is nondet.
+%!  redis_stream_read(+Reads, -Key, -StreamId, ?Tag, -Fields) is nondet.
+%
+%   Unifies with all Key, StreamId and array of Fields for all Reads.
+
+redis_stream_read(Reads, Key, StreamId, Fields) :-
+    member([Key, Entries], Reads),
+    redis_stream_entry(Entries, StreamId, Fields).
+
+redis_stream_read(Reads, Key, StreamId, Tag, Fields) :-
+    member([Key, Entries], Reads),
+    redis_stream_entry(Entries, StreamId, Tag, Fields).
+
 %!  redis_stream_entry(+Entries, -StreamId, -Fields) is nondet.
 %!  redis_stream_entry(+Entries:list, -StreamId:pair(nonneg, nonneg),
 %!  ?Tag:atom, -Fields:dict) is nondet.
@@ -123,10 +138,6 @@ redis_stream_entry(Entries, StreamId, Fields) :-
 redis_stream_entry(Entries, StreamId, Tag, Fields) :-
     redis_stream_entry(Entries, StreamId, Fields0),
     redis_array_dict(Fields0, Tag, Fields).
-
-redis_stream_entry(Reads, Key, StreamId, Tag, Fields) :-
-    member([Key, Entries], Reads),
-    redis_stream_entry(Entries, StreamId, Tag, Fields).
 
 %!  redis_stream_id(?RedisTimeSeqPair) is semidet.
 %!  redis_stream_id(?StreamId:text, ?RedisTimeSeqPair) is semidet.
