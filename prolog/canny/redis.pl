@@ -27,7 +27,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_redis,
-          [ redis_keys_and_stream_ids/4,        % +Streams,?Tag,-Keys,-StreamIds
+          [ redis_last_stream_entry/3,          % +Streams,-StreamId,-Fields
+            redis_last_stream_entry/4,          % +Streams,-StreamId,?Tag,-Fields
+            redis_keys_and_stream_ids/4,        % +Streams,?Tag,-Keys,-StreamIds
             redis_keys_and_stream_ids/3,        % +Pairs,-Keys,-StreamIds,
             redis_last_stream_entry/3,          % +Streams,-StreamId,-Fields
             redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Entry
@@ -39,15 +41,21 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- autoload(library(lists), [member/2]).
 :- autoload(library(redis), [redis_array_dict/3]).
 
-%!  redis_stream_entry(+Entries, -StreamId, -Fields) is semidet.
+%!  redis_last_stream_entry(+Entries, -StreamId, -Fields) is semidet.
+%!  redis_last_stream_entry(+Entries:list(list), -StreamId:atom,
+%!  ?Tag:atom, -Fields:dict) is semidet.
 %
-%   Unifies with the last StreamId and Fields list. It fails for empty
-%   Entries.
+%   Unifies with the last StreamId and Fields. It fails for empty
+%   Entries. Each entry comprises a StreamId and a set of Fields.
 
 redis_last_stream_entry([[StreamId, Fields]], StreamId, Fields) :-
     !.
 redis_last_stream_entry([_|Entries], StreamId, Fields) :-
     redis_last_stream_entry(Entries, StreamId, Fields).
+
+redis_last_stream_entry(Entries, StreamId, Tag, Fields) :-
+    redis_last_stream_entry(Entries, StreamId, Fields0),
+    redis_array_dict(Fields0, Tag, Fields).
 
 %!  redis_keys_and_stream_ids(+Streams, ?Tag, -Keys, -StreamIds) is det.
 %!  redis_keys_and_stream_ids(+Pairs, -Keys, -StreamIds) is det.
