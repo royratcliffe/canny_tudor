@@ -28,13 +28,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- module(canny_redis_streams,
           [ xrange/4,                           % +Redis,+Key,-Entries,+Options
-            xread/4                             % +Redis,+Streams,-Reads,+Options
+            xread/4,                            % +Redis,+Streams,-Reads,+Options
+            xread_call/5,                       % +Redis,+Streams,:Goal,-Fields,+Options
+            xread_call/6                        % +Redis,+Streams,:Goal,?Tag,-Fields,+Options
           ]).
 :- autoload(library(option), [option/3, option/2]).
 :- autoload(library(lists), [append/3]).
 :- autoload(library(redis), [redis/3]).
 
 :- use_module(redis).
+
+:- meta_predicate
+    xread_call(+, +, :, -, +),
+    xread_call(+, +, :, ?, -, +).
 
 %!  xrange(+Redis, +Key:atom, -Entries:list, +Options:list) is det.
 %
@@ -90,3 +96,39 @@ xread(Redis, Streams, Reads, Options) :-
     ),
     Command =.. [xread|Arguments],
     redis(Redis, Command, Reads).
+
+%!  xread_call(+Redis, +Streams, :Goal, -Fields, +Options) is semidet.
+%!  xread_call(+Redis, +Streams, :Goal, ?Tag, -Fields, +Options) is
+%!  semidet.
+%
+%   Reads Streams continuously until Goal succeeds or times out. Also
+%   supports a Redis time limit option so that blocking, if used, does
+%   not continue indefinately even on a very busy stream set. The limit
+%   applies to any of the given streams; it acts as a time threshold
+%   for continuous blocking failures.
+
+xread_call(Redis, Streams, Goal, Fields, Options) :-
+    xread(Redis, Streams, Reads, Options),
+    redis_last_streams(Reads, _, Streams_),
+    xread_call_(Redis, Streams.put(Streams_), Goal, Reads, Fields, Options).
+
+xread_call_(_Redis, _Streams, Goal, Reads, Fields, _Options) :-
+    redis_stream_entry(Reads, Key, StreamId, Tag, Fields),
+    call(Goal, Key, StreamId, Tag, Fields),
+    !.
+xread_call_(Redis, Streams, Goal, _Reads, Fields, Options) :-
+    (   option(threshold(Threshold), Options)
+    ->  dict_pairs(Streams, _, Pairs),
+        maplist(xread_call__, Pairs, RedisTimes),
+        max_list(RedisTimes, RedisTime),
+        RedisTime < Threshold
+    ;   true
+    ),
+    xread_call(Redis, Streams, Goal, Fields, Options).
+
+xread_call__(_Key-StreamId, RedisTime) :-
+    redis_stream_id(StreamId, RedisTime, _Seq).
+
+xread_call(Redis, Streams, Goal, Tag, Fields, Options) :-
+    xread_call(Redis, Streams, Goal, Tag, Fields0, Options),
+    redis_array_dict(Fields0, Tag, Fields).
