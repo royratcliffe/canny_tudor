@@ -42,13 +42,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %
 %   Deliberately validates incoming Redis time and sequence numbers.
 %   Both must be integers and both must be zero or more. The predicates
-%   fails otherwise. Internally, Redis stores stream identifiers as
-%   128-bit unsigned integers split in half for the time and sequence,
-%   each of 64 bits.
+%   fail otherwise. Internally, Redis stores stream identifiers as
+%   128-bit unsigned integers split in half for the time and sequence
+%   values, each of 64 bits.
 %
 %   The 3-arity version of the predicate handles extraction of time and
 %   sequence integers from arbitrary stream identifiers: text or
-%   compound terms.
+%   compound terms, including implied zero-sequence stream identifier
+%   with a single non-negative integer representing a millisecond Unix
+%   time.
 %
 %   @arg StreamId identifies a stream message or entry, element or item.
 %   All these terms apply to the contents of a stream, but Redis
