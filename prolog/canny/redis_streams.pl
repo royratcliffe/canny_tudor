@@ -34,6 +34,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- autoload(library(lists), [append/3]).
 :- autoload(library(redis), [redis/3]).
 
+:- use_module(redis).
+
 %!  xrange(+Redis, +Key:atom, -Entries:list, +Options:list) is det.
 %
 %   Applies range selection to Key stream. Options optionally specify
@@ -75,8 +77,7 @@ rev(true, xrevrange, +, -).
 %   [StreamID, Fields] where Fields is an array of keys and values.
 
 xread(Redis, Streams, Reads, Options) :-
-    dict_pairs(Streams, _, Pairs),
-    keys_and_stream_ids(Pairs, Keys, StreamIds),
+    redis_keys_and_stream_ids(Streams, _, Keys, StreamIds),
     append(Keys, StreamIds, Arguments___),
     Arguments__ = [streams|Arguments___],
     (   option(block(Block), Options)
@@ -89,7 +90,3 @@ xread(Redis, Streams, Reads, Options) :-
     ),
     Command =.. [xread|Arguments],
     redis(Redis, Command, Reads).
-
-keys_and_stream_ids([], [], []).
-keys_and_stream_ids([Key-StreamId|T0], [Key|T1], [StreamId|T]) :-
-    keys_and_stream_ids(T0, T1, T).

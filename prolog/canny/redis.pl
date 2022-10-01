@@ -27,7 +27,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_redis,
-          [ redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Entry
+          [ redis_keys_and_stream_ids/4,        % +Streams,?Tag,-Keys,-StreamIds
+            redis_keys_and_stream_ids/3,        % +Pairs,-Keys,-StreamIds,
+            redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Entry
             redis_stream_entry/5,               % +Reads,-Key,-StreamId,?Tag,-Entry
             redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
             redis_stream_id/1,                  % ?RedisTimeSeqPair
@@ -35,6 +37,31 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           ]).
 :- autoload(library(lists), [member/2]).
 :- autoload(library(redis), [redis_array_dict/3]).
+
+%!  redis_keys_and_stream_ids(+Streams, ?Tag, -Keys, -StreamIds) is det.
+%!  redis_keys_and_stream_ids(+Pairs, -Keys, -StreamIds) is det.
+%
+%   Streams or Pairs of Keys and StreamIds. Arity-3 exists with Tag in
+%   order to unify with a dictionary by Tag.
+%
+%   @arg Streams is a dictionary of stream identifiers, indexed by
+%   stream key.
+%
+%   @arg Keys is a list of stream keys.
+%
+%   @arg StreamIds is a list of corrected stream identifiers. The
+%   predicate applies redis_stream_id/3 to the incoming identifiers,
+%   allowing for arbitrary milliseconds-sequence pairs including
+%   implied missing zero sequence number.
+
+redis_keys_and_stream_ids(Streams, Tag, Keys, StreamIds) :-
+    dict_pairs(Streams, Tag, Pairs),
+    redis_keys_and_stream_ids(Pairs, Keys, StreamIds).
+
+redis_keys_and_stream_ids([], [], []).
+redis_keys_and_stream_ids([Key-StreamId0|T0], [Key|T1], [RedisTime-Seq|T]) :-
+    redis_stream_id(StreamId0, RedisTime, Seq),
+    redis_keys_and_stream_ids(T0, T1, T).
 
 %!  redis_stream_entry(+Entries:list, -StreamId:pair(nonneg, nonneg),
 %!  ?Tag:atom, -Entry:dict) is nondet.
