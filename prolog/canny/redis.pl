@@ -27,19 +27,28 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_redis,
-          [ redis_stream_id/2                   % ?StreamId,?RedisTimeSeqPair
+          [ redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
+            redis_stream_id/1,                  % ?RedisTimeSeqPair
+            redis_stream_id/3                   % ?StreamId,?RedisTime,?Seq
           ]).
 
-%!  redis_stream_id(?StreamId, ?RedisTimeSeqPair) is semidet.
+%!  redis_stream_id(?StreamId:text, ?RedisTimeSeqPair) is semidet.
+%!  redis_stream_id(?RedisTimeSeqPair) is semidet.
+%!  redis_stream_id(?StreamId:text, ?RedisTime:nonneg, ?Seq:nonneg) is
+%!  semidet.
 %
 %   Stream identifier to millisecond and sequence numbers. In
 %   practice, the numbers always convert to integers.
 %
 %   Deliberately validates incoming Redis time and sequence numbers.
-%   Both must be integers and both must be zero or more. The predicate
+%   Both must be integers and both must be zero or more. The predicates
 %   fails otherwise. Internally, Redis stores stream identifiers as
 %   128-bit unsigned integers split in half for the time and sequence,
 %   each of 64 bits.
+%
+%   The 3-arity version of the predicate handles extraction of time and
+%   sequence integers from arbitrary stream identifiers: text or
+%   compound terms.
 %
 %   @arg StreamId identifies a stream message or entry, element or item.
 %   All these terms apply to the contents of a stream, but Redis
@@ -52,12 +61,32 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 redis_stream_id(StreamId, RedisTime-Seq) :-
     var(StreamId),
     !,
-    integer(RedisTime),
-    integer(Seq),
-    RedisTime >= 0,
-    Seq >= 0,
+    redis_stream_id(RedisTime-Seq),
     atomic_list_concat([RedisTime, Seq], -, StreamId).
 redis_stream_id(StreamId, RedisTime-Seq) :-
+    (   atom(StreamId)
+    ->  true
+    ;   string(StreamId)
+    ),
     split_string(StreamId, -, '', [RedisTime0, Seq0]),
     number_string(RedisTime, RedisTime0),
-    number_string(Seq, Seq0).
+    number_string(Seq, Seq0),
+    redis_stream_id(RedisTime-Seq).
+
+redis_stream_id(RedisTime-Seq) :-
+    redis_time(RedisTime),
+    integer(Seq),
+    Seq >= 0.
+
+redis_time(RedisTime) :-
+    integer(RedisTime),
+    RedisTime >= 0.
+
+redis_stream_id(RedisTime-Seq, RedisTime, Seq) :-
+    redis_stream_id(RedisTime-Seq),
+    !.
+redis_stream_id(RedisTime, RedisTime, 0) :-
+    redis_time(RedisTime),
+    !.
+redis_stream_id(StreamId, RedisTime, Seq) :-
+    redis_stream_id(StreamId, RedisTime-Seq).
