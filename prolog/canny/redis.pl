@@ -27,10 +27,32 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_redis,
-          [ redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
+          [ redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Entry
+            redis_stream_entry/5,               % +Reads,-Key,-StreamId,?Tag,-Entry
+            redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
             redis_stream_id/1,                  % ?RedisTimeSeqPair
             redis_stream_id/3                   % ?StreamId,?RedisTime,?Seq
           ]).
+:- autoload(library(lists), [member/2]).
+:- autoload(library(redis), [redis_array_dict/3]).
+
+%!  redis_stream_entry(+Entries:list, -StreamId:pair(nonneg, nonneg),
+%!  ?Tag:atom, -Entry:dict) is nondet.
+%!  redis_stream_entry(+Reads:list, -Key:atom, -StreamId:pair(nonneg,
+%!  nonneg), ?Tag:atom, -Entry:dict) is nondet.
+%
+%   Unifies non-deterministically with all Entries, or Entry
+%   dictionaries embedded with multi-stream Reads. Decodes the stream
+%   identifier and the Entry.
+
+redis_stream_entry(Entries, StreamId, Tag, Entry) :-
+    member([StreamId0, Entry0], Entries),
+    redis_stream_id(StreamId0, StreamId),
+    redis_array_dict(Entry0, Tag, Entry).
+
+redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
+    member([Key, Entries], Reads),
+    redis_stream_entry(Entries, StreamId, Tag, Entry).
 
 %!  redis_stream_id(?StreamId:text, ?RedisTimeSeqPair) is semidet.
 %!  redis_stream_id(?RedisTimeSeqPair) is semidet.

@@ -27,34 +27,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_redis_streams,
-          [ redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Entry
-            redis_stream_entry/5,               % +Reads,-Key,-StreamId,?Tag,-Entry
-            xrange/4,                           % +Redis,+Key,-Entries,+Options
+          [ xrange/4,                           % +Redis,+Key,-Entries,+Options
             xread/4                             % +Redis,+Streams,-Reads,+Options
           ]).
-:- autoload(library(lists), [member/2, append/3]).
 :- autoload(library(option), [option/3, option/2]).
-:- autoload(library(redis), [redis_array_dict/3, redis/3]).
-
-:- use_module(redis).
-
-%!  redis_stream_entry(+Entries:list, -StreamId:pair(nonneg, nonneg),
-%!  ?Tag:atom, -Entry:dict) is nondet.
-%!  redis_stream_entry(+Reads:list, -Key:atom, -StreamId:pair(nonneg,
-%!  nonneg), ?Tag:atom, -Entry:dict) is nondet.
-%
-%   Unifies non-deterministically with all Entries, or Entry
-%   dictionaries embedded with multi-stream Reads. Decodes the stream
-%   identifier and the Entry.
-
-redis_stream_entry(Entries, StreamId, Tag, Entry) :-
-    member([StreamId0, Entry0], Entries),
-    redis_stream_id(StreamId0, StreamId),
-    redis_array_dict(Entry0, Tag, Entry).
-
-redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
-    member([Key, Entries], Reads),
-    redis_stream_entry(Entries, StreamId, Tag, Entry).
+:- autoload(library(lists), [append/3]).
+:- autoload(library(redis), [redis/3]).
 
 %!  xrange(+Redis, +Key:atom, -Entries:list, +Options:list) is det.
 %
