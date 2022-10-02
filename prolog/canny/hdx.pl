@@ -1,7 +1,7 @@
-/*  File:    canny/duplex.pl
+/*  File:    canny/hdx.pl
     Author:  Roy Ratcliffe
     Created: Sep 24 2022
-    Purpose: Canny Duplex
+    Purpose: Canny Half-Duplex
 
 Copyright (c) 2022, Roy Ratcliffe, Northumberland, United Kingdom
 
@@ -26,13 +26,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-:- module(canny_duplex,
-          [ half_duplex/4,        % +StreamPair,+Term,-Codes,+TimeOut
-            half_duplex/3         % +In,-Codes,+TimeOut
+:- module(canny_hdx,
+          [ hdx/4,                              % +StreamPair,+Term,-Codes,+TimeOut
+            hdx/3                               % +In,-Codes,+TimeOut
           ]).
 
-%!  half_duplex(+StreamPair, +Term, -Codes, +TimeOut) is semidet.
-%!  half_duplex(+In, -Codes, +TimeOut) is semidet.
+%!  hdx(+StreamPair, +Term, -Codes, +TimeOut) is semidet.
+%!  hdx(+In, -Codes, +TimeOut) is semidet.
 %
 %   Performs a single half-duplex stream   interaction  with StreamPair.
 %   Flushes Term to the output  stream.   Reads  pending  Codes from the
@@ -53,13 +53,25 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %
 %   @arg TimeOut in seconds.
 
-half_duplex(StreamPair, Term, Codes, TimeOut) :-
+hdx(StreamPair, Term, Codes, TimeOut) :-
     stream_pair(StreamPair, In, Out),
-    write(Out, Term),
-    flush_output(Out),
-    half_duplex(In, Codes, TimeOut).
+    hdx(Out, Term),
+    hdx(In, Codes, TimeOut).
 
-half_duplex(In, Codes, TimeOut) :-
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+No need to distinguish between command and query at the lower layers of
+duplex communication. The upper-level stream determines the mode: either
+both halves of the half-duplex cycle: write then read for the query
+stream; else write only for the command stream.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+hdx(Out, Term) :-
+    write(Out, Term),
+    flush_output(Out).
+
+hdx(In, Codes, TimeOut) :-
     wait_for_input([In], [Ready], TimeOut),
     fill_buffer(Ready),
     read_pending_codes(Ready, Codes, []).
