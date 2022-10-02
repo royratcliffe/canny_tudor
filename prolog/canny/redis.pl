@@ -204,6 +204,13 @@ redis_stream_id(RedisTime, RedisTime, 0) :-
 redis_stream_id(StreamId, RedisTime, Seq) :-
     redis_stream_id(StreamId, RedisTime-Seq).
 
+%!  redis_time(+RedisTime) is semidet.
+%
+%   Successful when RedisTime is a positive integer. Redis times amount
+%   to millisecond-scale Unix times.
+%
+%   @arg RedisTime in milliseconds since 1970.
+
 redis_time(RedisTime) :-
     integer(RedisTime),
     RedisTime >= 0.
