@@ -28,11 +28,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- module(canny_hdx,
           [ hdx/4,                              % +StreamPair,+Term,-Codes,+TimeOut
-            hdx/3                               % +In,-Codes,+TimeOut
+            hdx/3,                              % +In,-Codes,+TimeOut
+            hdx/2                               % +Out,+Term
           ]).
 
 %!  hdx(+StreamPair, +Term, -Codes, +TimeOut) is semidet.
 %!  hdx(+In, -Codes, +TimeOut) is semidet.
+%!  hdx(+Out, +Term) is semidet.
 %
 %   Performs a single half-duplex stream   interaction  with StreamPair.
 %   Flushes Term to the output  stream.   Reads  pending  Codes from the
