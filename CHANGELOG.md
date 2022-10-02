@@ -7,6 +7,10 @@ log](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Half-duplex hdx/{4, 3, 2} predicates
 
+## [0.22.0] - 2022-10-02
+### Added
+- Canny predicates for Redis and Redis streams
+
 ## [0.21.1] - 2022-08-15
 ### Changed
 - Refactored `bit_fields/3` and `bit_fields/4`
