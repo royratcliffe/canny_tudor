@@ -37,7 +37,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             redis_stream_read/5,                % +Reads,-Key,-StreamId,?Tag,-Fields
             redis_stream_entry/3,               % +Entries,-StreamId,-Fields
             redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Fields
-            redis_stream_entry/5,               % +Reads,-Key,-StreamId,?Tag,-Fields
             redis_stream_id/1,                  % ?RedisTimeSeqPair
             redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
             redis_stream_id/3                   % ?StreamId,?RedisTime,?Seq
