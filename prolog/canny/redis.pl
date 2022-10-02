@@ -112,6 +112,10 @@ redis_keys_and_stream_ids([Key-StreamId0|T0], [Key|T1], [RedisTime-Seq|T]) :-
 %!  redis_stream_read(+Reads, -Key, -StreamId, ?Tag, -Fields) is nondet.
 %
 %   Unifies with all Key, StreamId and array of Fields for all Reads.
+%
+%   @arg Reads is a list of [Key, Entries] lists, a list of lists. The
+%   sub-lists always have two items: the Key of the stream followed by
+%   another sub-list of stream entries.
 
 redis_stream_read(Reads, Key, StreamId, Fields) :-
     member([Key, Entries], Reads),
@@ -130,6 +134,10 @@ redis_stream_read(Reads, Key, StreamId, Tag, Fields) :-
 %   Unifies non-deterministically with all Entries, or Fields
 %   dictionaries embedded with multi-stream Reads. Decodes the stream
 %   identifier and the Entry.
+%
+%   @arg Entries is a list of [StreamId, Fields] lists, another list of
+%   lists. Each sub-list describes an "entry" within the stream, a
+%   pairing between an identifier and some fields.
 
 redis_stream_entry(Entries, StreamId, Fields) :-
     member([StreamId0, Fields], Entries),
