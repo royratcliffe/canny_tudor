@@ -3,7 +3,7 @@
     Created: May  5 2021
     Purpose: Canny Executables
 
-Copyright (c) 2021, Roy Ratcliffe, United Kingdom
+Copyright (c) 2021, Roy Ratcliffe, Northumberland, United Kingdom
 
 Permission is hereby granted, free of charge,  to any person obtaining a
 copy  of  this  software  and    associated   documentation  files  (the
