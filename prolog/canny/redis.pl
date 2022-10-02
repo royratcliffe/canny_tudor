@@ -44,6 +44,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           ]).
 :- autoload(library(lists), [member/2]).
 :- autoload(library(redis), [redis_array_dict/3]).
+:- autoload(library(apply), [maplist/3]).
 
                 /*******************************
                 *       S t r e a m s          *
