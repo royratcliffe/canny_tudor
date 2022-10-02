@@ -3,6 +3,11 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.23.2] - 2022-10-02
+### Changed
+- Bumped pack version to patch level 2
+- Skipping release for patch level 1
+
 ## [0.23.0] - 2022-10-02
 ### Added
 - Half-duplex hdx/{4, 3, 2} predicates
