@@ -39,7 +39,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Fields
             redis_stream_id/1,                  % ?RedisTimeSeqPair
             redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
-            redis_stream_id/3                   % ?StreamId,?RedisTime,?Seq
+            redis_stream_id/3,                  % ?StreamId,?RedisTime,?Seq
+            redis_time/1,                       % +RedisTime
+            redis_date_time/3                   % +RedisTime,-DateTime,+TimeZone
           ]).
 :- autoload(library(lists), [member/2]).
 :- autoload(library(redis), [redis_array_dict/3]).
@@ -214,3 +216,11 @@ redis_stream_id(StreamId, RedisTime, Seq) :-
 redis_time(RedisTime) :-
     integer(RedisTime),
     RedisTime >= 0.
+
+%!  redis_date_time(+RedisTime, -DateTime, +TimeZone) is det.
+%
+%   Converts RedisTime to DateTime within TimeZone.
+
+redis_date_time(RedisTime, DateTime, TimeZone) :-
+    Stamp is RedisTime / 1000,
+    stamp_date_time(Stamp, DateTime, TimeZone).
