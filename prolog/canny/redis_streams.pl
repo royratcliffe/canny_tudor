@@ -27,34 +27,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_redis_streams,
-          [ redis_stream_entry/4,               % +Entries,-StreamId,?Tag,-Entry
-            redis_stream_entry/5,               % +Reads,-Key,-StreamId,?Tag,-Entry
-            xrange/4,                           % +Redis,+Key,-Entries,+Options
-            xread/4                             % +Redis,+Streams,-Reads,+Options
+          [ xrange/4,                           % +Redis,+Key,-Entries,+Options
+            xread/4,                            % +Redis,+Streams,-Reads,+Options
+            xread_call/5,                       % +Redis,+Streams,:Goal,-Fields,+Options
+            xread_call/6                        % +Redis,+Streams,:Goal,?Tag,-Fields,+Options
           ]).
-:- autoload(library(lists), [member/2, append/3]).
 :- autoload(library(option), [option/3, option/2]).
-:- autoload(library(redis), [redis_array_dict/3, redis/3]).
+:- autoload(library(lists), [append/3]).
+:- autoload(library(redis), [redis/3]).
 
 :- use_module(redis).
 
-%!  redis_stream_entry(+Entries:list, -StreamId:pair(nonneg, nonneg),
-%!  ?Tag:atom, -Entry:dict) is nondet.
-%!  redis_stream_entry(+Reads:list, -Key:atom, -StreamId:pair(nonneg,
-%!  nonneg), ?Tag:atom, -Entry:dict) is nondet.
-%
-%   Unifies non-deterministically with all Entries, or Entry
-%   dictionaries embedded with multi-stream Reads. Decodes the stream
-%   identifier and the Entry.
-
-redis_stream_entry(Entries, StreamId, Tag, Entry) :-
-    member([StreamId0, Entry0], Entries),
-    redis_stream_id(StreamId0, StreamId),
-    redis_array_dict(Entry0, Tag, Entry).
-
-redis_stream_entry(Reads, Key, StreamId, Tag, Entry) :-
-    member([Key, Entries], Reads),
-    redis_stream_entry(Entries, StreamId, Tag, Entry).
+:- meta_predicate
+    xread_call(+, +, :, -, +),
+    xread_call(+, +, :, ?, -, +).
 
 %!  xrange(+Redis, +Key:atom, -Entries:list, +Options:list) is det.
 %
@@ -97,8 +83,7 @@ rev(true, xrevrange, +, -).
 %   [StreamID, Fields] where Fields is an array of keys and values.
 
 xread(Redis, Streams, Reads, Options) :-
-    dict_pairs(Streams, _, Pairs),
-    keys_and_stream_ids(Pairs, Keys, StreamIds),
+    redis_keys_and_stream_ids(Streams, _, Keys, StreamIds),
     append(Keys, StreamIds, Arguments___),
     Arguments__ = [streams|Arguments___],
     (   option(block(Block), Options)
@@ -112,6 +97,53 @@ xread(Redis, Streams, Reads, Options) :-
     Command =.. [xread|Arguments],
     redis(Redis, Command, Reads).
 
-keys_and_stream_ids([], [], []).
-keys_and_stream_ids([Key-StreamId|T0], [Key|T1], [StreamId|T]) :-
-    keys_and_stream_ids(T0, T1, T).
+%!  xread_call(+Redis, +Streams, :Goal, -Fields, +Options) is semidet.
+%!  xread_call(+Redis, +Streams, :Goal, ?Tag, -Fields, +Options) is
+%!  semidet.
+%
+%   Reads Streams continuously until Goal succeeds or times out. Also
+%   supports a Redis time limit option so that blocking, if used, does
+%   not continue indefinately even on a very busy stream set. The limit
+%   applies to any of the given streams; it acts as a time threshold
+%   for continuous blocking failures.
+
+xread_call(Redis, Streams, Goal, Fields, Options) :-
+    xread(Redis, Streams, Reads, Options),
+    redis_last_streams(Reads, _, Streams_),
+    xread_call_(Redis, Streams.put(Streams_), Goal, Reads, Fields, Options).
+
+xread_call_(_Redis, _Streams, Goal, Reads, Fields, _Options) :-
+    redis_stream_read(Reads, Key, StreamId, Fields),
+    call(Goal, Key, StreamId, Fields),
+    !.
+xread_call_(Redis, Streams, Goal, _Reads, Fields, Options) :-
+    (   option(threshold(Threshold), Options)
+    ->  dict_pairs(Streams, _, Pairs),
+        maplist(xread_call__, Pairs, RedisTimes),
+        max_list(RedisTimes, RedisTime),
+        RedisTime < Threshold
+    ;   true
+    ),
+    xread_call(Redis, Streams, Goal, Fields, Options).
+
+xread_call__(_Key-StreamId, RedisTime) :-
+    redis_stream_id(StreamId, RedisTime, _Seq).
+
+xread_call(Redis, Streams, Goal, Tag, Fields, Options) :-
+    xread(Redis, Streams, Reads, Options),
+    redis_last_streams(Reads, _, Streams_),
+    xread_call_(Redis, Streams.put(Streams_), Goal, Reads, Tag, Fields, Options).
+
+xread_call_(_Redis, _Streams, Goal, Reads, Tag, Fields, _Options) :-
+    redis_stream_read(Reads, Key, StreamId, Tag, Fields),
+    call(Goal, Key, StreamId, Tag, Fields),
+    !.
+xread_call_(Redis, Streams, Goal, _Reads, Tag, Fields, Options) :-
+    (   option(threshold(Threshold), Options)
+    ->  dict_pairs(Streams, _, Pairs),
+        maplist(xread_call__, Pairs, RedisTimes),
+        max_list(RedisTimes, RedisTime),
+        RedisTime < Threshold
+    ;   true
+    ),
+    xread_call(Redis, Streams, Goal, Tag, Fields, Options).

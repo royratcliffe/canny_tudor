@@ -103,6 +103,22 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.23.0] - 2022-10-02}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Half-duplex hdx/\{4, 3, 2\} predicates
+\end{shortlist}
+
+\section{[0.22.0] - 2022-10-02}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Canny predicates for Redis and Redis streams
+\end{shortlist}
+
 \section{[0.21.1] - 2022-08-15}
 
 \subsection{Changed}
@@ -763,6 +779,33 @@ multiple root directories on different mounted drives. \\
 \end{arguments}
 \end{description}
 
+\chapter{library(canny/hdx)}\label{sec:hdx}
+
+\begin{description}
+    \predicate[semidet]{hdx}{4}{+StreamPair, +Term, -Codes, +TimeOut}
+\nodescription
+    \predicate[semidet]{hdx}{3}{+In, -Codes, +TimeOut}
+\nodescription
+    \predicate[semidet]{hdx}{2}{+Out, +Term}
+Performs a single half-duplex stream interaction with \arg{StreamPair}.
+Flushes \arg{Term} to the output stream. Reads pending \arg{Codes} from the
+input stream within \arg{TimeOut} seconds. Succeeds when a write-read
+cycle completes without timing out; fails on time-out expiry.
+
+Filling a stream buffer blocks the calling thread if there is no
+input ready. Pending read operations also block for the same reason.
+Hence the \predref{wait_for_input}{3} \textbf{must} precede them.
+
+\begin{arguments}
+\arg{StreamPair} & connection from client to server, a
+closely-associated input and output stream pairing used for
+half-duplex communication. \\
+\arg{Term} & to write and flush. \\
+\arg{Codes} & waited for and extracted from the pending input stream. \\
+\arg{TimeOut} & in seconds. \\
+\end{arguments}
+\end{description}
+
 \chapter{library(canny/maths)}\label{sec:maths}
 
 \begin{description}
@@ -924,6 +967,145 @@ Throws a domain error otherwise.
     \tag{Errors}
 \verb$domain_error(not_less_than_one, A)$ if \arg{A} less than 0.
 \end{tags}
+\end{description}
+
+\chapter{library(canny/redis)}\label{sec:redis}
+
+\begin{description}
+    \predicate[det]{redis_last_streams}{2}{+Reads, -Streams:list}
+\nodescription
+    \predicate[det]{redis_last_streams}{3}{+Reads, ?Tag, -Streams:dict}
+Collates the last \arg{Streams} for a given list of \arg{Reads}, the reply from
+an XREAD command. The implementation assumes that each stream's read
+reply has one entry at least, else the stream does not present a
+reply.
+
+    \predicate[semidet]{redis_last_stream_entry}{3}{+Entries, -StreamId, -Fields}
+\nodescription
+    \predicate[semidet]{redis_last_stream_entry}{4}{+Entries:list(list), -StreamId:atom, ?Tag:atom, -Fields:dict}
+Unifies with the last \arg{StreamId} and \arg{Fields}. It fails for empty
+\arg{Entries}. Each entry comprises a \arg{StreamId} and a set of \arg{Fields}.
+
+    \predicate[det]{redis_keys_and_stream_ids}{4}{+Streams, ?Tag, -Keys, -StreamIds}
+\nodescription
+    \predicate[det]{redis_keys_and_stream_ids}{3}{+Pairs, -Keys, -StreamIds}
+\arg{Streams} or \arg{Pairs} of \arg{Keys} and \arg{StreamIds}. Arity-3 exists with \arg{Tag} in
+order to unify with a dictionary by \arg{Tag}.
+
+\begin{arguments}
+\arg{Streams} & is a dictionary of stream identifiers, indexed by
+stream key. \\
+\arg{Keys} & is a list of stream keys. \\
+\arg{StreamIds} & is a list of corrected stream identifiers. The
+predicate applies \predref{redis_stream_id}{3} to the incoming identifiers,
+allowing for arbitrary milliseconds-sequence pairs including
+implied missing zero sequence number. \\
+\end{arguments}
+
+    \predicate[nondet]{redis_stream_read}{4}{+Reads, -Key, -StreamId, -Fields}
+\nodescription
+    \predicate[nondet]{redis_stream_read}{5}{+Reads, -Key, -StreamId, ?Tag, -Fields}
+Unifies with all \arg{Key}, \arg{StreamId} and array of \arg{Fields} for all \arg{Reads}.
+
+\begin{arguments}
+\arg{Reads} & is a list of [\arg{Key}, Entries] lists, a list of lists. The
+sub-lists always have two items: the \arg{Key} of the stream followed by
+another sub-list of stream entries. \\
+\end{arguments}
+
+    \predicate[nondet]{redis_stream_entry}{3}{+Entries, -StreamId, -Fields}
+\nodescription
+    \predicate[nondet]{redis_stream_entry}{4}{+Entries:list, -StreamId:pair(nonneg,nonneg), ?Tag:atom, -Fields:dict}
+\nodescription
+    \predicate[nondet]{redis_stream_entry}{5}{+Reads:list, -Key:atom, -StreamId:pair(nonneg,nonneg), ?Tag:atom, -Fields:dict}
+Unifies non-deterministically with all \arg{Entries}, or \arg{Fields}
+dictionaries embedded with multi-stream \arg{Reads}. Decodes the stream
+identifier and the Entry.
+
+\begin{arguments}
+\arg{Entries} & is a list of [\arg{StreamId}, \arg{Fields}] lists, another list of
+lists. Each sub-list describes an "entry" within the stream, a
+pairing between an identifier and some fields. \\
+\end{arguments}
+
+    \predicate[semidet]{redis_stream_id}{1}{?RedisTimeSeqPair}
+\nodescription
+    \predicate[semidet]{redis_stream_id}{2}{?StreamId:text, ?RedisTimeSeqPair}
+\nodescription
+    \predicate[semidet]{redis_stream_id}{3}{?StreamId:text, ?RedisTime:nonneg, ?Seq:nonneg}
+Stream identifier to millisecond and sequence numbers. In
+practice, the numbers always convert to integers.
+
+Deliberately validates incoming Redis time and sequence numbers.
+Both must be integers and both must be zero or more. The predicates
+fail otherwise. Internally, Redis stores stream identifiers as
+128-bit unsigned integers split in half for the time and sequence
+values, each of 64 bits.
+
+The 3-arity version of the predicate handles extraction of time and
+sequence integers from arbitrary stream identifiers: text or
+compound terms, including implied zero-sequence stream identifier
+with a single non-negative integer representing a millisecond Unix
+time.
+
+\begin{arguments}
+\arg{StreamId} & identifies a stream message or entry, element or item.
+All these terms apply to the contents of a stream, but Redis
+internally refers to the content as \textit{entries}. \\
+\arg{RedisTimeSeqPair} & is a pair of non-negative integers, time and
+sequence. The Redis time equals Unix time multiplied by 1,000; in
+other words, Unix time in milliseconds. \\
+\end{arguments}
+
+    \predicate[semidet]{redis_time}{1}{+RedisTime}
+Successful when \arg{RedisTime} is a positive integer. Redis times amount
+to millisecond-scale Unix times.
+
+\begin{arguments}
+\arg{RedisTime} & in milliseconds since 1970. \\
+\end{arguments}
+
+    \predicate[det]{redis_date_time}{3}{+RedisTime, -DateTime, +TimeZone}
+Converts \arg{RedisTime} to \arg{DateTime} within \arg{TimeZone}.
+\end{description}
+
+\chapter{library(canny/redis_streams)}\label{sec:redisstreams}
+
+\begin{description}
+    \predicate[det]{xrange}{4}{+Redis, +Key:atom, -Entries:list, +Options:list}
+Applies range selection to \arg{Key} stream. \arg{Options} optionally specify
+the start and end stream identifiers, defaulting to \verb$-$ and \verb$+$
+respectively or in reverse if \verb$rev(true)$ included in \arg{Options} list;
+the plus stream identifier stands for the maximum identifier, or
+the newest, whereas the minus identifier stands for the oldest.
+Option \verb$count(Count)$ limits the number of entries to read by
+\arg{Count} items.
+
+The following always unifies \arg{Entries} with \verb$[]$.
+
+\begin{code}
+xrange(Server, Key, Entries, [start(+)]).
+xrange(Server, Key, Entries, [rev(true), start(-)]).
+\end{code}
+
+    \predicate[semidet]{xread}{4}{+Redis, +Streams:dict, -Reads:list, +Options:list}
+Unifies \arg{Reads} from \arg{Streams}. Fails on time-out, if option
+\verb$block(Milliseconds)$ specifies a non-zero blocking delay.
+
+\begin{arguments}
+\arg{Reads} & by stream key. The reply has the form [Key, Entries]
+for each stream where each member of Entries has the form
+[StreamID, Fields] where Fields is an array of keys and values. \\
+\end{arguments}
+
+    \predicate[semidet]{xread_call}{5}{+Redis, +Streams, :Goal, -Fields, +Options}
+\nodescription
+    \predicate[semidet]{xread_call}{6}{+Redis, +Streams, :Goal, ?Tag, -Fields, +Options}
+Reads \arg{Streams} continuously until \arg{Goal} succeeds or times out. Also
+supports a \arg{Redis} time limit option so that blocking, if used, does
+not continue indefinately even on a very busy stream set. The limit
+applies to any of the given streams; it acts as a time threshold
+for continuous blocking failures.
 \end{description}
 
 \chapter{library(canny/situations)}\label{sec:situations}
