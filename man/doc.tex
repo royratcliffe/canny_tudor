@@ -103,6 +103,14 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.23.0] - 2022-10-02}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Half-duplex hdx/\{4, 3, 2\} predicates
+\end{shortlist}
+
 \section{[0.22.0] - 2022-10-02}
 
 \subsection{Added}
@@ -768,6 +776,33 @@ the root directory (/) on Unix.
 typically include a driver letter, else not absolute in the complete
 sense under Microsoft Windows since its file system supports
 multiple root directories on different mounted drives. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(canny/hdx)}\label{sec:hdx}
+
+\begin{description}
+    \predicate[semidet]{hdx}{4}{+StreamPair, +Term, -Codes, +TimeOut}
+\nodescription
+    \predicate[semidet]{hdx}{3}{+In, -Codes, +TimeOut}
+\nodescription
+    \predicate[semidet]{hdx}{2}{+Out, +Term}
+Performs a single half-duplex stream interaction with \arg{StreamPair}.
+Flushes \arg{Term} to the output stream. Reads pending \arg{Codes} from the
+input stream within \arg{TimeOut} seconds. Succeeds when a write-read
+cycle completes without timing out; fails on time-out expiry.
+
+Filling a stream buffer blocks the calling thread if there is no
+input ready. Pending read operations also block for the same reason.
+Hence the \predref{wait_for_input}{3} \textbf{must} precede them.
+
+\begin{arguments}
+\arg{StreamPair} & connection from client to server, a
+closely-associated input and output stream pairing used for
+half-duplex communication. \\
+\arg{Term} & to write and flush. \\
+\arg{Codes} & waited for and extracted from the pending input stream. \\
+\arg{TimeOut} & in seconds. \\
 \end{arguments}
 \end{description}
 
