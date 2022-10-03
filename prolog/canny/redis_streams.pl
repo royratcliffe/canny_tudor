@@ -112,7 +112,7 @@ xread_call(Redis, Streams, Goal, Fields, Options) :-
     redis_last_streams(Reads, _, Streams_),
     xread_call_(Redis, Streams.put(Streams_), Goal, Reads, Fields, Options).
 
-xread_call_(_Redis, _Streams, Goal, Reads, Fields, _Options) :-
+xread_call_(_Redis, _Streams, Goal, Reads, Fields, Options) :-
     redis_stream_read(Reads, Key, StreamId, Fields),
     call(Goal, Key, StreamId, Fields),
     select_option(key(Key), Options, _, _),
@@ -136,7 +136,7 @@ xread_call(Redis, Streams, Goal, Tag, Fields, Options) :-
     redis_last_streams(Reads, _, Streams_),
     xread_call_(Redis, Streams.put(Streams_), Goal, Reads, Tag, Fields, Options).
 
-xread_call_(_Redis, _Streams, Goal, Reads, Tag, Fields, _Options) :-
+xread_call_(_Redis, _Streams, Goal, Reads, Tag, Fields, Options) :-
     redis_stream_read(Reads, Key, StreamId, Tag, Fields),
     call(Goal, Key, StreamId, Tag, Fields),
     select_option(key(Key), Options, _, _),
