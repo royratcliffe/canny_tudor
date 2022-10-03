@@ -112,38 +112,40 @@ xread_call(Redis, Streams, Goal, Fields, Options) :-
     redis_last_streams(Reads, _, Streams_),
     xread_call_(Redis, Streams.put(Streams_), Goal, Reads, Fields, Options).
 
-xread_call_(_Redis, _Streams, Goal, Reads, Fields, _Options) :-
+xread_call_(_Redis, _Streams, Goal, Reads, Fields, Options) :-
     redis_stream_read(Reads, Key, StreamId, Fields),
     call(Goal, Key, StreamId, Fields),
+    select_option(key(Key), Options, _, _),
+    select_option(id(StreamId), Options, _, _),
     !.
 xread_call_(Redis, Streams, Goal, _Reads, Fields, Options) :-
-    (   option(threshold(Threshold), Options)
-    ->  dict_pairs(Streams, _, Pairs),
-        maplist(xread_call__, Pairs, RedisTimes),
-        max_list(RedisTimes, RedisTime),
-        RedisTime < Threshold
-    ;   true
-    ),
+    streams_options(Streams, Options),
     xread_call(Redis, Streams, Goal, Fields, Options).
-
-xread_call__(_Key-StreamId, RedisTime) :-
-    redis_stream_id(StreamId, RedisTime, _Seq).
 
 xread_call(Redis, Streams, Goal, Tag, Fields, Options) :-
     xread(Redis, Streams, Reads, Options),
     redis_last_streams(Reads, _, Streams_),
     xread_call_(Redis, Streams.put(Streams_), Goal, Reads, Tag, Fields, Options).
 
-xread_call_(_Redis, _Streams, Goal, Reads, Tag, Fields, _Options) :-
+xread_call_(_Redis, _Streams, Goal, Reads, Tag, Fields, Options) :-
     redis_stream_read(Reads, Key, StreamId, Tag, Fields),
     call(Goal, Key, StreamId, Tag, Fields),
+    select_option(key(Key), Options, _, _),
+    select_option(id(StreamId), Options, _, _),
     !.
 xread_call_(Redis, Streams, Goal, _Reads, Tag, Fields, Options) :-
+    streams_options(Streams, Options),
+    xread_call(Redis, Streams, Goal, Tag, Fields, Options).
+
+streams_options(Streams, Options) :-
     (   option(threshold(Threshold), Options)
-    ->  dict_pairs(Streams, _, Pairs),
-        maplist(xread_call__, Pairs, RedisTimes),
+    ->  !,
+        dict_pairs(Streams, _, Pairs),
+        maplist(stream_redis_time, Pairs, RedisTimes),
         max_list(RedisTimes, RedisTime),
         RedisTime < Threshold
     ;   true
-    ),
-    xread_call(Redis, Streams, Goal, Tag, Fields, Options).
+    ).
+
+stream_redis_time(_Key-StreamId, RedisTime) :-
+    redis_stream_id(StreamId, RedisTime, _Seq).
