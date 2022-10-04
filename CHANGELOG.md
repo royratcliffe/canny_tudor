@@ -3,6 +3,12 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.23.3] - 2022-10-04
+### Added
+- Option `key/1` and `id/1` for `xread_call`/{5, 6}
+### Fixed
+- Cut choice for `threshold/1` option
+
 ## [0.23.2] - 2022-10-02
 ### Changed
 - Bumped pack version to patch level 2
