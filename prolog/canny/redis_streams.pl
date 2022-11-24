@@ -30,7 +30,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           [ xrange/4,                           % +Redis,+Key,-Entries,+Options
             xread/4,                            % +Redis,+Streams,-Reads,+Options
             xread_call/5,                       % +Redis,+Streams,:Goal,-Fields,+Options
-            xread_call/6                        % +Redis,+Streams,:Goal,?Tag,-Fields,+Options
+            xread_call/6,                       % +Redis,+Streams,:Goal,?Tag,-Fields,+Options
+            xread_ack/6                         % +Redis,+Key,+Select,+Id,-Fields,+Options
           ]).
 :- autoload(library(option), [option/3, option/2]).
 :- autoload(library(lists), [append/3]).
@@ -150,18 +151,18 @@ streams_options(Streams, Options) :-
 stream_redis_time(_Key-StreamId, RedisTime) :-
     redis_stream_id(StreamId, RedisTime, _Seq).
 
-%!  xread_ack(+Redis, +Key, +Key0, +Id0, -Fields, +Options) is semidet.
+%!  xread_ack(+Redis, +Key, +Select, +Id, -Fields, +Options) is semidet.
 %
-%   Unifies Fields with entry from Key with `key` and `id` fields
-%   matching Key0 and Id0.
+%   Unifies Fields with entry from Key with fields matching Select and
+%   with a stream identifier starting at Id.
 %
 %   @arg Redis connection to Redis server.
 %
 %   @arg Key stream from which to read.
 %
-%   @arg Key0 stream to match.
+%   @arg Select dictionary to match.
 %
-%   @arg Id0 identifying start of window. The millisecond Redis time
+%   @arg Id identifying start of window. The millisecond Redis time
 %   marks the start of the reading window from which to scan. The end
 %   extends forward in time by the limiting delay if Options defines a
 %   limit(Milliseconds) option in milliseconds.
@@ -169,18 +170,18 @@ stream_redis_time(_Key-StreamId, RedisTime) :-
 %   @arg Fields unified with matching entry.
 %
 %   @arg Options includes limit/1 for limiting Redis time in
-%   milliseconds relative to the millisecond time of the Id0 matched
+%   milliseconds relative to the millisecond time of the Id matched
 %   stream identifier.
 
-xread_ack(Redis, Key, Key0, Id0, Fields, Options) :-
-    redis_stream_id(Id0, RedisTime0, Seq0),
+xread_ack(Redis, Key, Select, Id, Fields, Options) :-
+    redis_stream_id(Id, RedisTime0, Seq0),
     (   option(limit(Limit), Options)
     ->  Threshold is RedisTime0 + Limit,
         Options_ = [threshold(Threshold)|Options]
     ;   Options_ = Options
     ),
     xread_call(Redis, _{}.put(Key, RedisTime0-0),
-               xread_ack_(Key0, RedisTime0-Seq0), _, Fields,
+               xread_ack_(Select, RedisTime0-Seq0), _, Fields,
                [ id(RedisTime-Seq)|Options_
                ]),
     select_option(id(RedisTime-Seq), Options, _, _),
@@ -191,6 +192,6 @@ xread_ack(Redis, Key, Key0, Id0, Fields, Options) :-
 
 :- public xread_ack_/6.
 
-xread_ack_(Key0, Id0, _Key, _StreamId, _Tag, Fields) :-
-    Fields.get(key) == Key0,
-    redis_stream_id(Fields.get(id), Id0).
+xread_ack_(Select, Id, _Key, _StreamId, _Tag, Fields) :-
+    Select :< Fields,
+    redis_stream_id(Fields.get(id), Id).
