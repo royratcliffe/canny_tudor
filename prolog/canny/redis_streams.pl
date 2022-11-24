@@ -31,7 +31,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             xread/4,                            % +Redis,+Streams,-Reads,+Options
             xread_call/5,                       % +Redis,+Streams,:Goal,-Fields,+Options
             xread_call/6,                       % +Redis,+Streams,:Goal,?Tag,-Fields,+Options
-            xread_ack/6                         % +Redis,+Key,+Select,+Id,-Fields,+Options
+            xread_ack/6,                        % +Redis,+Key,+Select,+Id,-Fields,+Options
+            xadd_group_ack/5                    % +Redis,+KeyGroup,+Add,-Ack,+Options
           ]).
 :- autoload(library(option), [option/3, option/2]).
 :- autoload(library(lists), [append/3]).
@@ -195,3 +196,25 @@ xread_ack(Redis, Key, Select, Id, Fields, Options) :-
 xread_ack_(Select, Id, _Key, _StreamId, _Tag, Fields) :-
     Select :< Fields,
     redis_stream_id(Fields.get(id), Id).
+
+%!  xadd_group_ack(+Redis, +KeyGroup, +Add, -Ack, +Options) is semidet.
+%
+%   Adds a request Add to some Key:Group stream which Group consumers
+%   read and add an Ack to Key stream on completion, success or failure.
+%   The protocol makes a simple assumption: that the Ack entry carries a
+%   `group` field matching Group.
+%
+%   @arg Redis connection to server.
+%
+%   @arg KeyGroup is the colon-separated Key and Group.
+%
+%   @arg Add dictionary of fields to add.
+%
+%   @arg Ack dictionary of acknowledged fields, including `group`
+%   matching the Group.
+%
+%   @arg Options for reading acknowledgement.
+
+xadd_group_ack(Redis, Key:Group, Add, Ack, Options) :-
+    xadd(Redis, Key:Group, Id, Add),
+    xread_ack(Redis, Key, _{group:Group}, Id, Ack, Options).
