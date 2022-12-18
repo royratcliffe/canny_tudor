@@ -62,7 +62,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 redis_last_streams(Reads, Streams) :-
     maplist(redis_last_stream, Reads, Streams).
 
-redis_last_stream([Key, Entries], Key-StreamId) :-
+redis_last_stream(Key-Entries, Key-StreamId) :-
     redis_last_stream_entry(Entries, StreamId, _).
 
 redis_last_streams(Reads, Tag, Streams) :-
@@ -120,11 +120,11 @@ redis_keys_and_stream_ids([Key-StreamId0|T0], [Key|T1], [RedisTime-Seq|T]) :-
 %   another sub-list of stream entries.
 
 redis_stream_read(Reads, Key, StreamId, Fields) :-
-    member([Key, Entries], Reads),
+    member(Key-Entries, Reads),
     redis_stream_entry(Entries, StreamId, Fields).
 
 redis_stream_read(Reads, Key, StreamId, Tag, Fields) :-
-    member([Key, Entries], Reads),
+    member(Key-Entries, Reads),
     redis_stream_entry(Entries, StreamId, Tag, Fields).
 
 %!  redis_stream_entry(+Entries, -StreamId, -Fields) is nondet.
