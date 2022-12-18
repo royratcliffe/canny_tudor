@@ -80,7 +80,7 @@ rev(true, xrevrange, +, -).
 %   Unifies Reads from Streams. Fails on time-out, if option
 %   `block(Milliseconds)` specifies a non-zero blocking delay.
 %
-%   @arg Reads by stream key. The reply has the form [Key, Entries]
+%   @arg Reads by stream key. The reply has the form Key-Entries
 %   for each stream where each member of Entries has the form
 %   [StreamID, Fields] where Fields is an array of keys and values.
 

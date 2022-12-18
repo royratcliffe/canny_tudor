@@ -115,7 +115,7 @@ redis_keys_and_stream_ids([Key-StreamId0|T0], [Key|T1], [RedisTime-Seq|T]) :-
 %
 %   Unifies with all Key, StreamId and array of Fields for all Reads.
 %
-%   @arg Reads is a list of [Key, Entries] lists, a list of lists. The
+%   @arg Reads is a list of Key-Entries items, a list of pairs. The
 %   sub-lists always have two items: the Key of the stream followed by
 %   another sub-list of stream entries.
 
