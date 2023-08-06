@@ -29,15 +29,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- module(canny_crc,
           []).
 
-:- table poly_degree/2.
+:- table poly_deg/2.
 
-poly_degree(Poly, Degree) :- poly_degrees(Poly, [Degree]).
+poly_deg(Poly, Deg) :- poly_degs(Poly, [Deg]).
 
-poly_degrees(Poly, Degrees) :-
-    include(poly_degree_(Poly), [8, 16, 24, 32, 64], Degrees).
+poly_degs(Poly, Degs) :-
+    include(poly_deg_(Poly), [8, 16, 24, 32, 64], Degs).
 
-poly_degree_(Poly, Degree) :-
-    Low is 1 << Degree,
+poly_deg_(Poly, Deg) :-
+    Low is 1 << Deg,
     Low =< Poly,
     High is Low << 1,
     Poly < High.
