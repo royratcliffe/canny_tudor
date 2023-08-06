@@ -31,7 +31,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             bits/4,
             bits/3,
             bit_fields/3,                       % +Fields,+Shift,+Int
-            bit_fields/4                        % +Fields,+Shift,+Int0,-Int
+            bit_fields/4,                       % +Fields,+Shift,+Int0,-Int
+            rbit/3                              % +Shift:integer,+Int,?Reverse
           ]).
 
 :- use_module(library(clpfd)).
@@ -97,3 +98,25 @@ bit_fields([Value:Width|Rest], Shift, Int0, Int) :-
     Shift_ is Shift - Width,
     Int_ is Int0 \/ ((Value /\ ((1 << Width) - 1)) << Shift_),
     bit_fields(Rest, Shift_, Int_, Int).
+
+%!  rbit(+Shift:integer, +Int:integer, ?Reverse:integer) is semidet.
+%
+%   Bit reversal over a given span of bits. The reverse bits equal the
+%   mirror image of the original; integer $1$ reversed in 16 bits
+%   becomes $8000_{16}$ for instance.
+%
+%   Arity-3 `rbit/3` predicate throws away the residual. Any bit values
+%   lying outside the shifting span remain; they do not appear in the
+%   residual and the predicate discards them. The order of the sub-terms
+%   is not very important, except for failures. Placing `succ` first
+%   ensures that recursive shifting fails if `Shift` is not a positive
+%   integer; it triggers an exception if not actually an integer.
+
+rbit(Shift, Int, Reverse) :- rbit(Shift, Int, 0, _Int, Reverse).
+
+rbit(0, Int, Reverse, Int, Reverse) :- !.
+rbit(Shift, Int0, Reverse0, Int, Reverse) :-
+    succ(Shift_, Shift),
+    Reverse_ is (Reverse0 << 1) \/ (Int0 /\ 1),
+    Int_ is Int0 >> 1,
+    rbit(Shift_, Int_, Reverse_, Int, Reverse).
