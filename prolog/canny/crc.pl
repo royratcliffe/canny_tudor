@@ -29,6 +29,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- module(canny_crc,
           []).
 
+:- table poly_degree/2.
+
 poly_degree(Poly, Degree) :- poly_degrees(Poly, [Degree]).
 
 poly_degrees(Poly, Degrees) :-
