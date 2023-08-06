@@ -13,4 +13,9 @@ test(bits, [true(A==0x8000_0000)]) :- bits(31, 1, A, 1, 0).
 test(bit_fields, true(A-B == 3-3)) :- bit_fields([A:2, B:2], 4, 2'1111).
 test(bit_fields, true(A == 2'0101)) :- bit_fields([1:2, 1:2], 4, 0, A).
 
+test(rbit, [true(A==16'8000_0000)]) :-
+    rbit(32, 1, A).
+test(rbit, [true(A==16'80_00)]) :-
+    rbit(16, 1, A).
+
 :- end_tests(canny_bits).
