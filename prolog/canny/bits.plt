@@ -17,5 +17,7 @@ test(rbit, [true(A==16'8000_0000)]) :-
     rbit(32, 1, A).
 test(rbit, [true(A==16'80_00)]) :-
     rbit(16, 1, A).
+test(rbit, [true(A==16'8408)]) :-
+    rbit(16, 16'1_1021, A).
 
 :- end_tests(canny_bits).
