@@ -27,7 +27,82 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_crc,
-          []).
+          [ crc/2,                              % +Predefined,-Check
+            crc_property/2,                     % +Check,?Property
+            crc/3                               % +Check0,+Term,-Check
+          ]).
+:- autoload(library(apply), [foldl/4]).
+:- autoload(library(option), [option/2]).
+
+:- use_module(bits).
+
+%!  crc(+Predefined, -Check) is semidet.
+
+crc(crc-8, crc(16'107, 16'0, [])).
+crc(crc-16-mcrf4xx, crc(16'11021, 16'FFFF, [reverse])).
+
+%!  crc_property(+Check, ?Property) is semidet.
+
+crc_property(crc(Poly, _Check, _Options), poly(Poly)).
+crc_property(crc(_Poly, Check, _Options), check(Check)).
+
+%!  crc(+Check0, +Term, -Check) is semidet.
+
+crc(crc(Poly, Check0, Options), Byte, crc(Poly, Check, Options)) :-
+    integer(Byte),
+    !,
+    0 =< Byte,
+    Byte < 256,
+    poly_deg(Poly, Deg),
+    (   option(reverse, Options)
+    ->  check_right(Deg, Poly, Check0, Byte, Check_)
+    ;   Byte_ is Byte xor Check0,
+        check_left(Poly, Byte_, Check_)
+    ),
+    Check is Check_ /\ ((1 << Deg) - 1).
+crc(Check0, List, Check) :-
+    is_list(List),
+    foldl(crc_, List, Check0, Check).
+
+crc_(Term, Check0, Check) :- crc(Check0, Term, Check).
+
+check_left(Poly, Check0, Check) :- check_left(8, Poly, Check0, Check).
+
+check_left(0, _Poly, Check, Check) :- !.
+check_left(Count, Poly, Check0, Check) :-
+    succ(Count_, Count),
+    poly_deg(Poly, Deg),
+    bit_left(Deg, Check0, Bit, Check1),
+    xor(Bit, Check1, Poly, Check_),
+    check_left(Count_, Poly, Check_, Check).
+
+check_right(Poly, Check0, Check) :-
+    poly_deg(Poly, Deg),
+    rbit(Deg, Poly, Poly_),
+    check_right(8, Poly_, Check0, Check).
+
+check_right(0, _Poly, Check, Check) :- !.
+check_right(Count, Poly, Check0, Check) :-
+    succ(Count_, Count),
+    bit_right(Check0, Bit, Check1),
+    xor(Bit, Check1, Poly, Check_),
+    check_right(Count_, Poly, Check_, Check).
+
+check_right(16, Poly, Check0, Byte, Check) :-
+    Byte_ is Byte xor (Check0 /\ 16'FF),
+    check_right(Poly, Byte_, Check1),
+    Check is Check1 xor (Check0 >> 8).
+
+bit_left(Deg, Byte0, Bit, Byte) :-
+    Bit is getbit(Byte0, Deg - 1),
+    Byte is Byte0 << 1.
+
+bit_right(Byte0, Bit, Byte) :-
+    Bit is getbit(Byte0, 0),
+    Byte is Byte0 >> 1.
+
+xor(0, Byte, _Poly, Byte).
+xor(1, Byte0, Poly, Byte) :- Byte is Byte0 xor Poly.
 
 :- table poly_deg/2.
 
