@@ -56,8 +56,7 @@ crc(crc(Poly, Check0, Options), Byte, crc(Poly, Check, Options)) :-
     poly_deg(Poly, Deg),
     (   option(reverse, Options)
     ->  check_right(Deg, Poly, Check0, Byte, Check_)
-    ;   Byte_ is Byte xor Check0,
-        check_left(Poly, Byte_, Check_)
+    ;   check_left(Deg, Poly, Check0, Byte, Check_)
     ),
     Check is Check_ /\ ((1 << Deg) - 1).
 crc(Check0, List, Check) :-
@@ -75,6 +74,10 @@ check_left(Count, Poly, Check0, Check) :-
     bit_left(Deg, Check0, Bit, Check1),
     xor(Bit, Check1, Poly, Check_),
     check_left(Count_, Poly, Check_, Check).
+
+check_left(8, Poly, Check0, Byte, Check) :-
+    Byte_ is Byte xor Check0,
+    check_left(Poly, Byte_, Check).
 
 check_right(Poly, Check0, Check) :-
     poly_deg(Poly, Deg),
