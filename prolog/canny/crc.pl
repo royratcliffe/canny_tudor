@@ -31,10 +31,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- table poly_deg/2.
 
-poly_deg(Poly, Deg) :- poly_degs(Poly, [Deg]).
+poly_deg(Poly, Deg) :- deg(Deg), poly_deg_(Poly, Deg), !.
 
-poly_degs(Poly, Degs) :-
-    include(poly_deg_(Poly), [8, 16, 24, 32, 64], Degs).
+deg(8).
+deg(16).
+deg(24).
+deg(32).
+deg(64).
 
 poly_deg_(Poly, Deg) :-
     Low is 1 << Deg,
