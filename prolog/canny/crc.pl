@@ -34,7 +34,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- autoload(library(apply), [foldl/4]).
 :- autoload(library(option), [option/2]).
 
-:- use_module(bits).
+:- use_module(bits, [rbit/3]).
 
 %!  crc(+Predefined, -Check) is semidet.
 
