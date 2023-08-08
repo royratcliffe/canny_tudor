@@ -72,7 +72,11 @@ crc_(Term, Check0, Check) :- crc(Check0, Term, Check).
 
 :- table check_left/3.
 
-check_left(Poly, Check0, Check) :- check_left(8, Poly, Check0, Check).
+check_left(Poly, Check0, Check) :-
+    poly_deg(Poly, Deg),
+    Check1 is Check0 << (Deg - 8),
+    check_left(8, Poly, Check1, Check_),
+    Check is Check_ /\ ((1 << Deg) - 1).
 
 check_left(0, _Poly, Check, Check) :- !.
 check_left(Count, Poly, Check0, Check) :-
