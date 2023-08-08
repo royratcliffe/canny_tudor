@@ -65,6 +65,8 @@ crc(Check0, List, Check) :-
 
 crc_(Term, Check0, Check) :- crc(Check0, Term, Check).
 
+:- table check_left/3.
+
 check_left(Poly, Check0, Check) :- check_left(8, Poly, Check0, Check).
 
 check_left(0, _Poly, Check, Check) :- !.
@@ -95,6 +97,7 @@ check_left(64, Poly, Check0, Byte, Check) :-
     check_left(Poly, Byte_, Check_),
     Check is Check_ xor ((Check0 << 8) /\ 16'FFFF_FFFF_FFFF_FF00).
 
+:- table check_right/3.
 
 check_right(Poly, Check0, Check) :-
     poly_deg(Poly, Deg),
