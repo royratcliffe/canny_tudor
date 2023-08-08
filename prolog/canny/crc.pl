@@ -39,7 +39,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %!  crc(+Predefined, -Check) is semidet.
 
 crc(crc-8, crc(16'107, 16'0, [])).
-crc(crc-16-mcrf4xx, crc(16'11021, 16'FFFF, [reverse])).
+crc(crc-16-mcrf4xx, crc(16'1_1021, 16'FFFF, [reverse])).
 
 %!  crc_property(+Check, ?Property) is semidet.
 
