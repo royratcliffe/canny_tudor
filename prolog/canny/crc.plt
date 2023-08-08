@@ -2,21 +2,6 @@
 
 :- use_module(crc).
 
-test(crc_8, true(Check == 16'D5)) :-
-    crc(crc-8, CRC1),
-    crc(CRC1, `CatMouse987654321`, CRC2),
-    crc_property(CRC2, check(Check)).
-
-test(crc_16_mcrf4xx, true(Check == 16'F56E)) :-
-    crc(crc-16-mcrf4xx, CRC1),
-    crc(CRC1, `CatMouse987654321`, CRC2),
-    crc_property(CRC2, check(Check)).
-
-test(crc_64_jones, true(Check == 16'7036_9BE5_4794_2213)) :-
-    crc(crc-64-jones, CRC1),
-    crc(CRC1, `CatMouse987654321`, CRC2),
-    crc_property(CRC2, check(Check)).
-
 cat_mouse_987654321(crc-8, 16'D5).
 cat_mouse_987654321(crc-16-mcrf4xx, 16'F56E).
 cat_mouse_987654321(crc-64-jones, 16'7036_9BE5_4794_2213).
