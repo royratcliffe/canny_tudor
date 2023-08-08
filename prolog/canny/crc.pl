@@ -98,7 +98,8 @@ check_left(Deg, Poly, Check0, Byte, Check) :-
 check_right(Poly, Check0, Check) :-
     poly_deg(Poly, Deg),
     rbit(Deg, Poly, Poly_),
-    check_right(8, Poly_, Check0, Check).
+    check_right(8, Poly_, Check0, Check_),
+    Check is Check_ /\ ((1 << Deg) - 1).
 
 check_right(0, _Poly, Check, Check) :- !.
 check_right(Count, Poly, Check0, Check) :-
