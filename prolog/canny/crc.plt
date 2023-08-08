@@ -3,6 +3,7 @@
 :- use_module(crc).
 
 cat_mouse_987654321(crc-8, 16'D5).
+cat_mouse_987654321(crc-8-itu, 16'80).
 cat_mouse_987654321(crc-16-mcrf4xx, 16'F56E).
 cat_mouse_987654321(crc-64-jones, 16'7036_9BE5_4794_2213).
 
