@@ -12,6 +12,11 @@ test(crc_16_mcrf4xx, true(Check == 16'F56E)) :-
     crc(CRC1, `CatMouse987654321`, CRC2),
     crc_property(CRC2, check(Check)).
 
+test(crc_64_jones, true(Check == 16'7036_9BE5_4794_2213)) :-
+    crc(crc-64-jones, CRC1),
+    crc(CRC1, `CatMouse987654321`, CRC2),
+    crc_property(CRC2, check(Check)).
+
 test(poly_deg) :-
     canny_crc:poly_deg(16'107, 8),
     canny_crc:poly_deg(16'18005, 16),
