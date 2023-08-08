@@ -46,11 +46,7 @@ crc(crc-64-jones, crc(16'1_AD93_D235_94C9_35A9, 16'FFFF_FFFF_FFFF_FFFF, [reverse
 %!  crc_property(+Check, ?Property) is semidet.
 
 crc_property(crc(Poly, _Check, _Options), poly(Poly)).
-crc_property(crc(_Poly, Check_, Options), check(Check)) :-
-    (   option(xor(Check0), Options)
-    ->  Check is Check_ xor Check0
-    ;   Check = Check_
-    ).
+crc_property(crc(_Poly, Check, _Options), check(Check)).
 
 %!  crc(+Check0, +Term, -Check) is semidet.
 
@@ -60,11 +56,13 @@ crc(crc(Poly, Check0, Options), Byte, crc(Poly, Check, Options)) :-
     0 =< Byte,
     Byte < 256,
     poly_deg(Poly, Deg),
+    xor(Check0, Check1, Options),
     (   option(reverse, Options)
-    ->  check_right(Deg, Poly, Check0, Byte, Check_)
-    ;   check_left(Deg, Poly, Check0, Byte, Check_)
+    ->  check_right(Deg, Poly, Check1, Byte, Check_)
+    ;   check_left(Deg, Poly, Check1, Byte, Check_)
     ),
-    Check is Check_ /\ ((1 << Deg) - 1).
+    Check2 is Check_ /\ ((1 << Deg) - 1),
+    xor(Check2, Check, Options).
 crc(Check0, List, Check) :-
     is_list(List),
     foldl(crc_, List, Check0, Check).
@@ -147,6 +145,12 @@ bit_right(Byte0, Bit, Byte) :-
 
 xor(0, Byte, _Poly, Byte).
 xor(1, Byte0, Poly, Byte) :- Byte is Byte0 xor Poly.
+
+xor(Check0, Check, Options) :-
+    (   option(xor(Check_), Options)
+    ->  Check is Check_ xor Check0
+    ;   Check = Check0
+    ).
 
 :- table poly_deg/2.
 
