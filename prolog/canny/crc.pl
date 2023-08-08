@@ -130,7 +130,7 @@ check_right(64, Poly, Check0, Byte, Check) :-
 
 bit_left(Deg, Byte0, Bit, Byte) :-
     Bit is getbit(Byte0, Deg - 1),
-    Byte is Byte0 << 1.
+    Byte is (Byte0 << 1) /\ ((1 << Deg) - 1).
 
 bit_right(Byte0, Bit, Byte) :-
     Bit is getbit(Byte0, 0),
