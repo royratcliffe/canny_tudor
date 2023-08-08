@@ -44,7 +44,11 @@ crc(crc-16-mcrf4xx, crc(16'11021, 16'FFFF, [reverse])).
 %!  crc_property(+Check, ?Property) is semidet.
 
 crc_property(crc(Poly, _Check, _Options), poly(Poly)).
-crc_property(crc(_Poly, Check, _Options), check(Check)).
+crc_property(crc(_Poly, Check_, Options), check(Check)) :-
+    (   option(xor(Check0), Options)
+    ->  Check is Check_ xor Check0
+    ;   Check = Check_
+    ).
 
 %!  crc(+Check0, +Term, -Check) is semidet.
 
