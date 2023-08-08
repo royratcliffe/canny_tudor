@@ -5,6 +5,7 @@
 cat_mouse_987654321(crc-8, 16'D5).
 cat_mouse_987654321(crc-8-itu, 16'80).
 cat_mouse_987654321(crc-16-mcrf4xx, 16'F56E).
+cat_mouse_987654321(crc-32-bzip2, 16'AF53_5767).
 cat_mouse_987654321(crc-64-jones, 16'7036_9BE5_4794_2213).
 
 test(predefined_check_CatMouse987654321, [forall(cat_mouse_987654321(Predefined, Check))]) :-
