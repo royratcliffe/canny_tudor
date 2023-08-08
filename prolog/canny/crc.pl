@@ -81,25 +81,12 @@ check_left(Count, Poly, Check0, Check) :-
     xor(Bit, Check1, Poly, Check_),
     check_left(Count_, Poly, Check_, Check).
 
-check_left(8, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor Check0,
-    check_left(Poly, Byte_, Check).
-check_left(16, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor (Check0 >> 8),
+check_left(Deg, Poly, Check0, Byte, Check) :-
+    Shift is Deg - 8,
+    Byte_ is Byte xor (Check0 >> Shift),
     check_left(Poly, Byte_, Check_),
-    Check is Check_ xor ((Check0 << 8) /\ 16'FF00).
-check_left(24, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor (Check0 >> 16),
-    check_left(Poly, Byte_, Check_),
-    Check is Check_ xor ((Check0 << 8) /\ 16'FF_FF00).
-check_left(32, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor (Check0 >> 24),
-    check_left(Poly, Byte_, Check_),
-    Check is Check_ xor ((Check0 << 8) /\ 16'FFFF_FF00).
-check_left(64, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor (Check0 >> 56),
-    check_left(Poly, Byte_, Check_),
-    Check is Check_ xor ((Check0 << 8) /\ 16'FFFF_FFFF_FFFF_FF00).
+    And is ((1 << Shift) - 1) << 8,
+    Check is Check_ xor ((Check0 << 8) /\ And).
 
 :- table check_right/3.
 
@@ -115,23 +102,8 @@ check_right(Count, Poly, Check0, Check) :-
     xor(Bit, Check1, Poly, Check_),
     check_right(Count_, Poly, Check_, Check).
 
-check_right(8, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor Check0,
-    check_right(Poly, Byte_, Check).
-check_right(16, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor (Check0 /\ 16'00FF),
-    check_right(Poly, Byte_, Check_),
-    Check is Check_ xor (Check0 >> 8).
-check_right(24, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor (Check0 /\ 16'00_00FF),
-    check_right(Poly, Byte_, Check_),
-    Check is Check_ xor (Check0 >> 8).
-check_right(32, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor (Check0 /\ 16'0000_00FF),
-    check_right(Poly, Byte_, Check_),
-    Check is Check_ xor (Check0 >> 8).
-check_right(64, Poly, Check0, Byte, Check) :-
-    Byte_ is Byte xor (Check0 /\ 16'0000_0000_0000_00FF),
+check_right(_Deg, Poly, Check0, Byte, Check) :-
+    Byte_ is Byte xor (Check0 /\ 16'FF),
     check_right(Poly, Byte_, Check_),
     Check is Check_ xor (Check0 >> 8).
 
