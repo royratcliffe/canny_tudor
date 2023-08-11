@@ -92,8 +92,8 @@ check_left(Deg, Poly, Check0, Byte, Check) :-
     Shift is Deg - 8,
     Byte_ is Byte xor (Check0 >> Shift),
     check_left(Poly, Byte_, Check_),
-    And is (1 << Shift) - 1,
-    Check is Check_ xor ((Check0 /\ And) << 8).
+    CheckMask is (1 << Shift) - 1,
+    Check is Check_ xor ((Check0 /\ CheckMask) << 8).
 
 :- table check_right/3.
 
