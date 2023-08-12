@@ -106,7 +106,7 @@ bit_fields([Value:Width|Rest], Shift, Int0, Int) :-
 %   becomes $8000_{16}$ for instance.
 %
 %   Arity-3 `rbit/3` predicate throws away the residual. Any bit values
-%   lying outside the shifting span remain; they do not appear in the
+%   lying outside the shifting span disappear; they do not appear in the
 %   residual and the predicate discards them. The order of the sub-terms
 %   is not very important, except for failures. Placing `succ` first
 %   ensures that recursive shifting fails if `Shift` is not a positive
