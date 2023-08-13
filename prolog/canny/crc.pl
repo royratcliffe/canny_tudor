@@ -36,7 +36,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- use_module(bits, [rbit/3]).
 
-%!  crc(+Predefined, -Check) is semidet.
+%!  crc(+Predefined, -CRC) is semidet.
+%
+%   Builds a predefined CRC accumulator.
+%
+%   @arg Predefined specifies a predefined CRC computation.
+%
+%   @arg CRC a newly-initialised CRC term with the correct polynomial,
+%   initial value and any necessary options such as bit reversal and
+%   inversion value.
 
 crc(crc-8,          crc(16'107, 16'0, [])).
 crc(crc-8-itu,      crc(16'107, 16'55, [xor(16'55)])).
@@ -46,12 +54,22 @@ crc(crc-32,         crc(16'1_04C1_1DB7, 16'0000_0000, [reverse, xor(16'FFFF_FFFF
 crc(crc-32-bzip2,   crc(16'1_04C1_1DB7, 16'0000_0000, [xor(16'FFFF_FFFF)])).
 crc(crc-64-jones,   crc(16'1_AD93_D235_94C9_35A9, 16'FFFF_FFFF_FFFF_FFFF, [reverse])).
 
-%!  crc_property(+Check, ?Property) is semidet.
+%!  crc_property(+CRC, ?Property) is semidet.
+%
+%   Extracts the CRC's checksum for comparison, or unifies with other
+%   interesting values belonging to a CRC accumulator.
 
 crc_property(crc(Poly, _Check, _Options), poly(Poly)).
 crc_property(crc(_Poly, Check, _Options), check(Check)).
 
-%!  crc(+Check0, +Term, -Check) is semidet.
+%!  crc(+CRC0, +Term, -CRC) is semidet.
+%
+%   Mutates CRC0 to CRC by feeding in a byte code, or a list of
+%   byte codes.
+%
+%   @arg CRC0 the initial or thus-far accumulated CRC.
+%   @arg Term a byte code or a list of byte codes.
+%   @arg CRC the updated CRC.
 
 crc(crc(Poly, Check0, Options), Byte, crc(Poly, Check, Options)) :-
     integer(Byte),
