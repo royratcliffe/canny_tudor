@@ -115,16 +115,16 @@ check_right(_Deg, Poly, Check0, Byte, Check) :-
     check_right(Poly, Byte_, Check_),
     Check is Check_ xor (Check0 >> 8).
 
-bit_left(Deg, Byte0, Bit, Byte) :-
-    Bit is getbit(Byte0, Deg - 1),
-    Byte is (Byte0 << 1) /\ ((1 << Deg) - 1).
+bit_left(Deg, Int0, Bit, Int) :-
+    Bit is getbit(Int0, Deg - 1),
+    Int is (Int0 << 1) /\ ((1 << Deg) - 1).
 
-bit_right(Byte0, Bit, Byte) :-
-    Bit is getbit(Byte0, 0),
-    Byte is Byte0 >> 1.
+bit_right(Int0, Bit, Int) :-
+    Bit is getbit(Int0, 0),
+    Int is Int0 >> 1.
 
-xor(0, Byte, _Poly, Byte).
-xor(1, Byte0, Poly, Byte) :- Byte is Byte0 xor Poly.
+xor(0, Int, _Poly, Int).
+xor(1, Int0, Poly, Int) :- Int is Int0 xor Poly.
 
 xor(Check0, Check, Options) :-
     (   option(xor(Check_), Options)
