@@ -27,9 +27,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_crc,
-          [ crc/2,                              % +Predefined,-Check
-            crc_property/2,                     % +Check,?Property
-            crc/3                               % +Check0,+Term,-Check
+          [ crc/2,                              % +Predefined,-CRC
+            crc_property/2,                     % +CRC,?Property
+            crc/3                               % +CRC0,+Term,-CRC
           ]).
 :- autoload(library(apply), [foldl/4]).
 :- autoload(library(option), [option/2]).
