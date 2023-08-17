@@ -29,7 +29,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- module(canny_crc,
           [ crc/2,                              % +Predefined,-CRC
             crc_property/2,                     % +CRC,?Property
-            crc/3                               % +CRC0,+Term,-CRC
+            crc/3,                              % +CRC0,+Term,-CRC
+            crc_16_mcrf4xx/1,                   % -Check
+            crc_16_mcrf4xx/3                    % +Check0,+Data,-Check
           ]).
 :- autoload(library(apply), [foldl/4]).
 :- autoload(library(option), [option/2]).
@@ -165,3 +167,26 @@ poly_deg_(Poly, Deg) :-
     Low =< Poly,
     High is Low << 1,
     Poly < High.
+
+%!  crc_16_mcrf4xx(-Check) is det.
+%
+%   Initialises CRC-16/MCRF4XX checksum.
+
+crc_16_mcrf4xx(16'FFFF).
+
+%!  crc_16_mcrf4xx(+Check0, +Data, -Check) is det.
+%
+%   Accumulates CRC-16/MCRF4XX checksum using optimal shifting and
+%   exclusive-OR operations.
+
+crc_16_mcrf4xx(Check0, Data, Check) :-
+    integer(Data),
+    !,
+    Data_ is (Check0 /\ 16'FF) xor (Data /\ 16'FF),
+    Data__ is Data_ xor ((Data_ << 4) /\ 16'FF),
+    Check is (Check0 >> 8) xor (Data__ << 8) xor (Data__ << 3) xor (Data__ >> 4).
+crc_16_mcrf4xx(Check0, Data, Check) :-
+    is_list(Data),
+    foldl(crc_16_mcrf4xx_, Data, Check0, Check).
+
+crc_16_mcrf4xx_(Data, Check0, Check) :- crc_16_mcrf4xx(Check0, Data, Check).

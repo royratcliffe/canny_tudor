@@ -20,4 +20,8 @@ test(poly_deg) :-
     canny_crc:poly_deg(16'104C11DB7, 32),
     canny_crc:poly_deg(16'1AD93D23594C935A9, 64).
 
+test(crc_16_mcrf4xx, true(B == 16'F56E)) :-
+    crc_16_mcrf4xx(A),
+    crc_16_mcrf4xx(A, `CatMouse987654321`, B).
+
 :- end_tests(canny_crc).
