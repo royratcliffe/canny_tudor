@@ -3,6 +3,13 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.23.4] - 2023-08-28
+### Added
+- Predicates `crc`/{2, 3} and `crc_property/2`
+- Predicates `crc_16_mcrf4xx`/{2, 3}
+- Predicate `rbit/3`
+- Table of contents to manual
+
 ## [0.23.3] - 2022-10-04
 ### Added
 - Option `key/1` and `id/1` for `xread_call`/{5, 6}

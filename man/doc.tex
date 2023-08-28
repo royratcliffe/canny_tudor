@@ -103,6 +103,17 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.23.4] - 2023-08-28}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Predicates \const{crc}/\{2, 3\} and \predref{crc_property}{2}
+    \item Predicates \verb$crc_16_mcrf4xx$/\{2, 3\}
+    \item Predicate \predref{rbit}{3}
+    \item Table of contents to manual
+\end{shortlist}
+
 \section{[0.23.3] - 2022-10-04}
 
 \subsection{Added}
@@ -636,6 +647,18 @@ variable or an integer. \\
 \arg{Shift} & is an integer number of total bits, e.g. 8 for eight-bit
 bytes, 16 for sixteen-bit words and so on. \\
 \end{arguments}
+
+    \predicate[semidet]{rbit}{3}{+Shift:integer, +Int:integer, ?Reverse:integer}
+Bit reversal over a given span of bits. The reverse bits equal the
+mirror image of the original; integer \$1\$ reversed in 16 bits
+becomes \$8000_\{16\}\$ for instance.
+
+Arity-3 \predref{rbit}{3} predicate throws away the residual. Any bit values
+lying outside the shifting span disappear; they do not appear in the
+residual and the predicate discards them. The order of the sub-terms
+is not very important, except for failures. Placing \const{succ} first
+ensures that recursive shifting fails if \arg{Shift} is not a positive
+integer; it triggers an exception if not actually an integer.
 \end{description}
 
 \chapter{library(canny/cover)}\label{sec:cover}
@@ -659,6 +682,41 @@ Non-deterministically finds \arg{Coverage} dictionaries for all \arg{Modules}.
 Bypasses those modules excluded from the required list, typically
 the list of modules belonging to a particular pack and excluding all
 system and other supporting modules.
+\end{description}
+
+\chapter{library(canny/crc)}\label{sec:crc}
+
+\begin{description}
+    \predicate[semidet]{crc}{2}{+Predefined, -CRC}
+Builds a predefined \arg{CRC} accumulator.
+
+\begin{arguments}
+\arg{Predefined} & specifies a predefined \arg{CRC} computation. \\
+\arg{CRC} & a newly-initialised \arg{CRC} term with the correct polynomial,
+initial value and any necessary options such as bit reversal and
+inversion value. \\
+\end{arguments}
+
+    \predicate[semidet]{crc_property}{2}{+CRC, ?Property}
+Extracts the \arg{CRC}'s checksum for comparison, or unifies with other
+interesting values belonging to a \arg{CRC} accumulator.
+
+    \predicate[semidet]{crc}{3}{+CRC0, +Term, -CRC}
+Mutates \arg{CRC0} to \arg{CRC} by feeding in a byte code, or a list of
+byte codes.
+
+\begin{arguments}
+\arg{CRC0} & the initial or thus-far accumulated \arg{CRC}. \\
+\arg{Term} & a byte code or a list of byte codes. \\
+\arg{CRC} & the updated \arg{CRC}. \\
+\end{arguments}
+
+    \predicate[det]{crc_16_mcrf4xx}{1}{-Check}
+Initialises CRC-16/MCRF4XX checksum.
+
+    \predicate[det]{crc_16_mcrf4xx}{3}{+Check0, +Data, -Check}
+Accumulates CRC-16/MCRF4XX checksum using optimal shifting and
+exclusive-OR operations.
 \end{description}
 
 \chapter{library(canny/endian): Big- and little-endian grammars}\label{sec:endian}
@@ -1404,7 +1462,7 @@ ghapi_update_gist(
 
 \begin{tags}
     \tag{See also}
-\url{https://docs.github.com/en/rest/reference/gists#update-a-gist}
+\url{https://docs.github.com/en/rest/reference/gists\#update-a-gist}
 \end{tags}
 
     \predicate[det]{ghapi_get}{3}{+PathComponents, +Data, +Options}
