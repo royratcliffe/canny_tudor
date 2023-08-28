@@ -12,6 +12,22 @@
 :- autoload(library(dcg/basics), [remainder/3]).
 
 %!  endian(?BigOrLittle, ?Width, ?Value)// is semidet.
+%
+%   Applies `big` or `little`-endian  ordering   grammar  to  an integer
+%   Value of any Width.
+%
+%   Divides the problem in two:  firstly   the  'endianness'  span which
+%   unifies an input or output phrase with the bit width of a value, and
+%   secondly the shifted bitwise-OR phase  that translates between coded
+%   eight-bit octets and un-encoded integers of unlimited bit width.
+%
+%   @arg BigOrLittle is the atom `big` or `little` specifying the
+%   endianness of the coded Value.
+%
+%   @arg Width is the multiple-of-eight bit width of the endian-ordered
+%   octet phrase.
+%
+%   @arg Value is the un-encoded integer value of unlimited bit width.
 
 endian(big, Width, Value) --> big_endian(Width, Value).
 endian(little, Width, Value) --> little_endian(Width, Value).
