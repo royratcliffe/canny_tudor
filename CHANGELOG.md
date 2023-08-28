@@ -7,6 +7,7 @@ log](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Predicates `crc`/{2, 3} and `crc_property/2`
 - Predicates `crc_16_mcrf4xx`/{2, 3}
+- Predicate `rbit/3`
 - Table of contents to manual
 
 ## [0.23.3] - 2022-10-04
