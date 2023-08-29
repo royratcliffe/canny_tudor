@@ -41,7 +41,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   Divides the problem in two:  firstly   the  'endianness'  span which
 %   unifies an input or output phrase with the bit width of a value, and
 %   secondly the shifted bitwise-OR phase  that translates between coded
-%   eight-bit octets and un-encoded integers of unlimited bit width.
+%   eight-bit octets and un-encoded integers of unlimited bit width by
+%   accumulation.
 %
 %   @arg BigOrLittle is the atom `big` or `little` specifying the
 %   endianness of the coded Value.
@@ -56,7 +57,14 @@ endian(little, Width, Value) --> little_endian(Width, Value).
 
 %!  big_endian(?Width, ?Value)// is semidet.
 %
-%   Implements big-endian endian(big, Width, Value) grammar.
+%   Implements the grammar for endian(big, Width, Value) super-grammar.
+%
+%   In (-, +)  mode  the  accumulator   recurses  _first_  and  then the
+%   residual Value_ merges with the accumulated  Value because the first
+%   octet code is the most-significant byte  of the value for big-endian
+%   integer representations, rather than the   least-significant. The `0
+%   =< H, H =< 255` guard conditions   ensure failure for non-octet code
+%   items in the list.
 
 big_endian(Width, Value) -->
     { var(Value), !
@@ -90,7 +98,12 @@ acc_(H, Value_, Value) :-
 
 %!  little_endian(?Width, ?Value)// is semidet.
 %
-%   Implements little-endian endian(little, Width, Value) grammar.
+%   Implements endian(little, Width, Value) grammar.
+%
+%   Little-endian accumulators perform the same   logical unification as
+%   for big-endian only in reverse. The  only difference between big and
+%   little: recurse first or recurse last.   Apart  from that subtle but
+%   essential difference, the inner computation behaves identically.
 
 little_endian(Width, Value) -->
     { var(Value), !
