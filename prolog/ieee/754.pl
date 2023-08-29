@@ -5,9 +5,9 @@
 :- use_module(library(canny/maths)).
 :- use_module(library(canny/bits)).
 
-%!  ieee(Bits, ExpBits, ExpBias) is semidet.
+%!  ieee(Width, ExpWidth, ExpBias) is semidet.
 %
-%   IEEE 754 has, for  floating-point  numbers   of  Bits  wide, ExpBits
+%   IEEE 754 has, for  floating-point  numbers   of  Width  wide, ExpWidth
 %   exponent bits with bias of ExpBias. The bias applies to the integral
 %   base-2 exponent and determines its zero value.
 %
@@ -19,18 +19,18 @@ ieee(64, 11, 1023).
 ieee(128, 15, 16383).
 ieee(256, 19, 262143).
 
-%!  inf(Bits, Inf) is semidet.
+%!  inf(Width, Inf) is semidet.
 %
 %   Infinity has all exponent bits set and  a zero significand. IEEE 754
 %   distinguishes between positive and negative  infinity using the sign
 %   bit.
 
-inf(Bits, Inf) :-
-    ieee(Bits, ExpBits, _),
-    Inf is ((1 << ExpBits) - 1) << (Bits - ExpBits - 1).
+inf(Width, Inf) :-
+    ieee(Width, ExpWidth, _),
+    Inf is ((1 << ExpWidth) - 1) << (Width - ExpWidth - 1).
 
-%!  ieee_754_float(+Bits, ?Word, ?Float) is det.
-%!  ieee_754_float(-Bits, ?Word, ?Float) is nondet.
+%!  ieee_754_float(+Width, ?Word, ?Float) is det.
+%!  ieee_754_float(-Width, ?Word, ?Float) is nondet.
 %
 %   Performs two-way pack and unpack for IEEE 754 floating-point numbers
 %   represented as words.
@@ -48,34 +48,34 @@ inf(Bits, Inf) :-
 %   Uses Sig rather than Mantissa; Sig   short  for Significand, another
 %   word for mantissa.
 
-ieee_754_float(Bits, Word, Float) :-
+ieee_754_float(Width, Word, Float) :-
     var(Float),
     !,
-    sig_exp(Bits, Word, Sig, Exp),
+    sig_exp(Width, Word, Sig, Exp),
     ldexp(Sig, Float, Exp).
-ieee_754_float(Bits, 0, 0.0) :- ieee(Bits, _, _), !.
-ieee_754_float(Bits, Inf, +1.0Inf) :- !, inf(Bits, Inf).
-ieee_754_float(Bits, Inf, -1.0Inf) :-
+ieee_754_float(Width, 0, 0.0) :- ieee(Width, _, _), !.
+ieee_754_float(Width, Inf, +1.0Inf) :- !, inf(Width, Inf).
+ieee_754_float(Width, Inf, -1.0Inf) :-
     !,
-    inf(Bits, Inf0),
-    Inf is 1 << (Bits - 1) \/ Inf0.
-ieee_754_float(Bits, NaN, 1.5NaN) :-
+    inf(Width, Inf0),
+    Inf is 1 << (Width - 1) \/ Inf0.
+ieee_754_float(Width, NaN, 1.5NaN) :-
     !,
-    inf(Bits, Inf0),
-    ieee(Bits, ExpBits, _),
-    NaN is Inf0 \/ (1 << (Bits - ExpBits - 2)).
-ieee_754_float(Bits, Word, Float) :-
+    inf(Width, Inf0),
+    ieee(Width, ExpWidth, _),
+    NaN is Inf0 \/ (1 << (Width - ExpWidth - 2)).
+ieee_754_float(Width, Word, Float) :-
     frexp(Float, Sig, Exp),
-    sig_exp(Bits, Word, Sig * 2, Exp - 1).
+    sig_exp(Width, Word, Sig * 2, Exp - 1).
 
-sig_exp(Bits, Word, Sig, Exp) :-
-    ieee(Bits, ExpBits, ExpBias),
-    SigBits is Bits - ExpBits - 1,
-    bits(Bits - 1, 1, Word, Sign, Word1),
-    bits(0, SigBits, Word1, Word0, Word2),
-    bits(SigBits, ExpBits, Word2, Exp0, 0),
+sig_exp(Width, Word, Sig, Exp) :-
+    ieee(Width, ExpWidth, ExpBias),
+    SigWidth is Width - ExpWidth - 1,
+    bits(Width - 1, 1, Word, Sign, Word1),
+    bits(0, SigWidth, Word1, Word0, Word2),
+    bits(SigWidth, ExpWidth, Word2, Exp0, 0),
     Exp #= Exp0 - ExpBias,
-    sig(Sign, Word0, 1 << SigBits, Sig).
+    sig(Sign, Word0, 1 << SigWidth, Sig).
 
 sig(Sign, Word, Max, Sig) :- var(Sig), !, ieee_sig(Sign, Word, Max, Sig).
 sig(Sign, Word, Max, Sig) :- sig_ieee(Sign, Sig, Max, Word).
