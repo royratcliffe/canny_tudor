@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.23.5] - 2023-08-29
+### Added
+- Predicate `endian//3`, module `dcg_endian`
+
 ## [0.23.4] - 2023-08-28
 ### Added
 - Predicates `crc`/{2, 3} and `crc_property/2`
