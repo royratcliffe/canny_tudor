@@ -39,6 +39,9 @@ inf(Width, Inf) :-
 %   hence remains within the integer   domain.  Float arithmetic applies
 %   outside the finite-domain constraints.
 %
+%   Note that -1.5NaN unifies with 1.5NaN. Query `1.5NaN == -1.5NaN`
+%   succeeds. Prolog ignores the sign when not-a-number.
+%
 %   @arg Int is a non-negative integer.   This  implementation does not
 %   handle negative integers. Negative support implies a non-determinate
 %   solution for packing. A positive and  negative answer exists for any
