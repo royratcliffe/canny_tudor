@@ -32,23 +32,24 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 %!  bit_shift(+Shifter, ?Left, ?Right) is semidet.
 %
-%   Shifts bits left or right depending on the argument mode. Mode (+,
-%   -, +) shifts left whereas mode (+, +, -) shifts right. The first
-%   argument specifies the position of the bit or bits in Left, the
-%   second argument, while the third argument specifies the aligned
-%   Right bits.
+%   Shifts bits left or right depending on   the argument mode. Mode (+,
+%   -, +) shifts left whereas mode  (+,   +,  -) shifts right. The first
+%   argument specifies the position of the  bit   or  bits  in Left, the
+%   second argument, while the  third   argument  specifies  the aligned
+%   Right bits. The  shift  moves  in   the  direction  of  the variable
+%   argument, towards the (-) mode argument.
 %
-%   The Shifter argument provides three different ways to specify a bit
-%   shift and bit width: either by an exclusive range using `+` and `-`
-%   terms; or an _inclusive_ range using `:` terms; or finally just a
-%   single bit shift which implies a width of one bit. Colons operate
+%   The Shifter argument provides three different  ways to specify a bit
+%   shift and bit width: either by an  exclusive range using `+` and `-`
+%   terms; or an _inclusive_ range using `:`   terms;  or finally just a
+%   single bit shift which implies a width   of  one bit. Colons operate
 %   inclusively whereas plus and minus apply exclusive upper ranges.
 %
 %   It first finds the amount of Shift required and the bit Width. After
-%   computing the lefthand and righthand bit masks, it finally performs
+%   computing the lefthand and righthand bit  masks, it finally performs
 %   a shift-mask or mask-shift for left and right shifts respectively.
 %
-%   @arg Shifter is a Shift+Width, Shift-Width, High:Low, Low:High or
+%   @arg Shifter is a Shift+Width,   Shift-Width,  High:Low, Low:High or
 %   just a single integer Shift for single bits.
 %
 %   @arg Left is the left-shifted integer.
