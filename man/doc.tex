@@ -103,6 +103,14 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.23.6] - 2023-09-16}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Predicate \dcgref{bit_shift}{3}, module \verb$canny_shifter$
+\end{shortlist}
+
 \section{[0.23.5] - 2023-08-29}
 
 \subsection{Added}
@@ -1195,6 +1203,35 @@ supports a \arg{Redis} time limit option so that blocking, if used, does
 not continue indefinately even on a very busy stream set. The limit
 applies to any of the given streams; it acts as a time threshold
 for continuous blocking failures.
+\end{description}
+
+\chapter{library(canny/shifter)}\label{sec:shifter}
+
+\begin{description}
+    \predicate[semidet]{bit_shift}{3}{+Shifter, ?Left, ?Right}
+Shifts bits left or right depending on the argument mode. Mode (+,
+-, +) shifts left whereas mode (+, +, -) shifts right. The first
+argument specifies the position of the bit or bits in \arg{Left}, the
+second argument, while the third argument specifies the aligned
+\arg{Right} bits. The shift moves in the direction of the variable
+argument, towards the (-) mode argument.
+
+The \arg{Shifter} argument provides three different ways to specify a bit
+shift and bit width: either by an exclusive range using \verb$+$ and \verb$-$
+terms; or an \textit{inclusive} range using \verb$:$ terms; or finally just a
+single bit shift which implies a width of one bit. Colons operate
+inclusively whereas plus and minus apply exclusive upper ranges.
+
+It first finds the amount of Shift required and the bit Width. After
+computing the lefthand and righthand bit masks, it finally performs
+a shift-mask or mask-shift for left and right shifts respectively.
+
+\begin{arguments}
+\arg{Shifter} & is a Shift+Width, Shift-Width, High:Low, Low:High or
+just a single integer Shift for single bits. \\
+\arg{Left} & is the left-shifted integer. \\
+\arg{Right} & is the right-shifted integer. \\
+\end{arguments}
 \end{description}
 
 \chapter{library(canny/situations)}\label{sec:situations}
