@@ -5,13 +5,16 @@
 */
 
 :- module(cmsis_svd,
-          []).
+          [ cmsis_load_svd/2                    % +Spec,+Options
+          ]).
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 Loads a CMSIS-SVD and optionally asserts its content.
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+%!  cmsis_load_svd(+Spec, +Options) is semidet.
 
 cmsis_load_svd(Spec, Options) :-
     load_structure(Spec, Content, []),
