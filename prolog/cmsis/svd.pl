@@ -37,7 +37,7 @@ element(element(Tag, _, [Content1]), Options) :-
     Term1 =.. [Tag, Content1],
     named_term([Term1|Context], Term),
     term(Term, Options).
-element(element(Tag, _Attrs, Content), Options) :-
+element(element(Tag, _, Content), Options) :-
     !,
     select_option(context(Context), Options, Options_, []),
     Term =.. [Tag, _],
