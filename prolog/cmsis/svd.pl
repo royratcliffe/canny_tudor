@@ -7,6 +7,10 @@
 :- module(cmsis_svd,
           [ cmsis_load_svd/2                    % +Spec,+Options
           ]).
+:- autoload(library(apply), [include/3, maplist/3]).
+:- autoload(library(lists), [reverse/2]).
+:- autoload(library(option), [option/2, select_option/4]).
+:- autoload(library(sgml), [load_structure/3]).
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -60,3 +64,55 @@ term(Term, Options) :-
     ;   writeq(Term),
         nl
     ).
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    The SVD fact base unifies with plain old atoms representing strings
+    and numbers, decimal and hexadecimal.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+cmsis_c99_svd(M:device_peripheral_base(A, B, C)) -->
+    { M:device_peripheral_baseAddress(A, B, C),
+      atom_codes(A, A_),
+      atom_codes(B, B_),
+      atom_codes(C, C_)
+    },
+    "#define ", A_, "_", B_, "_BASE ", C_, "".
+cmsis_c99_svd(M:device_peripheral_register_offset(A, B, C, D)) -->
+    { M:device_peripheral_register_addressOffset(A, B, C, D),
+      atom_codes(A, A_),
+      atom_codes(B, B_),
+      atom_codes(C, C_),
+      atom_codes(D, D_)
+    },
+    "#define ", A_, "_", B_, "_", C_, "_OFFSET ", D_, "".
+cmsis_c99_svd(M:device_peripheral_register(A, B, C)) -->
+    { M:device_peripheral_baseAddress(A, B, _),
+      M:device_peripheral_register_addressOffset(A, B, C, _),
+      atom_codes(A, A_),
+      atom_codes(B, B_),
+      atom_codes(C, C_)
+    },
+    "#define ", A_, "_", B_, "_", C_, " (",
+    A_, "_", B_, "_BASE + ",
+    A_, "_", B_, "_", C_, "_OFFSET)".
+cmsis_c99_svd(M:device_peripheral_register_field(A, B, C, D)) -->
+    { M:device_peripheral_register_field_bitOffset(A, B, C, D, Offset),
+      M:device_peripheral_register_field_bitWidth(A, B, C, D, Width),
+      atom_codes(A, A_),
+      /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      No need to express B because C_ incorporates it.
+
+      atom_codes(B, B_),
+
+      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+      atom_codes(C, C_),
+      atom_codes(D, D_),
+      atom_codes(Offset, Offset_),
+      atom_codes(Width, Width_)
+    },
+    "#define ", A_, "_", C_, "_", D_, " (((1 << ",
+    Width_, ") - 1) << ",
+    Offset_, ")".
