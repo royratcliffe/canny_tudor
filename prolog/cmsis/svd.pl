@@ -107,6 +107,8 @@ after sorting by the base address ascending.
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 %!  cmsis_c99_svd(M:Term) is nondet.
+%
+%   @see https://www.keil.com/pack/doc/CMSIS/SVD/html/index.html
 
 cmsis_c99_svd(M:device_peripheral_base(Device, Peripheral, BaseAddress)) -->
     { predicate_property(M:device_peripheral_baseAddress(_, _, _), defined),
