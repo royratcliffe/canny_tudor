@@ -109,30 +109,39 @@ after sorting by the base address ascending.
 %!  cmsis_c99_svd(M:Term) is nondet.
 
 cmsis_c99_svd(M:device_peripheral_base(Device, Peripheral, BaseAddress)) -->
-    { M:device_peripheral_baseAddress(Device, Peripheral, BaseAddress)
+    { predicate_property(M:device_peripheral_baseAddress(_, _, _), defined),
+      M:device_peripheral_baseAddress(Device, Peripheral, BaseAddress)
     },
     "#define ",
     atom(Device), "_", atom(Peripheral), "_BASE ",
     atom(BaseAddress).
-cmsis_c99_svd(M:device_peripheral_register_offset(Device, Peripheral, Register, D)) -->
-    { M:device_peripheral_register_addressOffset(Device, Peripheral, Register, D)
+cmsis_c99_svd(M:device_peripheral_register_offset(
+                    Device, Peripheral, Register, AddressOffset)) -->
+    { predicate_property(M:device_peripheral_register_addressOffset(_, _, _, _), defined),
+      M:device_peripheral_register_addressOffset(
+            Device, Peripheral, Register, AddressOffset)
     },
     "#define ",
     atom(Device), "_", atom(Peripheral), "_", atom(Register), "_OFFSET ",
-    atom(D).
+    atom(AddressOffset).
 cmsis_c99_svd(M:device_peripheral_register(Device, Peripheral, Register)) -->
-    { M:device_peripheral_baseAddress(Device, Peripheral, _),
+    { predicate_property(M:device_peripheral_baseAddress(_, _, _), defined),
+      predicate_property(M:device_peripheral_register_addressOffset(_, _, _, _), defined),
+      M:device_peripheral_baseAddress(Device, Peripheral, _),
       M:device_peripheral_register_addressOffset(Device, Peripheral, Register, _)
     },
     "#define ",
     atom(Device), "_", atom(Peripheral), "_", atom(Register), " (",
     atom(Device), "_", atom(Peripheral), "_BASE + ",
     atom(Device), "_", atom(Peripheral), "_", atom(Register), "_OFFSET)".
-cmsis_c99_svd(M:device_peripheral_register_field(Device, Peripheral, Register, Field)) -->
-    { M:device_peripheral_register_field_bitOffset(
-            Device, Peripheral, Register, Field, Offset),
+cmsis_c99_svd(M:device_peripheral_register_field(
+                    Device, Peripheral, Register, Field)) -->
+    { predicate_property(M:device_peripheral_register_field_bitOffset(_, _, _, _, _), defined),
+      predicate_property(M:device_peripheral_register_field_bitWidth(_, _, _, _, _), defined),
+      M:device_peripheral_register_field_bitOffset(
+            Device, Peripheral, Register, Field, BitOffset),
       M:device_peripheral_register_field_bitWidth(
-            Device, Peripheral, Register, Field, Width)
+            Device, Peripheral, Register, Field, BitWidth)
     },
     "#define ",
     atom(Device), "_",
@@ -147,8 +156,8 @@ cmsis_c99_svd(M:device_peripheral_register_field(Device, Peripheral, Register, F
     ;   atom(Peripheral), "_"
     ),
     atom(Register), "_", atom(Field), " (((1 << ",
-    atom(Width), ") - 1) << ",
-    atom(Offset), ")".
+    atom(BitWidth), ") - 1) << ",
+    atom(BitOffset), ")".
 
 atom(Atom) -->
     { atom_codes(Atom, Codes)
