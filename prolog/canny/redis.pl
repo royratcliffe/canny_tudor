@@ -115,17 +115,26 @@ redis_keys_and_stream_ids([Key-StreamId0|T0], [Key|T1], [RedisTime-Seq|T]) :-
 %
 %   Unifies with all Key, StreamId and array of Fields for all Reads.
 %
+%   Allows for "byte" reads, as follows, where the resulting values unify
+%   with lists of byte codes.
+%
+%       xread(default, _{key: 0}, Reads as bytes, []).
+%
 %   @arg Reads is a list of [Key, Entries] lists, a list of lists. The
 %   sub-lists always have two items: the Key of the stream followed by
 %   another sub-list of stream entries.
 
 redis_stream_read(Reads, Key, StreamId, Fields) :-
-    member([Key, Entries], Reads),
+    key_entries(Key, Entries, Reads),
     redis_stream_entry(Entries, StreamId, Fields).
 
 redis_stream_read(Reads, Key, StreamId, Tag, Fields) :-
-    member([Key, Entries], Reads),
+    key_entries(Key, Entries, Reads),
     redis_stream_entry(Entries, StreamId, Tag, Fields).
+
+key_entries(Key, Entries, Reads) :-
+    member([Key0, Entries], Reads),
+    atom_string(Key, Key0).
 
 %!  redis_stream_entry(+Entries, -StreamId, -Fields) is nondet.
 %!  redis_stream_entry(+Entries:list, -StreamId:pair(nonneg, nonneg),
@@ -188,10 +197,6 @@ redis_stream_id(StreamId, RedisTime-Seq) :-
     redis_stream_id(RedisTime-Seq),
     atomic_list_concat([RedisTime, Seq], -, StreamId).
 redis_stream_id(StreamId, RedisTime-Seq) :-
-    (   atom(StreamId)
-    ->  true
-    ;   string(StreamId)
-    ),
     split_string(StreamId, -, '', [RedisTime0, Seq0]),
     number_string(RedisTime, RedisTime0),
     number_string(Seq, Seq0),
