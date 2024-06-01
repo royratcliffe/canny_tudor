@@ -41,7 +41,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
             redis_stream_id/3,                  % ?StreamId,?RedisTime,?Seq
             redis_time/1,                       % +RedisTime
-            redis_date_time/3                   % +RedisTime,-DateTime,+TimeZone
+            redis_date_time/3,                  % +RedisTime,-DateTime,+TimeZone
+            redis_stream/3,                     % +Redis, --Stream, +DoConnect
+            redis_stream/2                      % +Redis, --Stream
           ]).
 :- autoload(library(lists), [member/2]).
 :- autoload(library(redis), [redis_array_dict/3]).
@@ -229,3 +231,18 @@ redis_time(RedisTime) :-
 redis_date_time(RedisTime, DateTime, TimeZone) :-
     Stamp is RedisTime / 1000,
     stamp_date_time(Stamp, DateTime, TimeZone).
+
+%!  redis_stream(+Redis, --Stream, +DoConnect) is det.
+%!  redis_stream(+Redis, --Stream) is det.
+%
+%   Connects a Redis specification to a connected stream. Breaks the
+%   Redis package encapsulation by accessing the redis_stream/3 private
+%   predicate.
+%
+%   The arity-2 version automatically reconnects.
+
+redis_stream(Redis, Stream, DoConnect) :-
+    redis:redis_stream(Redis, Stream, DoConnect).
+
+redis_stream(Redis, Stream) :- redis_stream(Redis, Stream, true).
+
