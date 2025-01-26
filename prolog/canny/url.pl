@@ -30,6 +30,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           [ url_encoded//1,
             url_coded/2                         % ?Decoded, ?Encoded
           ]).
+:- autoload(library(dcg/high_order), [sequence/4]).
 
 %!  url_encoded(?Code)// is nondet.
 %
@@ -49,7 +50,7 @@ url_encoded(Code) -->
     decoded(Code).
 
 encoded(Code) -->
-    { code_type(Code, csym)
+    { code_type(Code, ascii), code_type(Code, csym)
     },
     !, [Code].
 encoded(Code) -->
