@@ -3,7 +3,7 @@
     Created: Sep 24 2022
     Purpose: Canny Redis Streams
 
-Copyright (c) 2022, Roy Ratcliffe, Northumberland, United Kingdom
+Copyright (c) 2023, Roy Ratcliffe, Northumberland, United Kingdom
 
 Permission is hereby granted, free of charge,  to any person obtaining a
 copy  of  this  software  and    associated   documentation  files  (the
@@ -27,10 +27,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_redis_streams,
-          [ xrange/4,                           % +Redis,+Key,-Entries,+Options
-            xread/4,                            % +Redis,+Streams,-Reads,+Options
-            xread_call/5,                       % +Redis,+Streams,:Goal,-Fields,+Options
-            xread_call/6                        % +Redis,+Streams,:Goal,?Tag,-Fields,+Options
+          [ xrange/4,           % +Redis,+Key,-Entries,+Options
+            xread/4,            % +Redis,+Streams,-Reads,+Options
+            xread_call/5,       % +Redis,+Streams,:Goal,-Fields,+Options
+            xread_call/6        % +Redis,+Streams,:Goal,?Tag,-Fields,+Options
           ]).
 :- autoload(library(option), [option/3, option/2]).
 :- autoload(library(lists), [append/3]).
@@ -110,7 +110,8 @@ xread(Redis, Streams, Reads, Options) :-
 xread_call(Redis, Streams, Goal, Fields, Options) :-
     xread(Redis, Streams, Reads, Options),
     redis_last_streams(Reads, _, Streams_),
-    xread_call_(Redis, Streams.put(Streams_), Goal, Reads, Fields, Options).
+    xread_call_(Redis, Streams.put(Streams_),
+                Goal, Reads, Fields, Options).
 
 xread_call_(_Redis, _Streams, Goal, Reads, Fields, Options) :-
     redis_stream_read(Reads, Key, StreamId, Fields),
@@ -125,7 +126,8 @@ xread_call_(Redis, Streams, Goal, _Reads, Fields, Options) :-
 xread_call(Redis, Streams, Goal, Tag, Fields, Options) :-
     xread(Redis, Streams, Reads, Options),
     redis_last_streams(Reads, _, Streams_),
-    xread_call_(Redis, Streams.put(Streams_), Goal, Reads, Tag, Fields, Options).
+    xread_call_(Redis, Streams.put(Streams_),
+                Goal, Reads, Tag, Fields, Options).
 
 xread_call_(_Redis, _Streams, Goal, Reads, Tag, Fields, Options) :-
     redis_stream_read(Reads, Key, StreamId, Tag, Fields),

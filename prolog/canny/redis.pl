@@ -3,7 +3,7 @@
     Created: Sep 24 2022
     Purpose: Canny Redis
 
-Copyright (c) 2022, Roy Ratcliffe, Northumberland, United Kingdom
+Copyright (c) 2022, 2024, Roy Ratcliffe, Northumberland, United Kingdom
 
 Permission is hereby granted, free of charge,  to any person obtaining a
 copy  of  this  software  and    associated   documentation  files  (the
@@ -41,11 +41,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             redis_stream_id/2,                  % ?StreamId,?RedisTimeSeqPair
             redis_stream_id/3,                  % ?StreamId,?RedisTime,?Seq
             redis_time/1,                       % +RedisTime
-            redis_date_time/3                   % +RedisTime,-DateTime,+TimeZone
+            redis_date_time/3,                  % +RedisTime,-DateTime,+TimeZone
+            redis_stream/3,                     % +Redis, --Stream, +DoConnect
+            redis_stream/2,                     % +Redis, --Stream
+            redis_write_msg/2,                  % +Redis, +Msg
+            redis_write_msg/3,                  % +Redis, +Msg, +DoFlush
+            redis_read_msg/2                    % +Redis, -Msg
           ]).
 :- autoload(library(lists), [member/2]).
 :- autoload(library(redis), [redis_array_dict/3]).
 :- autoload(library(apply), [maplist/3]).
+
+:- use_module(library(canny/bytes)).
 
                 /*******************************
                 *       S t r e a m s          *
@@ -115,17 +122,26 @@ redis_keys_and_stream_ids([Key-StreamId0|T0], [Key|T1], [RedisTime-Seq|T]) :-
 %
 %   Unifies with all Key, StreamId and array of Fields for all Reads.
 %
+%   Allows for "byte" reads, as follows, where the resulting values unify
+%   with lists of byte codes.
+%
+%       xread(default, _{key: 0}, Reads as bytes, []).
+%
 %   @arg Reads is a list of [Key, Entries] lists, a list of lists. The
 %   sub-lists always have two items: the Key of the stream followed by
 %   another sub-list of stream entries.
 
 redis_stream_read(Reads, Key, StreamId, Fields) :-
-    member([Key, Entries], Reads),
+    key_entries(Key, Entries, Reads),
     redis_stream_entry(Entries, StreamId, Fields).
 
 redis_stream_read(Reads, Key, StreamId, Tag, Fields) :-
-    member([Key, Entries], Reads),
+    key_entries(Key, Entries, Reads),
     redis_stream_entry(Entries, StreamId, Tag, Fields).
+
+key_entries(Key, Entries, Reads) :-
+    member([Key0, Entries], Reads),
+    atom_string(Key, Key0).
 
 %!  redis_stream_entry(+Entries, -StreamId, -Fields) is nondet.
 %!  redis_stream_entry(+Entries:list, -StreamId:pair(nonneg, nonneg),
@@ -188,10 +204,6 @@ redis_stream_id(StreamId, RedisTime-Seq) :-
     redis_stream_id(RedisTime-Seq),
     atomic_list_concat([RedisTime, Seq], -, StreamId).
 redis_stream_id(StreamId, RedisTime-Seq) :-
-    (   atom(StreamId)
-    ->  true
-    ;   string(StreamId)
-    ),
     split_string(StreamId, -, '', [RedisTime0, Seq0]),
     number_string(RedisTime, RedisTime0),
     number_string(Seq, Seq0),
@@ -224,3 +236,149 @@ redis_time(RedisTime) :-
 redis_date_time(RedisTime, DateTime, TimeZone) :-
     Stamp is RedisTime / 1000,
     stamp_date_time(Stamp, DateTime, TimeZone).
+
+                /*******************************
+                *       M e s s a g e s        *
+                *******************************/
+
+%!  redis_stream(+Redis, --Stream, +DoConnect) is det.
+%!  redis_stream(+Redis, --Stream) is det.
+%
+%   Connects a Redis specification to a connected stream. Breaks the
+%   Redis package encapsulation by accessing the redis:redis_stream/3
+%   private predicate.
+%
+%   The arity-2 version automatically reconnects.
+
+redis_stream(Redis, Stream, DoConnect) :-
+    redis:redis_stream(Redis, Stream, DoConnect).
+
+redis_stream(Redis, Stream) :- redis_stream(Redis, Stream, true).
+
+%!  redis_write_msg(+Redis, +Msg, +DoFlush) is semidet.
+%!  redis_write_msg(+Redis, +Msg) is semidet.
+%
+%   Writes a Redis message *without* reading a reply. Atoms become
+%   upper-case strings. Lists become arrays.
+
+redis_write_msg(Redis, Msg) :- redis_write_msg(Redis, Msg, true).
+
+redis_write_msg(Redis, Msg, DoFlush) :-
+    redis_stream(Redis, Stream),
+    write_msg(Msg, Stream),
+    (   DoFlush == true
+    ->  flush_output(Stream)
+    ;   true
+    ).
+
+write_msg(str(nul), Stream) :- !, put_bytes(Stream, `$-1\r\n`).
+write_msg(str(Str), Stream) :- !,
+    length(Str, Len),
+    format(Stream, '$~d\r\n', [Len]),
+    put_bytes(Stream, Str),
+    put_bytes(Stream, `\r\n`).
+write_msg(arr(Arr), Stream) :- !,
+    length(Arr, Len),
+    format(Stream, '*~d\r\n', [Len]),
+    write_arr(Arr, Stream).
+write_msg(String, Stream) :- string(String), !,
+    string_bytes(String, Bytes, utf8),
+    write_msg(str(Bytes), Stream).
+write_msg(Atom, Stream) :- atom(Atom), !,
+    string_upper(Atom, String),
+    write_msg(String, Stream).
+write_msg(List, Stream) :- is_list(List),
+    write_msg(arr(List), Stream).
+
+write_arr([], _Stream) :- !.
+write_arr([Msg|Msgs], Stream) :-
+    write_msg(Msg, Stream),
+    write_arr(Msgs, Stream).
+
+%!  redis_read_msg(+Redis, -Msg) is semidet.
+%
+%   Reads a Redis message at Msg. Presumes UTF-8 encoding for simple
+%   errors and simple strings but does not make the same assumption for
+%   bulk strings. The latter remain unencoded bytes. Operates
+%   recursively for arrays of messages.
+%
+%   String message terms str(Str) have three forms: (1) where the
+%   argument Str is `nul`; (2) where the argument is a simple UTF-8
+%   string; or (3) where the argument is a list of bulk bytes.
+
+redis_read_msg(Redis, Msg) :-
+    redis_stream(Redis, Stream),
+    read_msg(Stream, Msg).
+
+read_msg(Stream, Msg) :-
+    get_byte(Stream, Byte),
+    read_msg(Byte, Stream, Msg).
+
+read_msg(0'-, Stream, err(Str)) :- read_utf8_line(Stream, Str).
+read_msg(0'+, Stream, str(Str)) :- read_utf8_line(Stream, Str).
+read_msg(0':, Stream, int(Int)) :- read_int_line(Stream, Int).
+read_msg(0'$, Stream, str(Str)) :-
+    read_int_line(Stream, Len),
+    read_str(Len, Stream, Str).
+read_msg(0'*, Stream, arr(Arr)) :-
+    read_int_line(Stream, Len),
+    read_arr(Len, Stream, Arr).
+
+read_utf8_line(Stream, UTF8) :-
+    read_line_to_bytes(Stream, Bytes),
+    string_bytes(UTF8, Bytes, utf8).
+
+read_num_line(Stream, Num) :-
+    read_utf8_line(Stream, Str),
+    atom_number(Str, Num).
+
+read_int_line(Stream, Int) :-
+    read_num_line(Stream, Int),
+    integer(Int).
+
+%!  read_str(+Len, +Stream, -Str) is semidet.
+%
+%   Reads a bulk string of Len bytes *without* decoding, Lua style.
+%   Strings are zero or more unencoded bytes or `nul`. This allows for
+%   disparate decodings and encodings when written to Redis.
+
+read_str(-1, _Stream, nul) :- !.
+read_str(Len, Stream, Str) :-
+    read_bytes(Len, Stream, Str),
+    read_line_to_bytes(Stream, []).
+
+read_bytes(0, _Stream, []) :- !.
+read_bytes(Len, Stream, [Byte|Bytes]) :-
+    get_byte(Stream, Byte),
+    succ(Len0, Len),
+    read_bytes(Len0, Stream, Bytes).
+
+%!  read_arr(+Len, +Stream, -Arr) is semidet.
+%
+%   Reads an array of messages recursively.
+
+read_arr(0, _Stream, []) :- !.
+read_arr(Len, Stream, [Msg|Msgs]) :-
+    read_msg(Stream, Msg),
+    succ(Len0, Len),
+    read_arr(Len0, Stream, Msgs).
+
+%!  read_line_to_bytes(+Stream, -Bytes) is semidet.
+%
+%   Does not use get_code/2. Fails if no line found in Stream. The line
+%   must terminate with carriage return *and* line feed. Fails if
+%   the line contains a new line before the carriage return, or if the
+%   end-of-file occurs before the line terminates. Answers the line's
+%   Bytes *without* the line terminators. Assumes that the stream has
+%   binary type and octet encoding.
+
+read_line_to_bytes(Stream, Bytes) :-
+    get_byte(Stream, Byte),
+    read_line_to_bytes_(Byte, Stream, Bytes).
+
+read_line_to_bytes_(-1, _Stream, _Bytes) :- !, fail.
+read_line_to_bytes_(0'\n, _Stream, _Bytes) :- !, fail.
+read_line_to_bytes_(0'\r, Stream, []) :- !, get_byte(Stream, 0'\n).
+read_line_to_bytes_(Byte, Stream, [Byte|Bytes]) :-
+    get_byte(Stream, Byte_),
+    read_line_to_bytes_(Byte_, Stream, Bytes).
