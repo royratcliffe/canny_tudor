@@ -35,6 +35,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                      ]).
 :- autoload(library(process), [process_create/3]).
 :- autoload(library(thread), [concurrent/3]).
+:- use_module(library(canny/bytes)).
 
 %!  exe(+Executable, +Arguments, +Options) is semidet.
 %
@@ -45,9 +46,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   additional    enhanced    pipe     streaming      arguments.     See
 %   partially-enumerated list below.
 %
+%       * stdin(bytes(Bytes))
 %       * stdin(codes(Codes))
 %       * stdin(atom(Atom))
 %       * stdin(string(String))
+%       * stdout(bytes(Bytes))
 %       * stdout(codes(Codes))
 %       * stdout(atom(Atom))
 %       * stdout(string(String))
@@ -129,6 +132,12 @@ exe([Option0|Options0], [Option|Options], [Call|Calls], [Cleanup|Cleanups]) :-
 exe([Option|Options0], [Option|Options], Calls, Cleanups) :-
     exe(Options0, Options, Calls, Cleanups).
 
+opt(stdin(bytes(Bytes)), stdin(pipe(Stream, [type(binary), encoding(octet)])),
+    (   set_stream(Stream, type(binary)),
+        put_bytes(Stream, Bytes),
+        close(Stream)
+    ), true) :-
+    !.
 opt(stdin(Compound), stdin(pipe(Stream)),
     (   format(Stream, '~s', [S]),
         close(Stream)
@@ -161,6 +170,10 @@ s(string).
 std(stdout).
 std(stderr).
 
+std(bytes(Bytes), pipe(Stream, [type(binary), encoding(octet)]),
+    (   set_stream(Stream, type(binary)),
+        read_stream_to_bytes(Stream, Bytes)
+    ), close(Stream)).
 std(codes(Codes), pipe(Stream),
     read_stream_to_codes(Stream, Codes), close(Stream)).
 std(atom(Atom), pipe(Stream),
