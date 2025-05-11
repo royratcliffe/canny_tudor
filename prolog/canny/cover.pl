@@ -4,7 +4,7 @@
           ]).
 :- autoload(library(apply), [convlist/3]).
 :- autoload(library(strings), [string_lines/2]).
-:- autoload(library(prolog_coverage), [show_coverage/1]).
+:- autoload(library(prolog_coverage), [coverage/1, show_coverage/1]).
 :- autoload(library(yall), [(>>)/4]).
 :- autoload(library(dcg/basics), [whites/2, integer/3, number/3, string/3]).
 
