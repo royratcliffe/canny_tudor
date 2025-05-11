@@ -21,7 +21,8 @@
 %   carrying three keys: clauses, cov and fail.
 
 coverages_by_module(Goal, Coverages) :-
-    with_output_to(string(String), show_coverage(Goal)),
+    coverage(Goal),
+    with_output_to(string(String), show_coverage([])),
     string_lines(String, Lines),
     convlist([Line, Module=coverage{
                                clauses:Clauses,
