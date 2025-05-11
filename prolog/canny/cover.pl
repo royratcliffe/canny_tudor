@@ -37,6 +37,8 @@ coverages_by_module(Goal, Coverages) :-
 cover_line(Module, Clauses, Cov, Fail) -->
     cover_file(Module),
     whites,
+    dots,
+    whites,
     integer(Clauses),
     whites,
     number(Cov),
@@ -56,6 +58,9 @@ cover_file(Module) -->
       atom_codes(File, Codes)
     },
     string(Codes).
+
+dots --> ".", !, dots.
+dots --> [].
 
 %!  coverage_for_modules(:Goal, +Modules, -Module, -Coverage) is nondet.
 %
