@@ -54,8 +54,8 @@ directory_entry(Directory, Entry) -->
     },
     [Entry_],
     directory_entry(Directory_, Entry).
-directory_entry(Directory, Entry, [], Tail) :-
-    entries_entry([Directory|Tail], Entry).
+directory_entry(Directory, Entry, [], Entries) :-
+    entries_entry([Directory|Entries], Entry).
 
 entries_entry(Entries, Entry) :- atomic_list_concat(Entries, /, Entry).
 
