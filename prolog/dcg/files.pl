@@ -36,12 +36,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %
 %   Neatly traverses a file system using a grammar.
 %
-%   Finds files and skips the special dot entries. Here, $Entry$ refers
+%   Finds files and skips the special dot entries. Here, Entry refers
 %   to a file. The grammar recursively traverses sub-directories beneath
-%   the given $Directory$ and yields every existing file path at
-%   $Entry$. The directory acts as the root of the scan; it joins with
+%   the given Directory and yields every existing file path at
+%   Entry. The directory acts as the root of the scan; it joins with
 %   the entry to yield the full path of the file, but **not** with the
-%   difference list. The second $List$ argument of $phrase/2$ unifies
+%   difference list. The second `List` argument of phrase/2 unifies
 %   with a list of the corresponding sub-path components *without* the
 %   root. The caller sees the full path *and* the relative
 %   sub-components.
