@@ -45,6 +45,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   with a list of the corresponding sub-path components *without* the
 %   root. The caller sees the full path *and* the relative
 %   sub-components.
+%
+%   Note that the second clause appears in the DCG expanded form with the
+%   two hidden arguments: the pre-parsed input list `S0` and the
+%   post-parsed output list `S`. For non-directory entries, the input list
+%   unifies with nil `[]` because it represents a terminal node in the
+%   directory tree, and the post-parsed terms amount to the accumulated
+%   `Entries` spanning the sub-directory entries in-between the original
+%   root directory and the file itself.
 
 directory_entry(Directory, Entry) -->
     { exists_directory(Directory),
@@ -60,6 +68,9 @@ directory_entry(Directory, Entry, [], Entries) :-
 entries_entry(Entries, Entry) :- atomic_list_concat(Entries, /, Entry).
 
 %!  directory_entry(+Directory, ?Entry) is nondet.
+%
+%   Finds files and directories in the Directory except special files: dot,
+%   the current directory; and double dot, the parent directory.
 %
 %   No need to check if the Entry exists. It does exist at the time of
 %   directory iteration. That could easily change by deleting, moving or
