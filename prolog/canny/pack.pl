@@ -28,5 +28,5 @@ load_pack_modules(Pack, Modules) :-
 
 load_prolog_module(Directory, Module) :-
     directory_member(Directory, File, [file_type(prolog), recursive(true)]),
-    catch(load_files(File, [must_be_module(true)]), _, fail),
+    catch(load_files(File, [must_be_module(true), imports([])]), _, fail),
     module_property(Module, file(File)).

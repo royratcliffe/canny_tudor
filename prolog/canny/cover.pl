@@ -4,7 +4,7 @@
           ]).
 :- autoload(library(apply), [convlist/3]).
 :- autoload(library(strings), [string_lines/2]).
-:- autoload(library(test_cover), [show_coverage/1]).
+:- autoload(library(prolog_coverage), [coverage/1, show_coverage/1]).
 :- autoload(library(yall), [(>>)/4]).
 :- autoload(library(dcg/basics), [whites/2, integer/3, number/3, string/3]).
 
@@ -21,7 +21,8 @@
 %   carrying three keys: clauses, cov and fail.
 
 coverages_by_module(Goal, Coverages) :-
-    with_output_to(string(String), show_coverage(Goal)),
+    coverage(Goal),
+    with_output_to(string(String), show_coverage([])),
     string_lines(String, Lines),
     convlist([Line, Module=coverage{
                                clauses:Clauses,
@@ -35,6 +36,8 @@ coverages_by_module(Goal, Coverages) :-
 
 cover_line(Module, Clauses, Cov, Fail) -->
     cover_file(Module),
+    whites,
+    dots,
     whites,
     integer(Clauses),
     whites,
@@ -55,6 +58,9 @@ cover_file(Module) -->
       atom_codes(File, Codes)
     },
     string(Codes).
+
+dots --> ".", !, dots.
+dots --> [].
 
 %!  coverage_for_modules(:Goal, +Modules, -Module, -Coverage) is nondet.
 %
