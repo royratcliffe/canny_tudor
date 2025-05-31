@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.23.8] - 2025-05-31
+### Added
+- Predicate `ollama_chat(+Messages:list(dict), -Message:dict, +Options:list)`
+
 ## [0.23.7] - 2025-05-11
 ### Added
 - Predicate `directory_entry(+Directory, ?Entry)//`, module `dcg_files`
