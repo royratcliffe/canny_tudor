@@ -21,6 +21,53 @@
 
 /** <module> Ollama Chat
 
+Idiomatic SWI-Prolog HTTP client module for interacting with an Ollama
+chat API.
+
+## Usage
+
+How to use and abuse the interface? Take some examples. The following
+queries run with HTTP debugging enabled. Notice the headers.
+
+For streaming:
+```
+?- ollama_chat([_{role:user, content:"Hello"}], Message, [stream(true)]).
+% http_open: Connecting to localhost:11434 ...
+%       ok <stream>(000001a4454d2630) ---> <stream>(000001a4454d2740)
+% HTTP/1.1 200 OK
+% Content-Type: application/x-ndjson
+% Date: Sat, 31 May 2025 10:48:49 GMT
+% Connection: close
+% Transfer-Encoding: chunked
+Message = _{content:" Hello", role:"assistant"} ;
+Message = _{content:"!", role:"assistant"} ;
+Message = _{content:" How", role:"assistant"} ;
+Message = _{content:" can", role:"assistant"} ;
+Message = _{content:" I", role:"assistant"} ;
+Message = _{content:" assist", role:"assistant"} ;
+Message = _{content:" you", role:"assistant"} ;
+Message = _{content:" today", role:"assistant"} ;
+Message = _{content:"?", role:"assistant"} ;
+Message = _{content:"", role:"assistant"}.
+```
+
+The streaming content type is **not** "application/json" but rather
+newline-delimited JSON. This is correct. Our addition to the JSON type
+multifile predicate catches this.
+
+For non-streaming:
+```
+?- ollama_chat([_{role:user, content:"Hello"}], Message, [stream(false)]).
+% http_open: Connecting to localhost:11434 ...
+%       ok <stream>(000001a4454d3ea0) ---> <stream>(000001a4454d4e90)
+% HTTP/1.1 200 OK
+% Content-Type: application/json; charset=utf-8
+% Date: Sat, 31 May 2025 10:50:04 GMT
+% Content-Length: 347
+% Connection: close
+Message = _{content:" Sure, I'm here to help! How can I assist you today?", role:"assistant"}.
+```
+
 */
 
 :- multifile http_json:json_type/1.
@@ -29,6 +76,27 @@ http_json:json_type(application/'x-ndjson').
 
 %!  ollama_chat(+Messages:list(dict), -Message:dict, +Options:list) is
 %!              nondet.
+%
+%   Leverages  SWI-Prolog's  HTTP  libraries   for    Ollama   chat  API
+%   interaction. To stream or not  to   stream?  That becomes an option,
+%   specify either `stream(true)`  or   `stream(false)`,  defaulting  to
+%   streaming.  This  option  selects    the   predicate's  determinism.
+%   Predicate   `ollama_chat/3`   becomes     non-deterministic   *when*
+%   streaming, but falls back to deterministic when not.
+%
+%   Pulls out the message from the reply;   it becomes the result of the
+%   chat interaction: many messages in, one message out. Taking only the
+%   message assumes that the other keys within the reply dictionary have
+%   less value. Callers can usually ignore   them. The predicate unifies
+%   with reply(Reply) in the Options  argument   if  the caller wants to
+%   view the detailed response information.
+%
+%   Assumes that the reply is  always   a  dictionary type without first
+%   checking. The implementation relies on   the lower-level HTTP layers
+%   for parsing and rendering the  correct   term  type. It also assumes
+%   that the dictionary always contains  a   "message"  pair.  Throws an
+%   exception when this presumption fails;  this   is  a  design feature
+%   because all responses must have a message.
 
 ollama_chat(Messages, Message, Options) :-
     option(stream(Stream), Options, true),
