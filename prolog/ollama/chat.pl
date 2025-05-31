@@ -136,6 +136,14 @@ chat(URL, Dict, Reply, Options) :-
     http_open(URL, In, [post(json(Dict)), headers(Headers)|Options]),
     call_cleanup(read_dict(In, Reply, Headers), close(In)).
 
+%!  read_dict(+In, -Dict, +Options) is nondet.
+%
+%   Reads a dictionary from a JSON object, either deterministically for
+%   non-chunked stream responses or non-deterministically for chunked
+%   JSON responses. Continues with backtracking when the dictionary has
+%   not done, i.e. done is false. Cuts before the end-of-stream if done
+%   is true.
+
 read_dict(In, Dict, Options) :-
     read_data(In, Dict, [json_object(dict)|Options]),
     (   get_dict(done, Dict, false)
