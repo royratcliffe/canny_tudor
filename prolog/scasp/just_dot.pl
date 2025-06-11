@@ -17,25 +17,6 @@ read_json_dict(Src, Dict) :-
                        json_read_dict(Stream, Dict),
                        close(Stream)).
 
-indent(Options0, Width, '~t~*|'-[Indent0], [indent(Indent)|Options]) :-
-    select_option(indent(Indent0), Options0, Options, 0),
-    Indent is Indent0 + Width.
-
-indent(Options0, Tab, Options) :-
-    setting(tab, DefaultWidth),
-    option(tab(Width), Options0, DefaultWidth),
-    indent(Options0, Width, Tab, Options).
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
-tab_dot(Options0, Options) --> {indent(Options0, Tab, Options)}, [Tab].
-
-line_dot(Line, Options0, Options) --> tab_dot(Options0, Options), [Line, nl].
-
-line_dot(Line, Options) --> line_dot(Line, Options, _).
-
 :- setting(tab, nonneg, 2, '').
 :- setting(rankdir, atom, 'LR', '').
 :- setting(bgcolor, atom, transparent, '').
@@ -46,15 +27,6 @@ line_dot(Line, Options) --> line_dot(Line, Options, _).
                                    fontsize=10
                                  ], '').
 :- setting(edge, list, [color=darkred], '').
-
-setting_dot(Name, Options) -->
-    {setting(Name, Value)},
-    setting_dot(Name, Value, Options).
-
-setting_dot(Name, Value, Options) --> {is_list(Value)}, !,
-    line_dot('~p ~p;'-[Name, Value], Options).
-setting_dot(Name, Value, Options) -->
-    line_dot('~w;'-[Name=Value], Options).
 
 tree_dot(Tree, Options) -->
     line_dot('digraph {', Options, Options_),
@@ -81,6 +53,21 @@ answer_tree_dot(_{node:Node, children:Children}, Options) -->
 query_dot(Options, Answer) -->
     line_dot('subgraph {', Options),
     line_dot('}', Options).
+
+setting_dot(Name, Options) -->
+    {setting(Name, Value)},
+    setting_dot(Name, Value, Options).
+
+setting_dot(Name, Value, Options) --> {is_list(Value)}, !,
+    line_dot('~p ~p;'-[Name, Value], Options).
+setting_dot(Name, Value, Options) -->
+    line_dot('~w;'-[Name=Value], Options).
+
+tab_dot(Options0, Options) --> {indent(Options0, Tab, Options)}, [Tab].
+
+line_dot(Line, Options0, Options) --> tab_dot(Options0, Options), [Line, nl].
+
+line_dot(Line, Options) --> line_dot(Line, Options, _).
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -136,3 +123,16 @@ dict_term(Value, Term), _{type:"compound",
     atom_string(Functor_, Functor),
     maplist(value_term, Args, Args_),
     Term =.. [Functor_|Args_].
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+indent(Options0, Width, '~t~*|'-[Indent0], [indent(Indent)|Options]) :-
+    select_option(indent(Indent0), Options0, Options, 0),
+    Indent is Indent0 + Width.
+
+indent(Options0, Tab, Options) :-
+    setting(tab, DefaultWidth),
+    option(tab(Width), Options0, DefaultWidth),
+    indent(Options0, Width, Tab, Options).
