@@ -28,10 +28,6 @@ indent(Options0, Tab, Options) :-
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-indent_dot(Options, Tab, Options_) -->
-    {indent(Options, Tab, Indent, Options_)},
-    [Indent].
-
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 tab_dot(Options0, Options) --> {indent(Options0, Tab, Options)}, [Tab].
