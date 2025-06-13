@@ -46,8 +46,7 @@ answer_dot(Options, Answer) -->
     answer_tree_dot(Answer.tree, Options).
 
 answer_tree_dot(_{node:Node, children:Children}, Options) -->
-    { value_term(Node.value, query)
-    },
+    {value_term(Node.value, query)},
     sequence(query_dot(Options), Children).
 
 query_dot(Options, Answer) -->
