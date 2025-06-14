@@ -36,7 +36,7 @@ read_json_dict(Src, Dict) :-
                                  ], '').
 :- setting(edge, list, [color=darkred], '').
 
-tree_dot(Tree, Options) -->
+json_dot(Tree, Options) -->
     line_dot('digraph {', Options, Options_),
     answers_dot(Tree.answers, Options_),
     line_dot('}', Options).
