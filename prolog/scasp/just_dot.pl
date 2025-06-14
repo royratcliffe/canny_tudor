@@ -5,12 +5,20 @@
 */
 
 :- module(scasp_just_dot,
-          []).
+          [ scasp_print_just_dot/3              % Stream, Src, Options
+          ]).
 :- autoload(library(http/json), [json_read_dict/2]).
 :- autoload(library(apply), [maplist/3]).
 :- autoload(library(option), [select_option/4, option/3]).
 :- use_module(library(settings), [setting/4, setting/2]).
 :- autoload(library(dcg/high_order), [sequence/4]).
+
+%!  scasp_print_just_dot(+Stream, +Src, +Options) is det.
+
+scasp_print_just_dot(Stream, Src, Options) :-
+    read_json_dict(Src, Dict),
+    phrase(json_dot(Dict, Options), Lines),
+    print_message_lines(Stream, '', Lines).
 
 read_json_dict(Src, Dict) :-
     setup_call_cleanup(open(Src, read, Stream),
