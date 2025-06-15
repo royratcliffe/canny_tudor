@@ -61,6 +61,26 @@ query_dot(Options, Answer) -->
     line_dot('subgraph {', Options),
     line_dot('}', Options).
 
+implies_dot(Node0, Options, Node) -->
+    line_dot('"~w" -> "~w";'-[Node0, Node], Options).
+
+dict_comment_dot(Dict, Options) -->
+    {dict_pairs(Dict, _, Pairs)},
+    sequence(pair_comment_dot(Options), Pairs).
+
+pair_comment_dot(Options, Key-Value) -->
+    {includes_or_not_excludes(Key, Options)},
+    !,
+    line_dot('// ~k ~k'-[Key, Value], Options).
+pair_comment_dot(_, _) --> [].
+
+includes_or_not_excludes(Key, Options) :-
+    (   option(includes(Includes), Options)
+    ->  memberchk(Key, Includes)
+    ;   option(excludes(Excludes), Options)
+    ->  \+ memberchk(Key, Excludes)
+    ).
+
 setting_dot(Name, Options) -->
     {setting(Name, Value)},
     setting_dot(Name, Value, Options).
