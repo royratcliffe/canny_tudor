@@ -7,6 +7,8 @@ help: ; $(SCASP) --help
 
 %.json: %.pl ; $(SCASP) -s0 --tree --json=$@ $<
 
+%.dot: %.json ; swipl -s ../just_dot_main.pl -- $<
+
 swipl-win: ; swipl-win --no-packs -g "attach_packs(../../../..)" &
 .PHONY: swipl-win
 
