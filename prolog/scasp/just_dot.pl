@@ -36,9 +36,11 @@ read_json_dict(Src, Dict) :-
                                  ], '').
 :- setting(edge, list, [color=darkred], '').
 
-json_dot(Tree, Options) -->
+json_dot(Dict, Options) -->
+    tab_dot(Options), ['// solver ~s'-[Dict.solver], nl],
+    tab_dot(Options), ['// query '], value_w(Dict.query), [nl],
     line_dot('digraph {', Options, Options_),
-    answers_dot(Tree.answers, Options_),
+    answers_dot(Dict.answers, Options_),
     line_dot('}', Options).
 
 answers_dot(Answers, Options) -->
