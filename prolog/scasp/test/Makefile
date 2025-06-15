@@ -6,3 +6,6 @@ help: ; $(SCASP) --help
 .PHONY: help
 
 %.json: %.pl ; $(SCASP) -s0 --tree --json=$@ $<
+
+swipl-win: ; swipl-win --no-packs -g "attach_packs(../../../..)" &
+.PHONY: swipl-win
