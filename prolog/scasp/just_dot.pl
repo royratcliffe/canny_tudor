@@ -141,7 +141,7 @@ value_term(Value, Term), is_dict(Value) => dict_term(Value, Term).
 value_term(Value, List), is_list(Value) => maplist(value_term, Value, List).
 
 dict_term(Value, Var), _{type:"var",
-                         value:Var} :< Value => true.
+                         name:Var} :< Value => true.
 dict_term(Value, Atom), _{type:"atom",
                           value:String} :< Value => atom_string(Atom, String).
 dict_term(Value, Value), _{type:"number",
