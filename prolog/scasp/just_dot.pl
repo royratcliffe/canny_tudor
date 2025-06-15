@@ -92,6 +92,8 @@ setting_dot(Name, Value, Options) -->
 
 tab_dot(Options0, Options) --> {indent(Options0, Tab, Options)}, [Tab].
 
+tab_dot(Options) --> tab_dot(Options, _).
+
 line_dot(Line, Options0, Options) --> tab_dot(Options0, Options), [Line, nl].
 
 line_dot(Line, Options) --> line_dot(Line, Options, _).
