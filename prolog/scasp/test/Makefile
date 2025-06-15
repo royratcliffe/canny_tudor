@@ -12,6 +12,15 @@ help: ; $(SCASP) --help
 swipl-win: ; swipl-win --no-packs -g "attach_packs(../../../..)" &
 .PHONY: swipl-win
 
+ifeq ($OS,Windows_NT)
+EXE := .exe
+else
+EXE :=
+endif
+
+scasp-just-dot$(EXE): ../just_dot_main.pl
+	swipl -o scasp-just-dot -c ../just_dot_main.pl
+
 PUML = $(wildcard *.puml)
 DOT = $(wildcard *.dot)
 
