@@ -102,6 +102,10 @@ line_dot(Line, Options) --> line_dot(Line, Options, _).
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+value_p(Value) --> {value_term(Value, Term)}, ['~p'-[Term]].
+
+value_w(Value) --> {value_term(Value, Term)}, ['~w'-[Term]].
+
 %!  value_term(+Value:dict, -Term) is semidet.
 %
 %   Converts a Prolog dictionary (parsed from JSON) that represents a term
