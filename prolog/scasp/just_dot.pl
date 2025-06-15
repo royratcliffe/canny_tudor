@@ -69,7 +69,14 @@ answer_tree_query_dot(Nodes, Options, Answer) -->
     line_dot('}', Options).
 
 implies_dot(Node0, Options, Node) -->
-    line_dot('"~w" -> "~w";'-[Node0, Node], Options).
+    { option(elides(Elides), Options, []),
+      (   \+ memberchk(Node0, Elides),
+          \+ memberchk(Node, Elides)
+      ->  Elided = ""
+      ;   Elided = "// elided "
+      )
+    },
+    line_dot('~s"~w" -> "~w";'-[Elided, Node0, Node], Options).
 
 dict_comment_dot(Dict, Options) -->
     {dict_pairs(Dict, _, Pairs)},
