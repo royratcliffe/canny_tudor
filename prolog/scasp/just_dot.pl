@@ -51,16 +51,21 @@ answers_dot(Answers, Options) -->
     sequence(answer_dot(Options), Answers).
 
 answer_dot(Options, Answer) -->
-    line_dot('// answer ~d'-[Answer.answer], Options),
-    line_dot('// time ~f'-[Answer.time], Options),
+    dict_comment_dot(Answer, [excludes([bindings, model, tree])|Options]),
     answer_tree_dot(Answer.tree, Options).
 
 answer_tree_dot(_{node:Node, children:Children}, Options) -->
     {value_term(Node.value, query)},
-    sequence(query_dot(Options), Children).
+    line_dot('subgraph {', Options, Options_),
+    sequence(answer_tree_query_dot([], Options_), Children),
+    line_dot('}', Options).
 
-query_dot(Options, Answer) -->
-    line_dot('subgraph {', Options),
+answer_tree_query_dot(Nodes, Options, Answer) -->
+    {value_term(Answer.node.value, Node)},
+    line_dot('// ~w'-[Node], Options),
+    line_dot('subgraph {', Options, Options_),
+    sequence(implies_dot(Node, Options_), Nodes),
+    sequence(answer_tree_query_dot([Node|Nodes], Options_), Answer.children),
     line_dot('}', Options).
 
 implies_dot(Node0, Options, Node) -->
