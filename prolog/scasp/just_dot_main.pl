@@ -3,6 +3,10 @@
 
 :- initialization(main, main).
 
+opt_type(t, tab, nonneg).
+opt_type(r, rankdir, atom).
+opt_type(e, elides, term).
+
 main(Argv) :-
     argv_options(Argv, Positional, Options, []),
     forall(member(Src, Positional), json_to_dot(Src, Options)).
