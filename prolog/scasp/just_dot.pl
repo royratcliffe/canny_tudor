@@ -51,7 +51,7 @@ answers_dot(Answers, Options) -->
     sequence(answer_dot(Options), Answers).
 
 answer_dot(Options, Answer) -->
-    dict_comment_dot(Answer, [excludes([bindings, model, tree])|Options]),
+    dict_comment_dot(Answer, [excludes([constraints, tree])|Options]),
     answer_tree_dot(Answer.tree, Options).
 
 answer_tree_dot(_{node:Node, children:Children}, Options) -->
