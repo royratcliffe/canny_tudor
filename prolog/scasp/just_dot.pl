@@ -10,8 +10,19 @@
 :- autoload(library(http/json), [json_read_dict/2]).
 :- autoload(library(apply), [maplist/3]).
 :- autoload(library(option), [select_option/4, option/3]).
+:- autoload(library(dcg/high_order), [sequence//2]).
 :- use_module(library(settings), [setting/4, setting/2]).
-:- autoload(library(dcg/high_order), [sequence/4]).
+
+:- setting(tab, nonneg, 2, '').
+:- setting(rankdir, atom, 'LR', '').
+:- setting(bgcolor, atom, transparent, '').
+:- setting(node, list(compound), [ style=filled,
+                                   fillcolor=lightyellow,
+                                   color=darkred,
+                                   fontname="Arial",
+                                   fontsize=10
+                                 ], '').
+:- setting(edge, list, [color=darkred], '').
 
 %!  scasp_print_just_dot(+Stream, +Src, +Options) is det.
 
@@ -24,17 +35,6 @@ read_json_dict(Src, Dict) :-
     setup_call_cleanup(open(Src, read, Stream),
                        json_read_dict(Stream, Dict),
                        close(Stream)).
-
-:- setting(tab, nonneg, 2, '').
-:- setting(rankdir, atom, 'LR', '').
-:- setting(bgcolor, atom, transparent, '').
-:- setting(node, list(compound), [ style=filled,
-                                   fillcolor=lightyellow,
-                                   color=darkred,
-                                   fontname="Arial",
-                                   fontsize=10
-                                 ], '').
-:- setting(edge, list, [color=darkred], '').
 
 json_dot(Dict, Options) -->
     tab_dot(Options), ['// solver ~s'-[Dict.solver], nl],
