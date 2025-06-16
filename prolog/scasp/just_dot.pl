@@ -22,7 +22,7 @@
                                    fontname="Arial",
                                    fontsize=10
                                  ], '').
-:- setting(edge, list, [color=darkred], '').
+:- setting(edge, list(compound), [color=darkred], '').
 
 %!  scasp_print_just_dot(+Stream, +Src, +Options) is det.
 
