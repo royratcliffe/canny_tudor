@@ -192,6 +192,14 @@ dict_term(Value, Term), _{type:"compound",
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+%!  indent(+Options0:list, +Width:nonneg, -Tab:compound, -Options:list) is det.
+%
+%   Computes the next indentation level and returns a tabulation format for output.
+%   - Options0: Input options list, possibly containing indent/1.
+%   - Width: Amount to increase the indentation by.
+%   - Tab: Tabulation format for output (i.e., '~t~*|'-[Indent0]).
+%   - Options: Output options list with updated indent/1 option.
+
 indent(Options0, Width, '~t~*|'-[Indent0], [indent(Indent)|Options]) :-
     select_option(indent(Indent0), Options0, Options, 0),
     Indent is Indent0 + Width.
