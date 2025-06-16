@@ -51,7 +51,14 @@ answers_dot(Answers, Options) -->
     sequence(answer_dot(Options), Answers).
 
 answer_dot(Options, Answer) -->
-    dict_comment_dot(Answer, [excludes([constraints, tree])|Options]),
+    dict_comment_dot(Answer, [excludes([ bindings,
+                                         model,
+                                         constraints,
+                                         tree
+                                       ])|Options]),
+    {dict_pairs(Answer.bindings, _, Bindings)},
+    sequence(binding_comment_dot(Options), Bindings),
+    sequence(truth_comment_dot(Options), Answer.model),
     answer_tree_dot(Answer.tree, Options).
 
 answer_tree_dot(_{node:Node, children:Children}, Options) -->
@@ -77,6 +84,12 @@ implies_dot(Node0, Options, Node) -->
       )
     },
     line_dot('~s"~w" -> "~w";'-[Elided, Node0, Node], Options).
+
+binding_comment_dot(Options, Binding-Truth) -->
+    tab_dot(Options), ['// ~w: '-[Binding]], truth_w(Truth), [nl].
+
+truth_comment_dot(Options, Truth) -->
+    tab_dot(Options), ['// '], truth_w(Truth), [nl].
 
 dict_comment_dot(Dict, Options) -->
     {dict_pairs(Dict, _, Pairs)},
@@ -115,6 +128,10 @@ line_dot(Line, Options) --> line_dot(Line, Options, _).
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+truth_w(_{truth:Truth, value:Value}) -->
+    {value_term(Value, Term)},
+    ['~w ~w'-[Truth, Term]].
 
 value_p(Value) --> {value_term(Value, Term)}, ['~p'-[Term]].
 
