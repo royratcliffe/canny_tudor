@@ -32,7 +32,7 @@
 %   the output, such as indentation size, graph direction, background color,
 %   node attributes, edge attributes, and nodes to elide.
 %
-%   The JSON file should contain a dictionary with the following structure,
+%   The JSON source should contain a dictionary with the following structure,
 %   simplified for clarity:
 %
 %       {
