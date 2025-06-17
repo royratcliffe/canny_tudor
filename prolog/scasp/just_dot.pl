@@ -264,10 +264,6 @@ line_dot(Line, Options0, Options) --> tab_dot(Options0, Options), [Line, nl].
 
 line_dot(Line, Options) --> line_dot(Line, Options, _).
 
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
 truth_w(_{truth:Truth, value:Value}) -->
     { value_term(Value, Term)
     },
@@ -353,10 +349,6 @@ dict_term(Value, Term), _{type:"compound",
     atom_string(Functor_, Functor),
     maplist(value_term, Args, Args_),
     Term =.. [Functor_|Args_].
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 %!  indent(+Options0:list, +Width:nonneg, -Tab:compound, -Options:list) is det.
 %
