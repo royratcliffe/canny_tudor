@@ -50,66 +50,70 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                                  ], '').
 :- setting(edge, list(compound), [color=darkred], '').
 
-%!  scasp_just_dot_print(+Stream, +Src, +Options)// is det.
+%!  scasp_just_dot_print(+Stream, +Src, +Options) is det.
 %
-%   Reads a JSON file from Src, which is expected to be in the format produced
-%   by the s(CASP) solver, and prints a DOT representation of the justification
-%   graph to the specified Stream. The Options parameter allows customisation of
-%   the output, such as indentation size, graph direction, background color,
-%   node attributes, edge attributes, and nodes to elide.
+%   Reads a JSON file from Src, which is expected to be in the format
+%   produced by the s(CASP) solver, and prints a DOT representation of the
+%   justification graph to the specified Stream. The Options parameter
+%   allows customisation of the output, such as indentation size, graph
+%   direction, background colour, node attributes, edge attributes, and
+%   nodes to elide.
 %
 %   The JSON source should contain a dictionary with the following structure,
 %   simplified for clarity:
 %
-%       {
-%           "solver": {...},
-%           "query": {...},
-%           "answers": [
-%               {
-%                   "bindings": {...},
-%                   "model": [{"truth": ..., "value": {...}}],
-%                   "tree": {
-%                       "node": {"value": {...}},
-%                       "children": [
-%                           {
-%                               "node": {"value": {...}},
-%                               "children": [...]
-%                           }
-%                       ]
-%                   }
-%               },
-%               ...
-%           ]
-%       }
+%   ```
+%   {
+%       "solver": {...},
+%       "query": {...},
+%       "answers": [
+%           {
+%               "bindings": {...},
+%               "model": [{"truth": ..., "value": {...}}],
+%               "tree": {
+%                   "node": {"value": {...}},
+%                   "children": [
+%                       {
+%                           "node": {"value": {...}},
+%                           "children": [...]
+%                       },
+%                       ...
+%                   ]
+%               }
+%           },
+%           ...
+%       ]
+%   }
+%   ```
 %
-%   The `answers` field is a list of answers, each containing bindings, a model,
-%   and a tree structure. The `tree` field represents the justification tree,
-%   where each node has a value and may have children, forming a hierarchical
-%   structure of implications.
+%   The `answers` field is a list of answers, each containing bindings, a
+%   model, and a tree structure. The `tree` field represents the
+%   justification tree, where each node has a value and may have children,
+%   forming a hierarchical structure of implications.
 %
-%   The output is a DOT graph representation of the justification tree, where
-%   each node corresponds to a term in the justification, and edges represent
-%   implications between nodes. The graph is directed, with arrows indicating
-%   the direction of implications from one node to another.
+%   The output is a DOT graph representation of the justification tree,
+%   where each node corresponds to a term in the justification, and edges
+%   represent implications between nodes. The graph is directed, with arrows
+%   indicating the direction of implications from one node to another.
 %
-%   The output is formatted as a DOT graph, which can be visualized using graph
-%   visualisation tools like Graphviz. The output can be customised using the
-%   Options parameter, which allows for setting various attributes of the graph,
-%   such as:
+%   The output is formatted as a DOT graph, which can be visualised using
+%   graph visualisation tools like Graphviz. The output can be customised
+%   using the Options parameter, which allows for setting various attributes
+%   of the graph, such as:
 %
-%       - `tab(Width)`: Specifies the indentation width for the output.
-%       - `rankdir(Direction)`: Sets the direction of the graph layout,
-%         e.g., 'LR' for left-to-right.
-%       - `bgcolor(Color)`: Sets the background color of the graph.
-%       - `node(Attributes)`: Specifies attributes for the nodes in the graph.
-%       - `edge(Attributes)`: Specifies attributes for the edges in the graph.
-%       - `elides(Nodes)`: A list of nodes to elide in the graph,
-%         meaning they will not be displayed.
+%     - `tab(Width)`: Specifies the indentation width for the output.
+%     - `rankdir(Direction)`: Sets the direction of the graph layout, e.g.
+%       'LR' for left-to-right.
+%     - `bgcolor(Color)`: Sets the background colour of the graph.
+%     - `node(Attributes)`: Specifies attributes for the nodes in the graph.
+%     - `edge(Attributes)`: Specifies attributes for the edges in the graph.
+%     - `elides(Nodes)`: A list of nodes to elide in the graph, meaning they
+%       will not be displayed.
 %
 %   This predicate is useful for visualising the justification structure of
-%   s(CASP) queries, making it easier to understand the relationships between
-%   different terms and their implications in the context of logic programming
-%   and answer set programming.
+%   s(CASP) queries, making it easier to understand the relationships
+%   between different terms and their implications in the context of logic
+%   programming and answer set programming.
 
 scasp_just_dot_print(Stream, Src, Options) :-
     read_json_dict(Src, Dict),
@@ -141,19 +145,22 @@ answer_dot(Options, Answer) -->
                                          constraints,
                                          tree
                                        ])|Options]),
-    {dict_pairs(Answer.bindings, _, Bindings)},
+    { dict_pairs(Answer.bindings, _, Bindings)
+    },
     sequence(binding_comment_dot(Options), Bindings),
     sequence(truth_comment_dot(Options), Answer.model),
     answer_tree_dot(Answer.tree, Options).
 
 answer_tree_dot(_{node:Node, children:Children}, Options) -->
-    {value_term(Node.value, query)},
+    { value_term(Node.value, query)
+    },
     line_dot('subgraph {', Options, Options_),
     sequence(answer_tree_query_dot([], Options_), Children),
     line_dot('}', Options).
 
 answer_tree_query_dot(Nodes, Options, Answer) -->
-    {value_term(Answer.node.value, Node)},
+    { value_term(Answer.node.value, Node)
+    },
     line_dot('// ~w'-[Node], Options),
     line_dot('subgraph {', Options, Options_),
     sequence(implies_dot(Node, Options_), Nodes),
@@ -185,11 +192,13 @@ truth_comment_dot(Options, Truth) -->
     tab_dot(Options), ['// '], truth_w(Truth), [nl].
 
 dict_comment_dot(Dict, Options) -->
-    {dict_pairs(Dict, _, Pairs)},
+    { dict_pairs(Dict, _, Pairs)
+    },
     sequence(pair_comment_dot(Options), Pairs).
 
 pair_comment_dot(Options, Key-Value) -->
-    {includes_or_not_excludes(Key, Options)},
+    { includes_or_not_excludes(Key, Options)
+    },
     !,
     line_dot('// ~k ~k'-[Key, Value], Options).
 pair_comment_dot(_, _) --> [].
@@ -214,15 +223,22 @@ includes_or_not_excludes(Key, Options) :-
     ).
 
 setting_dot(Name, Options) -->
-    {setting(Name, Value)},
+    { setting(Name, Value)
+    },
     setting_dot(Name, Value, Options).
 
-setting_dot(Name, Value, Options) --> {is_list(Value)}, !,
+setting_dot(Name, Value, Options) -->
+    { is_list(Value)
+    },
+    !,
     line_dot('~p ~p;'-[Name, Value], Options).
 setting_dot(Name, Value, Options) -->
     line_dot('~w;'-[Name=Value], Options).
 
-tab_dot(Options0, Options) --> {indent(Options0, Tab, Options)}, [Tab].
+tab_dot(Options0, Options) -->
+    { indent(Options0, Tab, Options)
+    },
+    [Tab].
 
 tab_dot(Options) --> tab_dot(Options, _).
 
@@ -235,12 +251,19 @@ line_dot(Line, Options) --> line_dot(Line, Options, _).
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 truth_w(_{truth:Truth, value:Value}) -->
-    {value_term(Value, Term)},
+    { value_term(Value, Term)
+    },
     ['~w ~w'-[Truth, Term]].
 
-value_p(Value) --> {value_term(Value, Term)}, ['~p'-[Term]].
+value_p(Value) -->
+    { value_term(Value, Term)
+    },
+    ['~p'-[Term]].
 
-value_w(Value) --> {value_term(Value, Term)}, ['~w'-[Term]].
+value_w(Value) -->
+    { value_term(Value, Term)
+    },
+    ['~w'-[Term]].
 
 %!  value_term(+Value:dict, -Term) is semidet.
 %
