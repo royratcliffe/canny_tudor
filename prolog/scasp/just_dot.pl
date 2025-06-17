@@ -5,7 +5,7 @@
 */
 
 :- module(scasp_just_dot,
-          [ scasp_print_just_dot/3              % Stream, Src, Options
+          [ scasp_just_dot_print/3              % Stream, Src, Options
           ]).
 :- autoload(library(http/json), [json_read_dict/2]).
 :- autoload(library(apply), [maplist/3]).
@@ -24,7 +24,7 @@
                                  ], '').
 :- setting(edge, list(compound), [color=darkred], '').
 
-%!  scasp_print_just_dot(+Stream, +Src, +Options)// is det.
+%!  scasp_just_dot_print(+Stream, +Src, +Options)// is det.
 %
 %   Reads a JSON file from Src, which is expected to be in the format produced
 %   by the s(CASP) solver, and prints a DOT representation of the justification
@@ -85,7 +85,7 @@
 %   different terms and their implications in the context of logic programming
 %   and answer set programming.
 
-scasp_print_just_dot(Stream, Src, Options) :-
+scasp_just_dot_print(Stream, Src, Options) :-
     read_json_dict(Src, Dict),
     phrase(json_dot(Dict, Options), Lines),
     print_message_lines(Stream, '', Lines).
