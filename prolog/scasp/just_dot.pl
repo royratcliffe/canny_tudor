@@ -119,19 +119,22 @@ answer_dot(Options, Answer) -->
                                          constraints,
                                          tree
                                        ])|Options]),
-    {dict_pairs(Answer.bindings, _, Bindings)},
+    { dict_pairs(Answer.bindings, _, Bindings)
+    },
     sequence(binding_comment_dot(Options), Bindings),
     sequence(truth_comment_dot(Options), Answer.model),
     answer_tree_dot(Answer.tree, Options).
 
 answer_tree_dot(_{node:Node, children:Children}, Options) -->
-    {value_term(Node.value, query)},
+    { value_term(Node.value, query)
+    },
     line_dot('subgraph {', Options, Options_),
     sequence(answer_tree_query_dot([], Options_), Children),
     line_dot('}', Options).
 
 answer_tree_query_dot(Nodes, Options, Answer) -->
-    {value_term(Answer.node.value, Node)},
+    { value_term(Answer.node.value, Node)
+    },
     line_dot('// ~w'-[Node], Options),
     line_dot('subgraph {', Options, Options_),
     sequence(implies_dot(Node, Options_), Nodes),
@@ -163,11 +166,13 @@ truth_comment_dot(Options, Truth) -->
     tab_dot(Options), ['// '], truth_w(Truth), [nl].
 
 dict_comment_dot(Dict, Options) -->
-    {dict_pairs(Dict, _, Pairs)},
+    { dict_pairs(Dict, _, Pairs)
+    },
     sequence(pair_comment_dot(Options), Pairs).
 
 pair_comment_dot(Options, Key-Value) -->
-    {includes_or_not_excludes(Key, Options)},
+    { includes_or_not_excludes(Key, Options)
+    },
     !,
     line_dot('// ~k ~k'-[Key, Value], Options).
 pair_comment_dot(_, _) --> [].
@@ -192,15 +197,22 @@ includes_or_not_excludes(Key, Options) :-
     ).
 
 setting_dot(Name, Options) -->
-    {setting(Name, Value)},
+    { setting(Name, Value)
+    },
     setting_dot(Name, Value, Options).
 
-setting_dot(Name, Value, Options) --> {is_list(Value)}, !,
+setting_dot(Name, Value, Options) -->
+    { is_list(Value)
+    },
+    !,
     line_dot('~p ~p;'-[Name, Value], Options).
 setting_dot(Name, Value, Options) -->
     line_dot('~w;'-[Name=Value], Options).
 
-tab_dot(Options0, Options) --> {indent(Options0, Tab, Options)}, [Tab].
+tab_dot(Options0, Options) -->
+    { indent(Options0, Tab, Options)
+    },
+    [Tab].
 
 tab_dot(Options) --> tab_dot(Options, _).
 
@@ -213,12 +225,19 @@ line_dot(Line, Options) --> line_dot(Line, Options, _).
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 truth_w(_{truth:Truth, value:Value}) -->
-    {value_term(Value, Term)},
+    { value_term(Value, Term)
+    },
     ['~w ~w'-[Truth, Term]].
 
-value_p(Value) --> {value_term(Value, Term)}, ['~p'-[Term]].
+value_p(Value) -->
+    { value_term(Value, Term)
+    },
+    ['~p'-[Term]].
 
-value_w(Value) --> {value_term(Value, Term)}, ['~w'-[Term]].
+value_w(Value) -->
+    { value_term(Value, Term)
+    },
+    ['~w'-[Term]].
 
 %!  value_term(+Value:dict, -Term) is semidet.
 %
