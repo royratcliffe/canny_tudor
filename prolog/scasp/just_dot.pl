@@ -5,7 +5,7 @@
 */
 
 :- module(scasp_just_dot,
-          [ scasp_print_just_dot/3              % Stream, Src, Options
+          [ scasp_just_dot_print/3              % Stream, Src, Options
           ]).
 :- autoload(library(http/json), [json_read_dict/2]).
 :- autoload(library(apply), [maplist/3]).
@@ -24,68 +24,72 @@
                                  ], '').
 :- setting(edge, list(compound), [color=darkred], '').
 
-%!  scasp_print_just_dot(+Stream, +Src, +Options)// is det.
+%!  scasp_just_dot_print(+Stream, +Src, +Options) is det.
 %
-%   Reads a JSON file from Src, which is expected to be in the format produced
-%   by the s(CASP) solver, and prints a DOT representation of the justification
-%   graph to the specified Stream. The Options parameter allows customisation of
-%   the output, such as indentation size, graph direction, background color,
-%   node attributes, edge attributes, and nodes to elide.
+%   Reads a JSON file from Src, which is expected to be in the format
+%   produced by the s(CASP) solver, and prints a DOT representation of the
+%   justification graph to the specified Stream. The Options parameter
+%   allows customisation of the output, such as indentation size, graph
+%   direction, background colour, node attributes, edge attributes, and
+%   nodes to elide.
 %
 %   The JSON file should contain a dictionary with the following structure,
 %   simplified for clarity:
 %
-%       {
-%           "solver": {...},
-%           "query": {...},
-%           "answers": [
-%               {
-%                   "bindings": {...},
-%                   "model": [{"truth": ..., "value": {...}}],
-%                   "tree": {
-%                       "node": {"value": {...}},
-%                       "children": [
-%                           {
-%                               "node": {"value": {...}},
-%                               "children": [...]
-%                           }
-%                       ]
-%                   }
-%               },
-%               ...
-%           ]
-%       }
+%   ```
+%   {
+%       "solver": {...},
+%       "query": {...},
+%       "answers": [
+%           {
+%               "bindings": {...},
+%               "model": [{"truth": ..., "value": {...}}],
+%               "tree": {
+%                   "node": {"value": {...}},
+%                   "children": [
+%                       {
+%                           "node": {"value": {...}},
+%                           "children": [...]
+%                       },
+%                       ...
+%                   ]
+%               }
+%           },
+%           ...
+%       ]
+%   }
+%   ```
 %
-%   The `answers` field is a list of answers, each containing bindings, a model,
-%   and a tree structure. The `tree` field represents the justification tree,
-%   where each node has a value and may have children, forming a hierarchical
-%   structure of implications.
+%   The `answers` field is a list of answers, each containing bindings, a
+%   model, and a tree structure. The `tree` field represents the
+%   justification tree, where each node has a value and may have children,
+%   forming a hierarchical structure of implications.
 %
-%   The output is a DOT graph representation of the justification tree, where
-%   each node corresponds to a term in the justification, and edges represent
-%   implications between nodes. The graph is directed, with arrows indicating
-%   the direction of implications from one node to another.
+%   The output is a DOT graph representation of the justification tree,
+%   where each node corresponds to a term in the justification, and edges
+%   represent implications between nodes. The graph is directed, with arrows
+%   indicating the direction of implications from one node to another.
 %
-%   The output is formatted as a DOT graph, which can be visualized using graph
-%   visualisation tools like Graphviz. The output can be customised using the
-%   Options parameter, which allows for setting various attributes of the graph,
-%   such as:
+%   The output is formatted as a DOT graph, which can be visualised using
+%   graph visualisation tools like Graphviz. The output can be customised
+%   using the Options parameter, which allows for setting various attributes
+%   of the graph, such as:
 %
-%       - `tab(Width)`: Specifies the indentation width for the output.
-%       - `rankdir(Direction)`: Sets the direction of the graph layout,
-%         e.g., 'LR' for left-to-right.
-%       - `bgcolor(Color)`: Sets the background color of the graph.
-%       - `node(Attributes)`: Specifies attributes for the nodes in the graph.
-%       - `edge(Attributes)`: Specifies attributes for the edges in the graph.
-%       - `elides(Nodes)`: A list of nodes to elide in the graph,
-%         meaning they will not be displayed.
+%     - `tab(Width)`: Specifies the indentation width for the output.
+%     - `rankdir(Direction)`: Sets the direction of the graph layout, e.g.
+%       'LR' for left-to-right.
+%     - `bgcolor(Color)`: Sets the background colour of the graph.
+%     - `node(Attributes)`: Specifies attributes for the nodes in the graph.
+%     - `edge(Attributes)`: Specifies attributes for the edges in the graph.
+%     - `elides(Nodes)`: A list of nodes to elide in the graph, meaning they
+%       will not be displayed.
 %
 %   This predicate is useful for visualising the justification structure of
-%   s(CASP) queries, making it easier to understand the relationships between
-%   different terms and their implications in the context of logic programming
-%   and answer set programming.
+%   s(CASP) queries, making it easier to understand the relationships
+%   between different terms and their implications in the context of logic
+%   programming and answer set programming.
 
-scasp_print_just_dot(Stream, Src, Options) :-
+scasp_just_dot_print(Stream, Src, Options) :-
     read_json_dict(Src, Dict),
     phrase(json_dot(Dict, Options), Lines),
     print_message_lines(Stream, '', Lines).
