@@ -174,6 +174,24 @@ answer_tree_query_dot(Nodes, Options, Answer) -->
 %   If Node0 is not in the list of elided nodes, it generates a line indicating
 %   the implication from Node0 to Node. If Node0 is in the list of elided nodes,
 %   it generates a comment line indicating that the implication is elided.
+%
+%   The elision is controlled by the `elides/1` option in Options, which is a
+%   list of nodes that should *not* be displayed in the graph.
+%
+%   The predicate constructs a DOT line in the format:
+%   ```
+%   "// elided " if Node0 or Node is in the elides list
+%   "~s"~w" -> "~w";" if neither Node0 nor Node is elided
+%   ```
+%   where `~s` is replaced by the elided comment if applicable, and the `~w`
+%   format string are replaced by the string representations of Node0 and Node.
+%
+%   The predicate uses the `line_dot//2` DCG rule to format the output line
+%   according to the DOT syntax, including the optional comment if the node is
+%   elided. The `Elides` variable is used to check if either Node0 or Node is in
+%   the list of elided nodes. If neither is elided, it generates a standard DOT
+%   line containing the implication. If either is elided, it generates a comment
+%   line indicating that the implication is elided.
 
 implies_dot(Node0, Options, Node) -->
     { option(elides(Elides), Options, []),
