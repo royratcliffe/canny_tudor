@@ -26,5 +26,5 @@ json_to_dot(Src, Options) :-
     file_name_extension(Base, json, Src),
     file_name_extension(Base, dot, Dest),
     setup_call_cleanup(open(Dest, write, Out),
-                       scasp_print_just_dot(Out, Src, Options),
+                       scasp_just_dot_print(Out, Src, Options),
                        close(Out)).
