@@ -323,8 +323,7 @@ value_w(Value) -->
 %   to be used in conjunction with the `dict_term/2` helper predicate, which
 %   handles the conversion of a Prolog dictionary (parsed from JSON) into a
 %   Prolog term. The `dict_term/2` predicate is responsible for converting the
-%   dictionary representation of terms into actual Prolog terms, which can then
-%   be used in further processing or output.
+%   dictionary representation of terms into actual Prolog terms.
 
 value_term(Value, Term), is_dict(Value) => dict_term(Value, Term).
 value_term(Value, List), is_list(Value) => maplist(value_term, Value, List).
