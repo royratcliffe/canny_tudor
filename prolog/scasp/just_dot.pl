@@ -101,11 +101,23 @@ pair_comment_dot(Options, Key-Value) -->
     line_dot('// ~k ~k'-[Key, Value], Options).
 pair_comment_dot(_, _) --> [].
 
+%!  includes_or_not_excludes(+Key, +Options) is semidet.
+%
+%   Determines if a Key should be included in the output based on the provided
+%   Options. Succeeds if Key is included (if includes/1 is present), not
+%   excluded (if excludes/1 is present), or always succeeds if neither option is
+%   present.
+%
+%   If the includes/1 option is present, it checks if Key is a member of the
+%   Includes list. If the excludes/1 option is present, it checks that Key is
+%   not a member of the Excludes list.
+
 includes_or_not_excludes(Key, Options) :-
     (   option(includes(Includes), Options)
     ->  memberchk(Key, Includes)
     ;   option(excludes(Excludes), Options)
     ->  \+ memberchk(Key, Excludes)
+    ;   true % succeed if neither includes nor excludes (default behaviour)
     ).
 
 setting_dot(Name, Options) -->
