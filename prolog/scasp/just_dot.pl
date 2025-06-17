@@ -317,18 +317,14 @@ value_w(Value) -->
 %   of terms into Prolog terms, which can then be used in further processing
 %   or output---particularly useful in the context of generating a DOT
 %   graph from a JSON source produced by s(CASP), where terms represent nodes
-%   in the justification tree.
-%
-%   The `value_term/2` predicate is a crucial part of the justification tree
-%   processing, allowing the conversion of JSON representations of terms
-%   into Prolog terms that can be used to construct the graph structure.
-%
-%   The `value_term/2` predicate is designed to be used in conjunction with
-%   the `dict_term/2` helper predicate, which handles the conversion of a Prolog
-%   dictionary (parsed from JSON) into a Prolog term. The `dict_term/2`
-%   predicate is responsible for converting the dictionary representation
-%   of terms into actual Prolog terms, which can then be used in further
-%   processing or output.
+%   in the justification tree. It is a crucial part of justification tree
+%   processing, allowing the conversion of JSON representations of terms into
+%   Prolog terms that can be used to construct the graph structure, and designed
+%   to be used in conjunction with the `dict_term/2` helper predicate, which
+%   handles the conversion of a Prolog dictionary (parsed from JSON) into a
+%   Prolog term. The `dict_term/2` predicate is responsible for converting the
+%   dictionary representation of terms into actual Prolog terms, which can then
+%   be used in further processing or output.
 
 value_term(Value, Term), is_dict(Value) => dict_term(Value, Term).
 value_term(Value, List), is_list(Value) => maplist(value_term, Value, List).
