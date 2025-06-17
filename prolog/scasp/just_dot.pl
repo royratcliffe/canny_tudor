@@ -285,34 +285,54 @@ value_w(Value) -->
 
 %!  value_term(+Value:dict, -Term) is semidet.
 %
-%   Converts a Prolog dictionary (parsed from JSON) that represents a term
-%   into an actual Prolog term (either an atom or a compound). The predicate
-%   deals with two cases:
+%   Converts a Prolog dictionary (parsed from JSON) that represents a term into
+%   an actual Prolog term. The predicate deals with cases where the dictionary
+%   represents different types of terms, such as variables, atoms, numbers,
+%   rational numbers, and compound terms. It recursively processes the arguments
+%   of compound terms to construct the final term. The predicate handles the
+%   following cases:
 %
-%       1. When the dictionary represents an atom (`type:"atom"`), it
-%       converts the string value to an atom.
+%     - If the input is a dictionary representing a variable, it extracts the
+%       variable name and returns it as a Prolog *string*.
+%     - If the dictionary represents an atom, it converts the string value to
+%       a Prolog atom.
+%     - If the dictionary represents a number, it returns the number as is.
+%     - If the dictionary represents a rational number, it constructs a
+%       rational term from the numerator and denominator.
+%     - If the input is a dictionary representing a compound term, it
+%       recursively processes the arguments and constructs the compound term
+%       using the functor and the arguments.
 %
-%       2. When the dictionary represents a compound
-%       (`type:"compound"`), it recursively processes the arguments and
-%       constructs the compound term.
+%   The predicate employs dictionary pattern matching (`:<`) to safely extract
+%   the relevant fields from the dictionary, and for clarity. It handles nested
+%   compounds by recursively mapping the arguments to value terms. The predicate
+%   is semi-deterministic, meaning it succeeds at most once; if the input
+%   dictionary does not match any of the expected patterns, it fails silently.
+%   This allows for safe handling of the JSON structure without raising
+%   exceptions for unexpected formats.
 %
-%   It employs dictionary pattern matching (`:<`) for clarity and safety and
-%   handles nested compounds by recursively mapping arguments. The predicate
-%   is "semidet," i.e. succeeds at most once; but if the input dictionary
-%   does not match either pattern, it fails silently. If the JSON structure
-%   changes or new term types are added, the predicate will require
-%   updating.
+%   The implementation assumes that the JSON structure follows a specific
+%   format, where each term is represented as a dictionary with a `type`
+%   field indicating whether it is a variable, atom, number, rational, or
+%   compound. If the JSON structure changes or new term types are added,
+%   the predicate will require updating.
 %
-%   Terms here refer to either a compound or an atom. Compounds consist of
-%   atoms, pertaining to the functor and the compound's arguments. Node
-%   values assume the form of a dictionary after loading the JSON. The JSON
-%   transforms into a Prolog dictionary composed of dictionaries and lists.
-%   The implementation below recursively constructs a Term based on a
-%   node's Value dictionary. Mapping the arguments to value terms
-%   results in recursion. This suggests that each argument could, in turn,
-%   map to a sub-compound. The logic accommodates this possibility, although
-%   such may not practically exist within a justification tree. Generally,
-%   arguments will be atoms or possibly numbers.
+%   The `value_term/2` predicate is used to convert the JSON representation
+%   of terms into Prolog terms, which can then be used in further processing
+%   or output---particularly useful in the context of generating a DOT
+%   graph from a JSON source produced by s(CASP), where terms represent nodes
+%   in the justification tree.
+%
+%   The `value_term/2` predicate is a crucial part of the justification tree
+%   processing, allowing the conversion of JSON representations of terms
+%   into Prolog terms that can be used to construct the graph structure.
+%
+%   The `value_term/2` predicate is designed to be used in conjunction with
+%   the `dict_term/2` helper predicate, which handles the conversion of a Prolog
+%   dictionary (parsed from JSON) into a Prolog term. The `dict_term/2`
+%   predicate is responsible for converting the dictionary representation
+%   of terms into actual Prolog terms, which can then be used in further
+%   processing or output.
 
 value_term(Value, Term), is_dict(Value) => dict_term(Value, Term).
 value_term(Value, List), is_list(Value) => maplist(value_term, Value, List).
