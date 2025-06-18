@@ -39,16 +39,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- autoload(library(dcg/high_order), [sequence//2]).
 :- use_module(library(settings), [setting/4, setting/2]).
 
-:- setting(tab, nonneg, 2, '').
-:- setting(rankdir, atom, 'LR', '').
-:- setting(bgcolor, atom, transparent, '').
+:- setting(tab, nonneg, 2, 'Tab size for indentation').
+:- setting(rankdir, atom, 'LR', 'Direction of the graph layout').
+:- setting(bgcolor, atom, transparent, 'Background colour of the graph').
 :- setting(node, list(compound), [ style=filled,
                                    fillcolor=lightyellow,
                                    color=darkred,
                                    fontname="Arial",
                                    fontsize=10
-                                 ], '').
-:- setting(edge, list(compound), [color=darkred], '').
+                                 ], 'Node attributes').
+:- setting(edge, list(compound), [color=darkred], 'Edge attributes').
 
 %!  scasp_just_dot_print(+Stream, +Src, +Options) is det.
 %
