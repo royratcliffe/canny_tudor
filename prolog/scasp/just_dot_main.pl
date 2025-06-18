@@ -13,7 +13,7 @@ opt_type(elides, elides, term).
 opt_help(help(header), 'Generate a DOT file from a JSON file produced by scasp').
 opt_help(tab, 'Tab size for indentation').
 opt_help(rankdir, 'Direction of the graph layout').
-opt_help(bgcolor, 'Background color of the graph').
+opt_help(bgcolor, 'Background colour of the graph').
 opt_help(node, 'Node attributes').
 opt_help(edge, 'Edge attributes').
 opt_help(elides, 'Nodes to elide in the graph').
