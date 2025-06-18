@@ -175,16 +175,18 @@ answer_tree_query_dot(Nodes, Options, Answer) -->
 %   the implication from Node0 to Node. If Node0 is in the list of elided nodes,
 %   it generates a comment line indicating that the implication is elided.
 %
-%   The elision is controlled by the `elides/1` option in Options, which is a
-%   list of nodes that should *not* be displayed in the graph.
+%   The elision is controlled by the =|elides/1|= option in Options,
+%   which is a list of nodes that should *not* be displayed in the
+%   graph.
 %
 %   The predicate constructs a DOT line in the format:
 %   ```
-%   "// elided " if Node0 or Node is in the elides list
-%   "~s"~w" -> "~w";" if neither Node0 nor Node is elided
+%   ~s"~w" -> "~w";
 %   ```
-%   where `~s` is replaced by the elided comment if applicable, and the `~w`
-%   format string are replaced by the string representations of Node0 and Node.
+%   where =|~s|= is replaced by the elided comment =|"// elided "|= if
+%   Node0 or Node is in the elides list, else =|""|= if neither Node0
+%   nor Node is elided, and the =|~w|= format strings are replaced by
+%   the string representations of Node0 and Node.
 %
 %   The predicate uses the `line_dot//2` DCG rule to format the output line
 %   according to the DOT syntax, including the optional comment if the node is
@@ -223,14 +225,14 @@ pair_comment_dot(_, _) --> [].
 
 %!  includes_or_not_excludes(+Key, +Options) is semidet.
 %
-%   Determines if a Key should be included in the output based on the provided
-%   Options. Succeeds if Key is included (if includes/1 is present), not
-%   excluded (if excludes/1 is present), or always succeeds if neither option is
-%   present.
+%   Determines if a Key should be included in the output based on the
+%   provided Options. Succeeds if Key is included (if =|includes/1|= is
+%   present), not excluded (if =|excludes/1|= is present), or always
+%   succeeds if neither option is present.
 %
-%   If the includes/1 option is present, it checks if Key is a member of the
-%   Includes list. If the excludes/1 option is present, it checks that Key is
-%   not a member of the Excludes list.
+%   If the =|includes/1|= option is present, it checks if Key is a
+%   member of the Includes list. If the =|excludes/1|= option is
+%   present, it checks that Key is not a member of the Excludes list.
 
 includes_or_not_excludes(Key, Options) :-
     (   option(includes(Includes), Options)
