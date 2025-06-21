@@ -158,13 +158,14 @@ answer_tree_dot(_{node:Node, children:Children}, Options) -->
     sequence(answer_tree_query_dot([], Options_), Children),
     line_dot('}', Options).
 
-answer_tree_query_dot(Nodes, Options, Answer) -->
-    { value_term(Answer.node.value, Node)
+answer_tree_query_dot(Implies, Options, Answer) -->
+    { Node = Answer.node,
+      value_term(Node.value, Value)
     },
-    line_dot('// ~w'-[Node], Options),
+    line_dot('// ~w'-[Value], Options),
     line_dot('subgraph {', Options, Options_),
-    sequence(implies_dot(Node, Options_), Nodes),
-    sequence(answer_tree_query_dot([Node|Nodes], Options_), Answer.children),
+    sequence(implies_dot(Node, Options_), Implies),
+    sequence(answer_tree_query_dot([Node|Implies], Options_), Answer.children),
     line_dot('}', Options).
 
 %!  implies_dot(+Node0, +Options, +Node)// is det.
@@ -196,14 +197,23 @@ answer_tree_query_dot(Nodes, Options, Answer) -->
 %   line indicating that the implication is elided.
 
 implies_dot(Node0, Options, Node) -->
-    { option(elides(Elides), Options, []),
-      (   \+ memberchk(Node0, Elides),
-          \+ memberchk(Node, Elides)
+    { value_term(Node0.value, Value0),
+      value_term(Node.value, Value),
+      option(elides(Elides), Options, []),
+      (   \+ memberchk(Value0, Elides),
+          \+ memberchk(Value, Elides)
       ->  Elided = ""
       ;   Elided = "// elided "
-      )
+      ),
+      edge_attributes(Node0.truth, Attributes)
     },
-    line_dot('~s"~w" -> "~w";'-[Elided, Node0, Node], Options).
+    line_dot('~s"~w" -> "~w" ~w;'-[Elided, Value0, Value, Attributes], Options).
+
+edge_attributes(true, [color=green]) :- !.
+edge_attributes(false, [color=red]) :- !.
+edge_attributes("unlikely", [color=orange]) :- !.
+edge_attributes("unknown", [color=black]) :- !.
+edge_attributes(_, []).
 
 binding_comment_dot(Options, Binding-Truth) -->
     tab_dot(Options), ['// ~w: '-[Binding]], truth_w(Truth), [nl].
