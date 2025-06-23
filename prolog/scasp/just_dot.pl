@@ -209,10 +209,10 @@ implies_dot(Node0, Options, Node) -->
     },
     line_dot('~s"~w" -> "~w" ~w;'-[Elided, Value0, Value, Attributes], Options).
 
-edge_attributes(true, [color=green]) :- !.
-edge_attributes(false, [color=red]) :- !.
-edge_attributes("unlikely", [color=orange]) :- !.
-edge_attributes("unknown", [color=black]) :- !.
+edge_attributes(true, [color=darkgreen]) :- !.
+edge_attributes(false, [color=darkred]) :- !.
+edge_attributes("likely", [color=darkgreen, style=dashed]) :- !.
+edge_attributes("unlikely", [color=darkred, style=dashed]) :- !.
 edge_attributes(_, []).
 
 binding_comment_dot(Options, Binding-Truth) -->
