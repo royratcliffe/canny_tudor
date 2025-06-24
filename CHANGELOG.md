@@ -3,7 +3,7 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
-## [0.23.9] - 2025-05-31
+## [0.23.9] - 2025-06-08
 ### Added
 - Predicate `scasp_just_dot_print(+Stream, +Src, +Options)`
 
