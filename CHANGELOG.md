@@ -3,6 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.23.9] - 2025-05-31
+### Added
+- Predicate `scasp_just_dot_print(+Stream, +Src, +Options)`
+
 ## [0.23.8] - 2025-05-31
 ### Added
 - Predicate `ollama_chat(+Messages:list(dict), -Message:dict, +Options:list)`
