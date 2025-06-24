@@ -1,0 +1,26 @@
+// solver 1.1.4
+// query [eligible(Who)]
+digraph {
+  rankdir=LR;
+  bgcolor=transparent;
+  node [style=filled,fillcolor=lightyellow,color=darkred,fontname="Arial",fontsize=10];
+  edge [color=darkred];
+  // answer 1
+  // Who: true alice
+  // true citizen(alice)
+  // unlikely criminal(alice)
+  // true eligible(alice)
+  subgraph {
+    // eligible(alice)
+    subgraph {
+      // citizen(alice)
+      subgraph {
+        "citizen(alice)" -> "eligible(alice)" [color=darkgreen];
+      }
+      // criminal(alice)
+      subgraph {
+        "criminal(alice)" -> "eligible(alice)" [color=darkred,style=dashed];
+      }
+    }
+  }
+}

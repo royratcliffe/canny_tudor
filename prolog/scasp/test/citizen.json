@@ -1,0 +1,89 @@
+{
+  "solver":"1.1.4",
+  "query": [
+    {
+      "type":"compound",
+      "functor":"eligible",
+      "args": [ {"type":"var","name":"Who"} ]
+    }
+  ],
+  "answers": [
+    {
+      "answer":1,
+      "time":0.0027527589999999935,
+      "bindings": {
+	"Who": {"truth":true,"value": {"type":"atom","value":"alice"}}
+      },
+      "model": [
+	{
+	  "truth":true,
+	  "value": {
+	    "type":"compound",
+	    "functor":"citizen",
+	    "args": [ {"type":"atom","value":"alice"} ]
+	  }
+	},
+	{
+	  "truth":"unlikely",
+	  "value": {
+	    "type":"compound",
+	    "functor":"criminal",
+	    "args": [ {"type":"atom","value":"alice"} ]
+	  }
+	},
+	{
+	  "truth":true,
+	  "value": {
+	    "type":"compound",
+	    "functor":"eligible",
+	    "args": [ {"type":"atom","value":"alice"} ]
+	  }
+	}
+      ],
+      "tree": {
+	"children": [
+	  {
+	    "children": [
+	      {
+		"children": [],
+		"node": {
+		  "truth":true,
+		  "value": {
+		    "type":"compound",
+		    "functor":"citizen",
+		    "args": [ {"type":"atom","value":"alice"} ]
+		  },
+		  "source_file":"/home/roy/Documents/canny_tudor/prolog/scasp/test/citizen.pl",
+		  "source_line":3
+		}
+	      },
+	      {
+		"children": [],
+		"node": {
+		  "truth":"unlikely",
+		  "value": {
+		    "type":"compound",
+		    "functor":"criminal",
+		    "args": [ {"type":"atom","value":"alice"} ]
+		  }
+		}
+	      }
+	    ],
+	    "node": {
+	      "truth":true,
+	      "value": {
+		"type":"compound",
+		"functor":"eligible",
+		"args": [ {"type":"atom","value":"alice"} ]
+	      },
+	      "source_file":"/home/roy/Documents/canny_tudor/prolog/scasp/test/citizen.pl",
+	      "source_line":1
+	    }
+	  }
+	],
+	"node": {"truth":true,"value": {"type":"atom","value":"query"}}
+      },
+      "constraints": {}
+    }
+  ]
+}

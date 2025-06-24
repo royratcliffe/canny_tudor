@@ -151,7 +151,8 @@ answer_dot(Options, Answer) -->
     dict_comment_dot(Answer, [excludes([ bindings,
                                          model,
                                          constraints,
-                                         tree
+                                         tree,
+                                         time
                                        ])|Options]),
     { dict_pairs(Answer.bindings, _, Bindings)
     },
