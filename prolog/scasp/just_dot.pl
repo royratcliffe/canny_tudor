@@ -48,7 +48,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                                    fontname="Arial",
                                    fontsize=10
                                  ], 'Node attributes').
-:- setting(edge, list(compound), [color=darkred], 'Edge attributes').
+:- setting(edge, list(compound), [color=darkred], 'Edge default attributes').
+:- setting(edge_true, list(compound), [color=darkgreen], 'Edge attributes for true').
+:- setting(edge_false, list(compound), [color=darkred], 'Edge attributes for false').
+:- setting(edge_likely, list(compound), [ color=darkgreen,
+                                          style=dashed
+                                        ], 'Edge attributes for likely').
+:- setting(edge_unlikely, list(compound), [ color=darkred,
+                                            style=dashed
+                                          ], 'Edge attributes for unlikely').
 
 %!  scasp_just_dot_print(+Stream, +Src, +Options) is det.
 %
@@ -205,15 +213,22 @@ implies_dot(Node0, Options, Node) -->
       ->  Elided = ""
       ;   Elided = "// elided "
       ),
-      edge_attributes(Node0.truth, Attributes)
+      edge_attributes(Node0.truth, Attributes, Options)
     },
     line_dot('~s"~w" -> "~w" ~w;'-[Elided, Value0, Value, Attributes], Options).
 
-edge_attributes(true, [color=darkgreen]) :- !.
-edge_attributes(false, [color=darkred]) :- !.
-edge_attributes("likely", [color=darkgreen, style=dashed]) :- !.
-edge_attributes("unlikely", [color=darkred, style=dashed]) :- !.
-edge_attributes(_, []).
+edge_attributes(Truth, Attributes, Options) :-
+    atom_string(Truth_, Truth),
+    edge_attributes_(Truth_, Attributes, Options).
+
+edge_attributes_(Truth, Attributes, Options) :-
+    option(edge(Truth, Attributes), Options),
+    !.
+edge_attributes_(Truth, Attributes, _) :-
+    atomic_list_concat([edge, Truth], '_', Name),
+    setting(Name, Attributes),
+    !.
+edge_attributes_(_, [], _).
 
 binding_comment_dot(Options, Binding-Truth) -->
     tab_dot(Options), ['// ~w: '-[Binding]], truth_w(Truth), [nl].
@@ -280,11 +295,6 @@ truth_w(_{truth:Truth, value:Value}) -->
     { value_term(Value, Term)
     },
     ['~w ~w'-[Truth, Term]].
-
-value_p(Value) -->
-    { value_term(Value, Term)
-    },
-    ['~p'-[Term]].
 
 value_w(Value) -->
     { value_term(Value, Term)
