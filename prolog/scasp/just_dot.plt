@@ -9,12 +9,9 @@ user:file_search_path(scasp_just_dot_test, Path) :-
     directory_file_path(Directory, _, SourceFile),
     absolute_file_name(test, Path, [relative_to(Directory)]).
 
-test_file(File, Abs) :-
-    absolute_file_name(scasp_just_dot_test(File), Abs).
-
 test(citizen, JsonCodes == DotCodes) :-
-    test_file('citizen.json', AbsJson),
-    test_file('citizen.dot', AbsDot),
+    absolute_file_name(scasp_just_dot_test('citizen.json'), AbsJson),
+    absolute_file_name(scasp_just_dot_test('citizen.dot'), AbsDot),
     with_output_to(codes(JsonCodes),
                    scasp_just_dot_print(current_output, AbsJson, [])),
     format('~s', [JsonCodes]),
