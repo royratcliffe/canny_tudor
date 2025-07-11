@@ -15,8 +15,8 @@
 %!  read_stream_to_codes_until(+In, -Codes, +Until) is nondet.
 %
 %   Reads from a stream and finds a specific code sequence. The
-%   predicate reads the stream until it reaches the end or encounters
-%   the specified code term.
+%   predicate reads the stream until it encounters the specified code
+%   term.
 %
 %   @param In The input stream to read from.
 %   @param Codes The codes read from the stream.
