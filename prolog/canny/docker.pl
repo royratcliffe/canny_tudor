@@ -2,6 +2,28 @@
     Author:  Roy Ratcliffe
     Created: Jul 11 2025
     Purpose: Docker API
+
+Copyright (c) 2025, Roy Ratcliffe, Northumberland, United Kingdom
+
+Permission is hereby granted, free of charge,  to any person obtaining a
+copy  of  this  software  and    associated   documentation  files  (the
+"Software"), to deal in  the   Software  without  restriction, including
+without limitation the rights to  use,   copy,  modify,  merge, publish,
+distribute, sub-license, and/or sell copies  of   the  Software,  and to
+permit persons to whom the Software is   furnished  to do so, subject to
+the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT  WARRANTY OF ANY KIND, EXPRESS
+OR  IMPLIED,  INCLUDING  BUT  NOT   LIMITED    TO   THE   WARRANTIES  OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR   PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS  OR   COPYRIGHT  HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY,  WHETHER   IN  AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM,  OUT  OF   OR  IN  CONNECTION  WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 */
 
 :- module(canny_docker,
@@ -14,8 +36,13 @@
 %!  read_stream_to_codes_until_end_of_file(+In, -Codes) is nondet.
 %!  read_stream_to_codes_until(+In, -Codes, +Until) is nondet.
 %
-%   Reads Codes from a stream until it finds a specific code term, e.g.
-%   `end_of_file`.
+%   Reads Codes from a stream until it finds a specific code term, such as
+%   `end_of_file`. The predicate reads the stream until it encounters the `Until`
+%   code term, which defaults to `end_of_file`. It succeeds non-deterministically
+%   for each chunk read before reaching the `Until` code term. Use this predicate
+%   to process multiple messages or data chunks from a stream, handling each
+%   chunk separately. The `Codes` variable contains the codes read from the
+%   stream, and the predicate succeeds until it reaches the `Until` condition.
 %
 %   @param In The input stream to read from.
 %   @param Codes The codes read from the stream.
