@@ -53,8 +53,7 @@ read_stream_to_codes_until_end_of_file(In, Codes) :-
 
 read_stream_to_codes_until(In, Codes, Until) :-
     repeat,
-    (   true,
-        read_stream_to_codes(In, Codes),
+    (   read_stream_to_codes(In, Codes),
         Codes \== Until
     ->  true
     ;   !,
