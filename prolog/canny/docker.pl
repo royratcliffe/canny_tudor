@@ -36,13 +36,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %!  read_stream_to_codes_until_end_of_file(+In, -Codes) is nondet.
 %!  read_stream_to_codes_until(+In, -Codes, +Until) is nondet.
 %
-%   Reads Codes from a stream until it finds a specific code term, such as
-%   `end_of_file`. The predicate reads the stream until it encounters the `Until`
-%   code term, which defaults to `end_of_file`. It succeeds non-deterministically
-%   for each chunk read before reaching the `Until` code term. Use this predicate
-%   to process multiple messages or data chunks from a stream, handling each
-%   chunk separately. The `Codes` variable contains the codes read from the
-%   stream, and the predicate succeeds until it reaches the `Until` condition.
+%   Reads Codes from a stream until it  finds a specific code term, such
+%   as `end_of_file`. The predicate reads the stream until it encounters
+%   the `Until` code term, which defaults  to `end_of_file`. It succeeds
+%   non-deterministically  for  each  chunk  read  before  reaching  the
+%   `Until` code term. Use this predicate   to process multiple messages
+%   or data chunks from a stream,   handling  each chunk separately. The
+%   `Codes` variable contains the codes read   from  the stream, and the
+%   predicate succeeds until it reaches the `Until` condition.
 %
 %   @param In The input stream to read from.
 %   @param Codes The codes read from the stream.
