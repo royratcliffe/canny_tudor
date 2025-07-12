@@ -66,7 +66,13 @@ read_stream_to_codes_until(In, Codes, Until) :-
         fail
     ).
 
-%!  docker_json(+Base, -Abs) is det.
+docker_json(Version, Dict) :-
+    docker_json_path(Version, Path),
+    setup_call_cleanup(open(Path, read, In),
+                       json_read_dict(In, Dict),
+                       close(In)).
+
+%!  docker_json_path(+Base, -Abs) is det.
 %
 %   Constructs the absolute path of a Docker   JSON file based on a base
 %   name. The base name is expected  to   have  a `.json` extension. The
@@ -87,7 +93,7 @@ read_stream_to_codes_until(In, Codes, Until) :-
 %   @param Abs The absolute file path of the Docker JSON file with the
 %   `.json` extension.
 
-docker_json(Base, Abs) :-
+docker_json_path(Base, Abs) :-
     file_name_extension(Base, json, Name),
     context_file((..)/docker/Name, Abs, [access(exist)]).
 
