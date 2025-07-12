@@ -42,11 +42,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %!  path_method(?Path, ?Method, ?MethodDict) is nondet.
 %!  path_method(+Paths, -Path, -Method, -MethodDict) is nondet.
 %
-%   Retrieves a path and its corresponding method from a dictionary of paths.
-%   Succeeds if the given path and method are present in the dictionary. The
-%   predicate extracts the path and method from the dictionary and unifies them
-%   with the provided variables. The predicate succeeds if the given path and
-%   method are present in the dictionary.
+%   Retrieves a path and its corresponding   method from a dictionary of
+%   paths. Succeeds if the given path  and   method  are  present in the
+%   dictionary. The predicate extracts the  path   and  method  from the
+%   dictionary  and  unifies  them  with  the  provided  variables.  The
+%   predicate succeeds if the given path and   method are present in the
+%   dictionary.
 %
 %   @param Paths Dictionary mapping paths to method dictionaries.
 %   @param Path The extracted path key.
