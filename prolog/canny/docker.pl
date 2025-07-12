@@ -68,6 +68,25 @@ read_stream_to_codes_until(In, Codes, Until) :-
         fail
     ).
 
+%!  docker_json(+Version, -Dict) is det.
+%
+%   Reads a Docker JSON file for  a   specific  version  and returns its
+%   contents as a Prolog dictionary. The   predicate constructs the file
+%   path based on the version and reads the JSON data from the file.
+%
+%   The predicate uses the `docker_json_path/2` predicate to resolve the
+%   file path relative to the current module's source file directory.
+%
+%   @param Version The version of the Docker  API to read. The predicate
+%   reads the JSON data from the  file   and  unifies it with the `Dict`
+%   variable.  The  JSON  file  is  expected    to   be  in  the  format
+%   =|<version>.json|=, where =|<version>|=  is   the  specified version
+%   with its `v` prefix.
+%
+%   @param Dict The Prolog dictionary containing the JSON data read from
+%   the Docker JSON file. The dictionary  contains the configuration and
+%   metadata API for Docker.
+
 docker_json(Version, Dict) :-
     docker_json_path(Version, Path),
     setup_call_cleanup(open(Path, read, In),
@@ -77,23 +96,23 @@ docker_json(Version, Dict) :-
 %!  docker_json_path(+Base, -Abs) is det.
 %
 %   Constructs the absolute path of a Docker   JSON file based on a base
-%   name. The base name is expected  to   have  a `.json` extension. The
+%   name. The base name is expected to   have a =|.json|= extension. The
 %   predicate uses the `context_file/3` predicate   to  resolve the file
 %   path relative to the current module's source file directory.
 %
 %   The Docker JSON file stores the   configuration and metadata API for
-%   Docker. Provide the base version name without the `.json` extension;
-%   the predicate automatically appends it.   The  predicate unifies the
-%   absolute path to the term at   `Abs`. The `context_file/3` predicate
-%   is used to resolve the file path   relative  to the current module's
-%   source file directory.
+%   Docker.  Provide  the  base  version   name  without  the  =|.json|=
+%   extension; the predicate automatically  appends   it.  The predicate
+%   unifies the absolute path to the term at `Abs`. The `context_file/3`
+%   predicate is used to resolve the file   path relative to the current
+%   module's source file directory.
 %
 %   @param Base The base name of  the   Docker  JSON file, excluding the
-%   `.json` extension. This  corresponds  to   the  Docker  API version,
+%   =|.json|= extension. This corresponds  to   the  Docker API version,
 %   prefixed with `v`.
 %
 %   @param Abs The absolute file path of the Docker JSON file with the
-%   `.json` extension.
+%   =|.json|= extension.
 
 docker_json_path(Base, Abs) :-
     file_name_extension(Base, json, Name),
