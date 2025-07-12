@@ -30,6 +30,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           []).
 :- autoload(library(http/json), [json_read_dict/2]).
 :- autoload(library(lists), [member/2]).
+:- use_module(library(settings), [setting/4]).
+
+:- setting(api_version, atom, 'v1.49',
+           '').
 
 /** <module> Canny Docker
 
@@ -44,6 +48,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   @param Path The extracted path key.
 %   @param Method The extracted HTTP method.
 %   @param MethodDict Dictionary with details for the specified method.
+
+path_method(Path, Method, MethodDict) :-
+    setting(api_version, Version),
+    docker_json(Version, Dict),
+    path_method(Dict.paths, Path, Method, MethodDict).
 
 path_method(Paths, Path, Method, MethodDict) :-
     dict_pairs(Paths, _, PathPairs),
