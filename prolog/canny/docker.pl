@@ -88,8 +88,8 @@ read_stream_to_codes_until(In, Codes, Until) :-
 %   metadata API for Docker.
 
 docker_json(Version, Dict) :-
-    docker_json_path(Version, Path),
-    setup_call_cleanup(open(Path, read, In),
+    docker_json_path(Version, Abs),
+    setup_call_cleanup(open(Abs, read, In),
                        json_read_dict(In, Dict),
                        close(In)).
 
