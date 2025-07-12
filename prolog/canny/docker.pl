@@ -60,7 +60,7 @@ url_options([path(Path_)|URL], [method(Method)|Options]) :-
     atom_concat(/, Version, Path0),
     atom_concat(Path0, Path, Path_).
 
-%!  path_method(?Path, ?Method, -Options) is nondet.
+%!  operation(?Operation, ?Path, ?Method, -Options) is nondet.
 %!  path_method(+Paths, -Path, -Method, -MethodDict) is nondet.
 %
 %   Retrieves a path and its corresponding   method from a dictionary of
@@ -77,10 +77,12 @@ url_options([path(Path_)|URL], [method(Method)|Options]) :-
 %   @param Options List of options for the method, such as `accept` for
 %   the expected response format.
 
-path_method(Path, Method, Options) :-
+operation(Operation, Path, Method, Options) :-
     setting(api_version, Version),
     docker_json(Version, Dict),
     path_method(Dict.paths, Path, Method, MethodDict),
+    get_dict(operationId, MethodDict, OperationId),
+    restyle_identifier(one_two, OperationId, Operation),
     dict_pairs(MethodDict, _, Options0),
     convlist(method_option, Options0, Options).
 
