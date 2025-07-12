@@ -38,7 +38,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-%!  path_method(?Path, ?Method, ?MethodDict) is nondet.
+%!  path_method(?Path, ?Method, -Options) is nondet.
 %!  path_method(+Paths, -Path, -Method, -MethodDict) is nondet.
 %
 %   Retrieves a path and its corresponding   method from a dictionary of
@@ -52,6 +52,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   @param Path The extracted path key.
 %   @param Method The extracted HTTP method.
 %   @param MethodDict Dictionary with details for the specified method.
+%   @param Options List of options for the method, such as `accept` for
+%   the expected response format.
 
 path_method(Path, Method, Options) :-
     setting(api_version, Version),
