@@ -33,12 +33,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- use_module(library(settings), [setting/4]).
 
 :- setting(api_version, atom, 'v1.49',
-           '').
+           'Version of Docker API').
 
 /** <module> Canny Docker
 
 */
 
+%!  path_method(?Path, ?Method, ?MethodDict) is nondet.
 %!  path_method(+Paths, -Path, -Method, -MethodDict) is nondet.
 %
 %   Retrieves a path and its corresponding method from a dictionary of paths.
