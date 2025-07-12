@@ -29,10 +29,27 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- module(canny_docker,
           []).
 :- autoload(library(http/json), [json_read_dict/2]).
+:- autoload(library(lists), [member/2]).
 
 /** <module> Canny Docker
 
 */
+
+%!  path_method(+Paths, -Path, -Method, -MethodDict) is nondet.
+%
+%   Retrieves a path and its corresponding method from a dictionary of paths.
+%   Succeeds if the given path and method are present in the dictionary.
+%
+%   @param Paths Dictionary mapping paths to method dictionaries.
+%   @param Path The extracted path key.
+%   @param Method The extracted HTTP method.
+%   @param MethodDict Dictionary with details for the specified method.
+
+path_method(Paths, Path, Method, MethodDict) :-
+    dict_pairs(Paths, _, PathPairs),
+    member(Path-PathDict, PathPairs),
+    dict_pairs(PathDict, _, MethodPairs),
+    member(Method-MethodDict, MethodPairs).
 
 %!  docker_json(+Version, -Dict) is det.
 %
