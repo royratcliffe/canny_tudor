@@ -32,8 +32,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- autoload(library(lists), [member/2]).
 :- use_module(library(settings), [setting/4]).
 
-:- setting(api_version, atom, 'v1.49',
-           'Version of Docker API').
+:- setting(api_version, atom, 'v1.49', 'Version of Docker API').
 
 /** <module> Canny Docker
 
