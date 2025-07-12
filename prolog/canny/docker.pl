@@ -66,6 +66,10 @@ read_stream_to_codes_until(In, Codes, Until) :-
         fail
     ).
 
+docker_json(Base, Abs) :-
+    file_name_extension(Base, json, Name),
+    context_file((..)/docker/Name, Abs, []).
+
 %!  context_file(+Spec, -Abs, +Options) is det.
 %
 %   Determines the absolute path of a file Spec, resolving it relative to
