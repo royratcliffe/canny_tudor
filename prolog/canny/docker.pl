@@ -42,6 +42,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
+%!  url_options(+URL, -Options) is det.
+%
+%   Builds HTTP request options for the Docker API using the base URL from
+%   the `daemon_url` setting. The path and HTTP method are determined by
+%   `path_method/3`, and the resulting options are suitable for making
+%   requests to the Docker API.
+%
+%   @param URL The base URL of the Docker API, derived from the `daemon_url`
+%   setting.
+%   @param Options List of options for the URL, such as `method` and `path`.
+
 url_options([path(Path_)|URL], [method(Method)|Options]) :-
     setting(daemon_url, URL),
     setting(api_version, Version),
