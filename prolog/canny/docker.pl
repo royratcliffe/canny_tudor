@@ -76,10 +76,14 @@ read_stream_to_codes_until(In, Codes, Until) :-
 %   The Docker JSON file stores the   configuration and metadata API for
 %   Docker. Provide the base version name without the `.json` extension;
 %   the predicate automatically appends it.   The  predicate unifies the
-%   absolute path to the term at `Abs`.
+%   absolute path to the term at   `Abs`. The `context_file/3` predicate
+%   is used to resolve the file path   relative  to the current module's
+%   source file directory.
 %
-%   @param Base The base name of the Docker JSON file, without the
-%   `.json` extension.
+%   @param Base The base name of  the   Docker  JSON file, excluding the
+%   `.json` extension. This  corresponds  to   the  Docker  API version,
+%   prefixed with `v`.
+%
 %   @param Abs The absolute file path of the Docker JSON file with the
 %   `.json` extension.
 
