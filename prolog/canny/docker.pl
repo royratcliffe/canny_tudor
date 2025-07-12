@@ -28,7 +28,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- module(canny_docker,
           []).
-:- autoload(library(readutil), [read_stream_to_codes/2]).
 :- autoload(library(http/json), [json_read_dict/2]).
 
 /** <module> Canny Docker
