@@ -53,10 +53,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   @param Method The extracted HTTP method.
 %   @param MethodDict Dictionary with details for the specified method.
 
-path_method(Path, Method, MethodDict) :-
+path_method(Path, Method, Options) :-
     setting(api_version, Version),
     docker_json(Version, Dict),
-    path_method(Dict.paths, Path, Method, MethodDict).
+    path_method(Dict.paths, Path, Method, MethodDict),
+    dict_pairs(MethodDict, _, Options0),
+    convlist(method_option, Options0, Options).
+
+method_option(produces-Produces, accept(Produces)).
 
 path_method(Paths, Path, Method, MethodDict) :-
     dict_pairs(Paths, _, PathPairs),
