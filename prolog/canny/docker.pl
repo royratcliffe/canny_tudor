@@ -53,10 +53,15 @@ read_stream_to_codes_until_end_of_file(In, Codes) :-
     read_stream_to_codes_until(In, Codes, end_of_file).
 
 read_stream_to_codes_until(In, Codes, Until) :-
+    % Use repeat/0 to allow backtracking for each chunk read until `Until` is
+    % encountered. The cut (!) and fail ensure the predicate only succeeds for
+    % valid chunks and stops at `Until`.
     repeat,
     (   read_stream_to_codes(In, Codes),
         Codes \== Until
     ->  true
-    ;   !,
+    ;   % Cut (!) and fail here to terminate the repeat loop when
+        % `Until` is encountered.
+        !,
         fail
     ).
