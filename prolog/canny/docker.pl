@@ -32,11 +32,22 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- autoload(library(lists), [member/2]).
 :- use_module(library(settings), [setting/4]).
 
+:- setting(daemon_url, list, [ protocol(tcp),
+                               host(localhost),
+                               port(2375)
+                             ], 'URL of Docker API').
 :- setting(api_version, atom, 'v1.49', 'Version of Docker API').
 
 /** <module> Canny Docker
 
 */
+
+url_options([path(Path_)|URL], [method(Method)|Options]) :-
+    setting(daemon_url, URL),
+    setting(api_version, Version),
+    path_method(Path, Method, Options),
+    atom_concat(/, Version, Path0),
+    atom_concat(Path0, Path, Path_).
 
 %!  path_method(?Path, ?Method, -Options) is nondet.
 %!  path_method(+Paths, -Path, -Method, -MethodDict) is nondet.
