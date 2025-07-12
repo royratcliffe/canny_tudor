@@ -42,7 +42,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-%!  url_options(+URL, -Options) is det.
+%!  url_options(?Operation, -URL, -Options) is det.
 %
 %   Builds HTTP request options for the Docker API using the base URL from
 %   the `daemon_url` setting. The path and HTTP method are determined by
@@ -53,10 +53,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   setting.
 %   @param Options List of options for the URL, such as `method` and `path`.
 
-url_options([path(Path_)|URL], [method(Method)|Options]) :-
+url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
     setting(daemon_url, URL),
     setting(api_version, Version),
-    path_method(Path, Method, Options),
+    (   var(Operation)
+    ->  operation(Operation, Path, Method, Options)
+    ;   once(operation(Operation, Path, Method, Options))
+    ),
     atom_concat(/, Version, Path0),
     atom_concat(Path0, Path, Path_).
 
