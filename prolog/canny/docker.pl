@@ -33,6 +33,23 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
+%!  context_file(+Spec, -Abs, +Options) is det.
+%
+%   Determines the absolute path of a file Spec, resolving it relative to
+%   the directory of the current module's source file.
+%
+%   @param Spec The specification of the file, which can be a relative or
+%   absolute path.
+%   @param Abs The absolute file path of the specified file.
+%   @param Options Additional options for the absolute file name
+%   resolution.
+
+context_file(Spec, Abs, Options) :-
+    context_module(M),
+    module_property(M, file(File)),
+    file_directory_name(File, Directory),
+    absolute_file_name(Spec, Abs, [relative_to(Directory)|Options]).
+
 %!  read_stream_to_codes_until_end_of_file(+In, -Codes) is nondet.
 %!  read_stream_to_codes_until(+In, -Codes, +Until) is nondet.
 %
