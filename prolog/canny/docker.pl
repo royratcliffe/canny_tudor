@@ -66,9 +66,16 @@ read_stream_to_codes_until(In, Codes, Until) :-
         fail
     ).
 
+%!  docker_json(+Base, -Abs) is det.
+%
+%   Constructs the absolute path of a Docker JSON file based on a base
+%   name. The base name is expected to have a `.json` extension. The
+%   predicate uses the `context_file/3` predicate to resolve the file
+%   path relative to the current module's source file directory.
+
 docker_json(Base, Abs) :-
     file_name_extension(Base, json, Name),
-    context_file((..)/docker/Name, Abs, []).
+    context_file((..)/docker/Name, Abs, [access(exist)]).
 
 %!  context_file(+Spec, -Abs, +Options) is det.
 %
