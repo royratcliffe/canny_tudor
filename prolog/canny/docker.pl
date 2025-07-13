@@ -76,6 +76,13 @@ Options = [method(get), accept(["application/json"])],
 Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31fb1579', ...|...])].
 ```
 
+For creating a container, you can use:
+
+```prolog
+?- docker(container_create, A, [post(json(json(['Image'=ubuntu,
+   'Labels'=json(['Hello'=world])])))]).
+```
+
 @author Roy Ratcliffe
 @version 0.1.0
 */
