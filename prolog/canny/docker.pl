@@ -49,6 +49,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   `path_method/3`, and the resulting options are suitable for making
 %   requests to the Docker API.
 %
+%   The predicate constructs the URL by concatenating the base URL with
+%   the path and method. The `daemon_url` setting provides the base URL,
+%   and the `api_version` setting specifies the version of the Docker API.
+%
+%   The predicate succeeds if the given operation is present in the
+%   `docker_json/2` dictionary. The dictionary is read from a JSON file
+%   that contains the Docker API specification.
+%
+%   @param Operation The operation to perform, which determines the path and
+%   method, as well as any additional options.
 %   @param URL The base URL of the Docker API, derived from the `daemon_url`
 %   setting.
 %   @param Options List of options for the URL, such as `method` and `accept`.
