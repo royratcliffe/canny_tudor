@@ -112,8 +112,9 @@ docker(Operation, Reply, Options) :-
     setting(api_version, Version),
     url_options(Version, Operation, Path_, Options_),
     format_path(Path_, Path, Options),
-    append(Options, Options_, Options__),
-    http_get([path(Path)|URL], Reply, Options__).
+    select_option(search(Search), Options, Options0, []),
+    append(Options0, Options_, Options__),
+    http_get([path(Path), search(Search)|URL], Reply, Options__).
 
 %!  format_path(+Format:atom, -Path:atom, +Options:list) is det.
 %
