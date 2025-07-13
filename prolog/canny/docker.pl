@@ -97,6 +97,16 @@ Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31f
 %   The predicate constructs the URL by concatenating the base URL with
 %   the path and method. The `daemon_url` setting provides the base URL,
 %   and the `api_version` setting specifies the version of the Docker API.
+%
+%   @param Operation The operation to perform, which determines the path and
+%   method, as well as any additional options.
+%   @param Reply The response from the Docker API, which is typically a
+%   Prolog dictionary or list, depending on the operation.
+%   @param Options This is a list of options that control both how the path is
+%   formatted and how the HTTP request is made. For path formatting, options are
+%   terms like `id(Value)` that provide values for placeholders in the path
+%   template. For the HTTP request, options can include settings such as
+%   headers, authentication, or other parameters supported by the HTTP client.
 
 docker(Operation, Reply, Options) :-
     setting(daemon_url, URL),
