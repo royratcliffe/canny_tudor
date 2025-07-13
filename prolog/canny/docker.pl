@@ -77,6 +77,42 @@ Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31f
 @version 0.1.0
 */
 
+%!  format_path(+Format:atom, -Path:atom, +Options:list) is det.
+%
+%   Constructs a path by replacing placeholders in the format string with values
+%   from the options list. Placeholders are specified as `{name}` and are
+%   substituted with the corresponding value for `name` found in Options.
+%   The final path is formed by concatenating all components after substitution.
+%
+%   @param Format The format string containing placeholders for options.
+%   @param Path The resulting formatted path as an atom.
+%   @param Options List of options to be used for formatting the path.
+
+format_path(Format, Path, Options) :-
+    atom_codes(Format, Codes),
+    phrase(format_path([], Atomics0, Options), Codes),
+    reverse(Atomics0, Atomics),
+    atomic_list_concat(Atomics, '', Path).
+
+format_path(Atomics0, Atomics, Options) -->
+    "{",
+    string_without("}", NameCodes),
+    "}",
+    !,
+    { atom_codes(Name, NameCodes),
+      Option =.. [Name, Value],
+      option(Option, Options)
+    },
+    format_path([Value|Atomics0], Atomics, Options).
+format_path(Atomics0, Atomics, Options) -->
+    [Code],
+    !,
+    { atom_codes(Atom, [Code])
+    },
+    format_path([Atom|Atomics0], Atomics, Options).
+format_path(Atomics, Atomics, _Options) -->
+    [].
+
 %!  url_options(?Operation, -URL, -Options) is det.
 %
 %   Builds HTTP request options for the Docker API using the base URL from
