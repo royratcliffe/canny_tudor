@@ -83,6 +83,10 @@ For creating a container, you can use:
    'Labels'=json(['Hello'=world])])))]).
 ```
 
+This example creates a new Docker container with the specified image and labels.
+Notice that the post request uses `json(json(...))` to specify the JSON body of
+the request.
+
 @author Roy Ratcliffe
 @version 0.1.0
 */
