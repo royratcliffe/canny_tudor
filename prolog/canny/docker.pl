@@ -46,6 +46,11 @@ URL and API version, and provides a predicate to construct URLs and options for
 various Docker operations.
 
 ### Example usage
+
+The `url_options/3` predicate can be used to construct the URL and options for
+a specific Docker operation. For example, to get the URL and options for the
+`system_ping` operation, you can use:
+
 ```prolog
 ?- canny_docker:url_options(system_ping, URL, Options), http_get(URL, Reply, Options).
 URL = [path('/v1.49/_ping'), protocol(tcp), host(localhost), port(2375)],
