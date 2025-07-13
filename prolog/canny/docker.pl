@@ -40,6 +40,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /** <module> Canny Docker
 
+This module provides an interface to the Docker API, allowing interaction with
+Docker services through HTTP requests. It defines settings for the Docker daemon
+URL and API version, and provides a predicate to construct URLs and options for
+various Docker operations.
+
+### Example usage
+```prolog
+?- canny_docker:url_options(system_ping, URL, Options), http_get(URL, Reply, Options).
+URL = [path('/v1.49/_ping'), protocol(tcp), host(localhost), port(2375)],
+Options = [method(get), accept(["text/plain"])],
+Reply = 'OK'.
+```
+
 */
 
 %!  url_options(?Operation, -URL, -Options) is det.
