@@ -84,6 +84,24 @@ Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31f
 %   substituted with the corresponding value for `name` found in Options.
 %   The final path is formed by concatenating all components after substitution.
 %
+%   The format string can contain any number of placeholders, each enclosed in curly
+%   braces, such as `{name}`. When constructing the path, the predicate scans the
+%   format string from left to right, replacing each placeholder with the value
+%   associated with the corresponding key in the options list. The options list is
+%   expected to contain terms of the form `name(Value)`, where `name` matches the
+%   placeholder. All non-placeholder text in the format string is preserved as-is.
+%
+%   Placeholders are substituted in the order they appear in the format string,
+%   allowing for flexible and dynamic path construction. If a placeholder is found
+%   in the format string but no corresponding value exists in the options list,
+%   the predicate fails, ensuring that all required values are provided.
+%
+%   This mechanism enables the dynamic generation of API paths or file paths
+%   without hardcoding specific values, making the code more maintainable and
+%   adaptable to changes in configuration or runtime parameters. For example,
+%   given a format string `'/containers/{id}/json'` and options `[id('abc123')]`,
+%   the resulting path would be `'/containers/abc123/json'`.
+%
 %   @param Format The format string containing placeholders for options.
 %   @param Path The resulting formatted path as an atom.
 %   @param Options List of options to be used for formatting the path.
