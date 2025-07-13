@@ -108,8 +108,8 @@ Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31f
 
 format_path(Format, Path, Options) :-
     atom_codes(Format, Codes),
-    phrase(format_path([], Atomics0, Options), Codes),
-    reverse(Atomics0, Atomics),
+    phrase(format_path([], Atomics_, Options), Codes),
+    reverse(Atomics_, Atomics),
     atomic_list_concat(Atomics, '', Path).
 
 format_path(Atomics0, Atomics, Options) -->
