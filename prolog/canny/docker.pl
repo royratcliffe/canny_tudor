@@ -27,7 +27,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_docker,
-          []).
+          [ docker/3                            % +Operation, -Reply, +Options
+          ]).
 :- autoload(library(apply), [convlist/3]).
 :- autoload(library(atom), [restyle_identifier/3]).
 :- autoload(library(lists), [append/3, reverse/2, member/2]).
