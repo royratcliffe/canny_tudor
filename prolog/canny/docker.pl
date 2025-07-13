@@ -30,7 +30,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           []).
 :- autoload(library(apply), [convlist/3]).
 :- autoload(library(atom), [restyle_identifier/3]).
-:- autoload(library(lists), [member/2]).
+:- autoload(library(lists), [append/3, reverse/2, member/2]).
+:- autoload(library(option), [option/2]).
+:- autoload(library(dcg/basics), [string_without/4]).
+:- autoload(library(http/http_client), [http_get/3]).
 :- autoload(library(http/json), [json_read_dict/2]).
 :- use_module(library(settings), [setting/4, setting/2]).
 
@@ -76,6 +79,31 @@ Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31f
 @author Roy Ratcliffe
 @version 0.1.0
 */
+
+%!  docker(+Operation, -Reply, +Options) is det.
+%
+%   Makes a request to the Docker API using the specified operation and
+%   options. The operation is a string that identifies the Docker API
+%   operation to perform, such as `container_list` or `system_ping`. The
+%   predicate constructs the URL and options based on the operation and
+%   the settings defined in this module.
+%
+%   Builds HTTP request options for the Docker API using the base URL from
+%   the `daemon_url` setting. The path and HTTP method are determined by
+%   `path_and_method/3`, and the resulting options are suitable for making
+%   requests to the Docker API.
+%
+%   The predicate constructs the URL by concatenating the base URL with
+%   the path and method. The `daemon_url` setting provides the base URL,
+%   and the `api_version` setting specifies the version of the Docker API.
+
+docker(Operation, Reply, Options) :-
+    setting(daemon_url, URL),
+    setting(api_version, Version),
+    url_options(Version, Operation, Path_, Options_),
+    format_path(Path_, Path, Options),
+    append(Options, Options_, Options__),
+    http_get([path(Path)|URL], Reply, Options__).
 
 %!  format_path(+Format:atom, -Path:atom, +Options:list) is det.
 %
@@ -136,40 +164,30 @@ format_path(Atomics0, Atomics, Options) -->
 format_path(Atomics, Atomics, _Options) -->
     [].
 
-%!  url_options(?Operation, -URL, -Options) is det.
-%
-%   Builds HTTP request options for the Docker API using the base URL from
-%   the `daemon_url` setting. The path and HTTP method are determined by
-%   `path_and_method/3`, and the resulting options are suitable for making
-%   requests to the Docker API.
-%
-%   The predicate constructs the URL by concatenating the base URL with
-%   the path and method. The `daemon_url` setting provides the base URL,
-%   and the `api_version` setting specifies the version of the Docker API.
+%!  url_options(+Version, ?Operation, -Path, -Options) is semidet.
 %
 %   The predicate succeeds if the given operation is present in the
 %   `load_docker_api_json/2` dictionary. The dictionary is read from a JSON file
 %   that contains the Docker API specification.
 %
+%   @param Version The version of the Docker API to read.
 %   @param Operation The operation to perform, which determines the path and
 %   method, as well as any additional options.
-%   @param URL The base URL of the Docker API, derived from the `daemon_url`
-%   setting.
+%   @param Path The path for the operation, which is derived from the
+%   Docker API specification.
 %   @param Options List of options for the URL, such as `method` and `accept`.
 
-url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
-    setting(daemon_url, URL),
-    setting(api_version, Version),
+url_options(Version, Operation, Path, [method(Method)|Options]) :-
     % Look up the operation in the Docker API specification. Fail if not found.
     % Support variable Operation for dynamic queries.
     (   var(Operation)
-    ->  operation(Operation, Path, Method, Options)
-    ;   once(operation(Operation, Path, Method, Options))
+    ->  operation(Version, Operation, Path_, Method, Options)
+    ;   once(operation(Version, Operation, Path_, Method, Options))
     ),
     atom_concat(/, Version, Path0),
-    atom_concat(Path0, Path, Path_).
+    atom_concat(Path0, Path_, Path).
 
-%!  operation(?Operation, ?Path, ?Method, -Options) is nondet.
+%!  operation(+Version, ?Operation, -Path, -Method, -Options) is nondet.
 %
 %   Retrieves the operation, path, and method from the Docker API JSON
 %   specification. The predicate uses the `load_docker_api_json/2` predicate to
@@ -179,6 +197,7 @@ url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
 %   `load_docker_api_json/2` dictionary. The dictionary is read from a JSON file
 %   that contains the Docker API specification.
 %
+%   @param Version The version of the Docker API to read.
 %   @param Operation The operation to perform, which determines the path and
 %   method, as well as any additional options.
 %   @param Path The path for the operation, which is derived from the
@@ -188,10 +207,9 @@ url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
 %   @param Options List of options for the method, such as `accept` for
 %   the expected response format.
 
-:- table operation/4.
+:- table operation/5.
 
-operation(Operation, Path, Method, Options) :-
-    setting(api_version, Version),
+operation(Version, Operation, Path, Method, Options) :-
     load_docker_api_json(Version, Dict),
     path_and_method(Dict.paths, Path, Method, MethodDict),
     get_dict(operationId, MethodDict, OperationId),
