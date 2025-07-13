@@ -51,7 +51,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %
 %   @param URL The base URL of the Docker API, derived from the `daemon_url`
 %   setting.
-%   @param Options List of options for the URL, such as `method` and `path`.
+%   @param Options List of options for the URL, such as `method` and `accept`.
 
 url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
     setting(daemon_url, URL),
