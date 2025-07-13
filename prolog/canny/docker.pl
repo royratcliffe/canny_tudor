@@ -116,8 +116,8 @@ operation(Operation, Path, Method, Options) :-
     path_method(Dict.paths, Path, Method, MethodDict),
     get_dict(operationId, MethodDict, OperationId),
     restyle_identifier(one_two, OperationId, Operation),
-    dict_pairs(MethodDict, _, Options0),
-    convlist(method_option, Options0, Options).
+    dict_pairs(MethodDict, _, Pairs),
+    convlist(method_option, Pairs, Options).
 
 method_option(produces-Produces, accept(Produces)).
 
