@@ -71,7 +71,6 @@ For listing containers, you can use:
 
 ```prolog
 ?- canny_docker:url_options(container_list, URL, Options), http_get(URL, Reply, Options).
-Correct to: "http_client:http_get(URL,Reply,Options)"? yes
 URL = [path('/v1.49/containers/json'), protocol(tcp), host(localhost), port(2375)],
 Options = [method(get), accept(["application/json"])],
 Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31fb1579', ...|...])].
