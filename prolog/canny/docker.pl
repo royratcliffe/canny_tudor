@@ -28,9 +28,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- module(canny_docker,
           []).
-:- autoload(library(http/json), [json_read_dict/2]).
+:- autoload(library(apply), [convlist/3]).
+:- autoload(library(atom), [restyle_identifier/3]).
 :- autoload(library(lists), [member/2]).
-:- use_module(library(settings), [setting/4]).
+:- autoload(library(http/json), [json_read_dict/2]).
+:- use_module(library(settings), [setting/4, setting/2]).
 
 :- setting(daemon_url, list, [ protocol(tcp),
                                host(localhost),
