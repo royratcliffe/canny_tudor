@@ -70,7 +70,7 @@ For listing containers, you can use:
 Correct to: "http_client:http_get(URL,Reply,Options)"? yes
 URL = [path('/v1.49/containers/json'), protocol(tcp), host(localhost), port(2375)],
 Options = [method(get), accept(["application/json"])],
-Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31fb1579', 'Names'=['/ollama'], 'Image'='ollama/ollama', 'ImageID'='sha256:de659b95818c5ea17dc287a2e4f147f81e202d84f1dc4ad3f256c53fb81e8dd0', 'ImageManifestDescriptor'=json([...|...]), 'Command'='/bin/ollama serve', ... = ...|...])].
+Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31fb1579', ...|...])].
 ```
 
 @author Roy Ratcliffe
