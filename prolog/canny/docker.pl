@@ -92,19 +92,21 @@ url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
     atom_concat(Path0, Path, Path_).
 
 %!  operation(?Operation, ?Path, ?Method, -Options) is nondet.
-%!  path_method(+Paths, -Path, -Method, -MethodDict) is nondet.
 %
-%   Retrieves a path and its corresponding   method from a dictionary of
-%   paths. Succeeds if the given path  and   method  are  present in the
-%   dictionary. The predicate extracts the  path   and  method  from the
-%   dictionary  and  unifies  them  with  the  provided  variables.  The
-%   predicate succeeds if the given path and   method are present in the
-%   dictionary.
+%   Retrieves the operation, path, and method from the Docker API JSON
+%   specification. The predicate uses the `docker_json/2` predicate to
+%   read the Docker API specification and extract the operation details.
 %
-%   @param Paths Dictionary mapping paths to method dictionaries.
-%   @param Path The extracted path key.
-%   @param Method The extracted HTTP method.
-%   @param MethodDict Dictionary with details for the specified method.
+%   The predicate succeeds if the given operation is present in the
+%   `docker_json/2` dictionary. The dictionary is read from a JSON file
+%   that contains the Docker API specification.
+%
+%   @param Operation The operation to perform, which determines the path and
+%   method, as well as any additional options.
+%   @param Path The path for the operation, which is derived from the
+%   Docker API specification.
+%   @param Method The HTTP method for the operation, such as `get`, `post`,
+%   or `delete`.
 %   @param Options List of options for the method, such as `accept` for
 %   the expected response format.
 
@@ -118,6 +120,20 @@ operation(Operation, Path, Method, Options) :-
     convlist(method_option, Options0, Options).
 
 method_option(produces-Produces, accept(Produces)).
+
+%!  path_method(+Paths, -Path, -Method, -MethodDict) is nondet.
+%
+%   Retrieves a path and its corresponding   method from a dictionary of
+%   paths. Succeeds if the given path  and   method  are  present in the
+%   dictionary. The predicate extracts the  path   and  method  from the
+%   dictionary  and  unifies  them  with  the  provided  variables.  The
+%   predicate succeeds if the given path and   method are present in the
+%   dictionary.
+%
+%   @param Paths Dictionary mapping paths to method dictionaries.
+%   @param Path The extracted path key.
+%   @param Method The extracted HTTP method.
+%   @param MethodDict Dictionary with details for the specified method.
 
 path_method(Paths, Path, Method, MethodDict) :-
     dict_pairs(Paths, _, PathPairs),
