@@ -81,7 +81,7 @@ Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31f
 %
 %   Builds HTTP request options for the Docker API using the base URL from
 %   the `daemon_url` setting. The path and HTTP method are determined by
-%   `path_method/3`, and the resulting options are suitable for making
+%   `path_and_method/3`, and the resulting options are suitable for making
 %   requests to the Docker API.
 %
 %   The predicate constructs the URL by concatenating the base URL with
@@ -89,7 +89,7 @@ Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31f
 %   and the `api_version` setting specifies the version of the Docker API.
 %
 %   The predicate succeeds if the given operation is present in the
-%   `docker_json/2` dictionary. The dictionary is read from a JSON file
+%   `load_docker_api_json/2` dictionary. The dictionary is read from a JSON file
 %   that contains the Docker API specification.
 %
 %   @param Operation The operation to perform, which determines the path and
@@ -111,11 +111,11 @@ url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
 %!  operation(?Operation, ?Path, ?Method, -Options) is nondet.
 %
 %   Retrieves the operation, path, and method from the Docker API JSON
-%   specification. The predicate uses the `docker_json/2` predicate to
+%   specification. The predicate uses the `load_docker_api_json/2` predicate to
 %   read the Docker API specification and extract the operation details.
 %
 %   The predicate succeeds if the given operation is present in the
-%   `docker_json/2` dictionary. The dictionary is read from a JSON file
+%   `load_docker_api_json/2` dictionary. The dictionary is read from a JSON file
 %   that contains the Docker API specification.
 %
 %   @param Operation The operation to perform, which determines the path and
@@ -131,8 +131,8 @@ url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
 
 operation(Operation, Path, Method, Options) :-
     setting(api_version, Version),
-    docker_json(Version, Dict),
-    path_method(Dict.paths, Path, Method, MethodDict),
+    load_docker_api_json(Version, Dict),
+    path_and_method(Dict.paths, Path, Method, MethodDict),
     get_dict(operationId, MethodDict, OperationId),
     restyle_identifier(one_two, OperationId, Operation),
     dict_pairs(MethodDict, _, Pairs),
@@ -140,7 +140,7 @@ operation(Operation, Path, Method, Options) :-
 
 method_option(produces-Produces, accept(Produces)).
 
-%!  path_method(+Paths, -Path, -Method, -MethodDict) is nondet.
+%!  path_and_method(+Paths, -Path, -Method, -MethodDict) is nondet.
 %
 %   Retrieves a path and its corresponding   method from a dictionary of
 %   paths. Succeeds if the given path  and   method  are  present in the
@@ -154,19 +154,19 @@ method_option(produces-Produces, accept(Produces)).
 %   @param Method The extracted HTTP method.
 %   @param MethodDict Dictionary with details for the specified method.
 
-path_method(Paths, Path, Method, MethodDict) :-
+path_and_method(Paths, Path, Method, MethodDict) :-
     dict_pairs(Paths, _, PathPairs),
     member(Path-PathDict, PathPairs),
     dict_pairs(PathDict, _, MethodPairs),
     member(Method-MethodDict, MethodPairs).
 
-%!  docker_json(+Version, -Dict) is det.
+%!  load_docker_api_json(+Version, -Dict) is det.
 %
 %   Reads a Docker JSON file for  a   specific  version  and returns its
 %   contents as a Prolog dictionary. The   predicate constructs the file
 %   path based on the version and reads the JSON data from the file.
 %
-%   The predicate uses the `docker_json_path/2` predicate to resolve the
+%   The predicate uses the `docker_api_json_path/2` predicate to resolve the
 %   file path relative to the current module's source file directory.
 %
 %   @param Version The version of the Docker  API to read. The predicate
@@ -179,13 +179,13 @@ path_method(Paths, Path, Method, MethodDict) :-
 %   the Docker JSON file. The dictionary  contains the configuration and
 %   metadata API for Docker.
 
-docker_json(Version, Dict) :-
-    docker_json_path(Version, Abs),
+load_docker_api_json(Version, Dict) :-
+    docker_api_json_path(Version, Abs),
     setup_call_cleanup(open(Abs, read, In),
                        json_read_dict(In, Dict),
                        close(In)).
 
-%!  docker_json_path(+Base, -Abs) is det.
+%!  docker_api_json_path(+Base, -Abs) is det.
 %
 %   Constructs the absolute path of a Docker   JSON file based on a base
 %   name. The base name is expected to   have a =|.json|= extension. The
@@ -206,7 +206,7 @@ docker_json(Version, Dict) :-
 %   @param Abs The absolute file path of the Docker JSON file with the
 %   =|.json|= extension.
 
-docker_json_path(Base, Abs) :-
+docker_api_json_path(Base, Abs) :-
     file_name_extension(Base, json, Name),
     context_file((..)/docker/Name, Abs, [access(exist)]).
 
