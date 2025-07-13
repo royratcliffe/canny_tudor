@@ -101,6 +101,8 @@ Reply = [json(['Id'='12a42bbfcc5f64967da12ac03d46e0a3b885b104f1e1e2a0ecd27cea31f
 url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
     setting(daemon_url, URL),
     setting(api_version, Version),
+    % Look up the operation in the Docker API specification. Fail if not found.
+    % Support variable Operation for dynamic queries.
     (   var(Operation)
     ->  operation(Operation, Path, Method, Options)
     ;   once(operation(Operation, Path, Method, Options))
