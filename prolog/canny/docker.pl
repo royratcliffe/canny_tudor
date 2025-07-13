@@ -127,6 +127,8 @@ url_options(Operation, [path(Path_)|URL], [method(Method)|Options]) :-
 %   @param Options List of options for the method, such as `accept` for
 %   the expected response format.
 
+:- table operation/4.
+
 operation(Operation, Path, Method, Options) :-
     setting(api_version, Version),
     docker_json(Version, Dict),
