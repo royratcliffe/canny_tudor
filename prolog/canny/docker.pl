@@ -53,7 +53,7 @@ various Docker operations.
 
 ### Example usage
 
-The `url_options/3` predicate can be used to construct the URL and options for
+The `url_options/4` predicate can be used to construct the URL and options for
 a specific Docker operation. For example, to get the URL and options for the
 `system_ping` operation, you can use:
 
