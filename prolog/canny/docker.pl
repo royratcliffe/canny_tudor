@@ -102,6 +102,41 @@ post(Data, [json_object(dict), post(json(Dict))]) :-
     mapdict(restyle_key('OneTwo'), Data, Dict).
 post(Data, [post(json(Data))]).
 
+%!  mapdict(+Goal, +Dict0, -Dict) is det.
+%
+%   Applies a goal to each key-value pair in a dictionary, transforming the
+%   pairs according to the goal. The goal is typically a predicate that
+%   processes each key-value pair, allowing for custom transformations.
+%   The predicate takes an input dictionary `Dict0` and applies the goal to
+%   each key-value pair, producing a new dictionary `Dict` with the transformed pairs.
+%
+%   The goal is applied to each key-value pair in the input dictionary, and
+%   the results are collected into a new dictionary. The keys and values may
+%   be transformed according to the goal. This is useful for applying
+%   transformations to dictionary entries, such as changing the style of
+%   keys or values, or filtering out certain entries based on specific
+%   criteria.
+%
+%   The predicate uses `dict_pairs/3` to convert the dictionary into a list
+%   of key-value pairs, applies the goal to each pair using `maplist/3`, and
+%   then converts the list of transformed pairs back into a dictionary using
+%   `dict_pairs/3` again. This allows for flexible and efficient processing
+%   of dictionary entries without needing to manually iterate over the keys
+%   and values.
+%
+%   @param Goal The goal to apply to each key-value pair in the dictionary.
+%   The goal should be a predicate that takes a key-value pair and produces
+%   a transformed key-value pair. The goal can be defined as a predicate
+%   that takes two arguments: the original key-value pair and the transformed
+%   key-value pair.
+%
+%   @param Dict0 The input dictionary containing the key-value pairs to be
+%   transformed. The dictionary is expected to be a Prolog dictionary, which
+%   is a key-value store where keys are atoms and values can be any Prolog term.
+%   @param Dict The output dictionary containing the transformed key-value
+%   pairs. The keys in this dictionary are the same as in the input dictionary,
+%   but the values may have been transformed according to the specified goal.
+
 mapdict(Goal, Dict0, Dict) :-
     dict_pairs(Dict0, _, Pairs0),
     maplist(Goal, Pairs0, Pairs),
