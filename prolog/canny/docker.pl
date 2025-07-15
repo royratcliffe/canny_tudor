@@ -99,7 +99,7 @@ docker(network_delete(Id), Reply) :- docker(network_delete, Reply, [id(Id)]).
 post(Data, [json_object(dict), post(json(Dict))]) :-
     is_dict(Data),
     !,
-    mapdict(restyle_pair('OneTwo'), Data, Dict).
+    mapdict(restyle_key('OneTwo'), Data, Dict).
 post(Data, [post(json(Data))]).
 
 mapdict(Goal, Dict0, Dict) :-
@@ -107,10 +107,10 @@ mapdict(Goal, Dict0, Dict) :-
     maplist(Goal, Pairs0, Pairs),
     dict_pairs(Dict, _, Pairs).
 
-restyle_pair(Style, Key0-Value0, Key-Value) :-
+restyle_key(Style, Key0-Value0, Key-Value) :-
     restyle_identifier(Style, Key0, Key),
     (   is_dict(Value0)
-    ->  mapdict(restyle_pair(Style), Value0, Value)
+    ->  mapdict(restyle_key(Style), Value0, Value)
     ;   Value = Value0
     ).
 
