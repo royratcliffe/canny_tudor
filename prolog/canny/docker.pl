@@ -107,6 +107,31 @@ mapdict(Goal, Dict0, Dict) :-
     maplist(Goal, Pairs0, Pairs),
     dict_pairs(Dict, _, Pairs).
 
+%!  restyle_key(+Style, +Pair0, -Pair) is det.
+%
+%   Restyles a key-value pair in a dictionary according to the specified
+%   style. The key is transformed using the `restyle_identifier/3` predicate,
+%   which applies a specific naming convention to the key. The value is
+%   processed recursively if it is a dictionary, ensuring that all nested
+%   key-value pairs are also restyled.
+%
+%   The predicate takes a style identifier and a key-value pair, and it
+%   returns a new key-value pair with the key transformed according to the
+%   specified style. If the value is a dictionary, it recursively applies
+%   the same transformation to all key-value pairs within that dictionary.
+%   The transformation is useful for adapting keys to different naming
+%   conventions, such as converting from snake_case to camelCase or
+%   vice versa.
+%   @param Style The style identifier that determines how the key is
+%   transformed. For example, 'OneTwo' might convert keys from snake_case
+%   to CamelCase.
+%
+%   @param Pair0 The original key-value pair, where the key is an atom and
+%   the value can be any Prolog term, including another dictionary.
+%   @param Pair The transformed key-value pair, where the key has been
+%   restyled according to the specified style, and the value is either
+%   unchanged or recursively transformed if it is a dictionary.
+
 restyle_key(Style, Key0-Value0, Key-Value) :-
     restyle_identifier(Style, Key0, Key),
     (   is_dict(Value0)
