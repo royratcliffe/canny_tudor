@@ -91,6 +91,29 @@ the request.
 @version 0.1.0
 */
 
+docker(network_create(NetworkConfig), Reply) :-
+    post(NetworkConfig, Options),
+    docker(network_create, Reply, Options).
+docker(network_delete(Id), Reply) :- docker(network_delete, Reply, [id(Id)]).
+
+post(Data, [json_object(dict), post(json(Dict))]) :-
+    is_dict(Data),
+    !,
+    mapdict(restyle_pair('OneTwo'), Data, Dict).
+post(Data, [post(json(Data))]).
+
+mapdict(Goal, Dict0, Dict) :-
+    dict_pairs(Dict0, _, Pairs0),
+    maplist(Goal, Pairs0, Pairs),
+    dict_pairs(Dict, _, Pairs).
+
+restyle_pair(Style, Key0-Value0, Key-Value) :-
+    restyle_identifier(Style, Key0, Key),
+    (   is_dict(Value0)
+    ->  mapdict(restyle_pair(Style), Value0, Value)
+    ;   Value = Value0
+    ).
+
 %!  docker(+Operation, -Reply, +Options) is det.
 %
 %   Makes a request to the Docker API using the specified operation and
