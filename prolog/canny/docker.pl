@@ -139,8 +139,8 @@ make requests to the Docker API.
 
 ### Example usage
 
-The `url_options/4` predicate can be used to construct the URL and options for
-a specific Docker operation. For example, to get the URL and options for the
+The `url_options/4` predicate can be used to construct the URL and options for a
+specific Docker operation. For example, to get the URL and options for the
 `system_ping` operation, you can use:
 
 ```prolog
