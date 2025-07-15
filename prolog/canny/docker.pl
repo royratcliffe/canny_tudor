@@ -51,6 +51,92 @@ Docker services through HTTP requests. It defines settings for the Docker daemon
 URL and API version, and provides a predicate to construct URLs and options for
 various Docker operations.
 
+It supports operations such as listing containers, creating containers, and
+checking the Docker system status. The module uses Prolog dictionaries to
+represent JSON data structures, making it easy to work with the Docker API's
+responses. It also includes utility predicates for transforming dictionary
+key-value pairs and constructing paths for API requests. It is designed to be
+used in conjunction with the HTTP client library to make requests to the Docker
+API. It provides a flexible way to interact with Docker services, allowing for
+dynamic construction of API requests based on the specified operations and
+options.
+
+## Docker API Operations
+
+The module supports various Docker API operations, such as:
+
+    - `system_ping`: Check if the Docker daemon is reachable.
+    - `container_list`: List all containers.
+    - `container_create`: Create a new container.
+    - `network_create`: Create a new network.
+    - `network_delete`: Delete a network.
+
+These operations are defined in the Docker API specification and can be accessed
+through the `docker/3` predicate, which constructs the appropriate URL and
+options based on the operation and the settings defined in this module.
+
+### Example network operations
+
+The following examples demonstrate how to create and delete a Docker network
+using the `docker/3` predicate. The network is created with a name and labels,
+and then deleted by its name.
+
+```prolog
+?- docker(network_create(_{name:my_network, labels:_{'my.label':'my-value'}}), A).
+A = _{id:"1be0f5d2337ff6a6db79a59707049c199268591f49e3c9054fc698fe7916f9c3", warning:""}.
+
+38 ?- docker(network_delete(my_network), A).
+A = ''.
+```
+
+Note that the `network_create/2` predicate constructs a network with the
+specified name and labels, and returns a reply containing the network ID and any
+warnings. The `network_delete/2` predicate deletes the network by its name,
+returning an empty reply if successful.
+
+Labels can be used to tag networks with metadata, which can be useful
+for organising and managing Docker resources. The labels are specified
+as a dictionary with key-value pairs, where the keys and values are
+strings. The labels are included in the network configuration when
+creating a network, allowing for flexible and dynamic tagging of Docker
+resources.
+
+Labels can be used to filter and query networks, making it easier to
+manage Docker resources based on specific criteria. For example, you can
+create a network with a label indicating its purpose or owner, and then
+use that label to find networks that match certain criteria. This allows
+for more organised and efficient management of Docker resources,
+especially in larger deployments with many networks and containers.
+
+The `docker/3` predicate transforms the keys in the input dictionary to
+CamelCase format using the `restyle_key/3` predicate, which applies the
+Docker-specific CamelCase naming convention to the keys. This
+transformation is useful for ensuring that the keys in the input
+dictionary match the expected format for the Docker API, making it
+easier to work with the API and ensuring compatibility with the expected
+request format. The transformation is applied recursively to all
+key-value pairs in the input dictionary, ensuring that all keys are
+transformed to the correct format before making the request to the
+Docker API. The reverse transformation is applied to the reply
+dictionary, which does not retain the original key names as returned by
+the Docker API. Label keys are also transformed to CamelCase format,
+ensuring consistency in the naming convention used for labels in the
+Docker API requests and responses.
+
+## Low-Level HTTP Requests
+
+The module provides a low-level interface to the Docker API, allowing for custom
+HTTP requests to be made. The `docker/3` predicate constructs the URL and
+options for the specified operation, and uses the `http_get/3` predicate to make
+the request. The options can include HTTP methods, headers, and other parameters
+as needed for the specific operation.
+
+The `url_options/4` predicate is used to construct the URL and options for a
+specific Docker operation. It retrieves the operation details from the Docker
+API specification and formats the path according to the specified version and
+operation. The resulting URL and options can be used with the HTTP client to
+make requests to the Docker API.
+
 ### Example usage
 
 The `url_options/4` predicate can be used to construct the URL and options for
