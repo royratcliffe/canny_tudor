@@ -141,6 +141,8 @@ post(Data, [post(json(Data))]).
 %   input dictionary, but the values may have been transformed according
 %   to the specified goal.
 
+:- meta_predicate mapdict(2, +, -).
+
 mapdict(Goal, Dict0, Dict) :-
     dict_pairs(Dict0, _, Pairs0),
     maplist(Goal, Pairs0, Pairs),
