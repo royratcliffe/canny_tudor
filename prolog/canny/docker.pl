@@ -177,6 +177,16 @@ the request.
 @version 0.1.0
 */
 
+%!  docker(+Ask, -Reply) is det.
+%
+%   Issues a request to the Docker API using the specified Ask term and returns
+%   the Reply. The Ask term may be a compound specifying the operation to perform
+%   together with any required arguments.
+
+docker(system_ping, Reply) :- docker(system_ping, Reply, []).
+docker(container_list, Reply) :-
+    docker(container_list, Reply0, [json_object(dict)]),
+    maplist(reply, Reply0, Reply).
 docker(network_create(NetworkConfig), Reply) :-
     post(NetworkConfig, Options),
     docker(network_create, Reply0, Options),
