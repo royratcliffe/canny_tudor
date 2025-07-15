@@ -184,7 +184,7 @@ restyle_key(Style, Key0-Value0, Key-Value) :-
 %
 %   Builds HTTP request options for the Docker API using the base URL from
 %   the `daemon_url` setting. The path and HTTP method are determined by
-%   `path_and_method/3`, and the resulting options are suitable for making
+%   `path_and_method/4`, and the resulting options are suitable for making
 %   requests to the Docker API.
 %
 %   The predicate constructs the URL by concatenating the base URL with
