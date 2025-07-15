@@ -157,10 +157,10 @@ mapdict(Goal, Dict0, Dict) :-
 %   The transformation is useful for adapting keys to different naming
 %   conventions, such as converting from snake_case to camelCase or
 %   vice versa.
+%
 %   @param Style The style identifier that determines how the key is
 %   transformed. For example, 'OneTwo' might convert keys from snake_case
 %   to CamelCase.
-%
 %   @param Pair0 The original key-value pair, where the key is an atom and
 %   the value can be any Prolog term, including another dictionary.
 %   @param Pair The transformed key-value pair, where the key has been
