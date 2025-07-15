@@ -93,7 +93,8 @@ the request.
 
 docker(network_create(NetworkConfig), Reply) :-
     post(NetworkConfig, Options),
-    docker(network_create, Reply, Options).
+    docker(network_create, Reply0, Options),
+    reply(Reply0, Reply).
 docker(network_delete(Id), Reply) :- docker(network_delete, Reply, [id(Id)]).
 
 post(Data, [json_object(dict), post(json(Dict))]) :-
@@ -101,6 +102,12 @@ post(Data, [json_object(dict), post(json(Dict))]) :-
     !,
     mapdict(restyle_key('OneTwo'), Data, Dict).
 post(Data, [post(json(Data))]).
+
+reply(Reply0, Reply) :-
+    is_dict(Reply0),
+    !,
+    mapdict(restyle_key(one_two), Reply0, Reply).
+reply(Reply, Reply).
 
 %!  mapdict(+Goal, +Dict0, -Dict) is det.
 %
