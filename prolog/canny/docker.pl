@@ -279,10 +279,12 @@ mapdict(Goal, Dict0, Dict) :-
 %   unchanged or recursively transformed if it is a dictionary.
 
 restyle_key(Style, Key0-Value0, Key-Value) :-
-    % What if the value is a list? And what if the list contains
-    % dictionaries? Should we apply the restyle_key to each element?
-    % What if the list contains sub-lists? Should we apply the
-    % restyle_key to each element of the sub-lists?
+    % What if the value is a list? And what if the list contains dictionaries?
+    % Should we apply the restyling to each element? What if the list contains
+    % sub-lists? Should we apply the restyling to each element of the sub-lists?
+    %
+    % If the value is a list, apply restyle_value recursively to each element.
+    % This handles lists of dictionaries and nested lists.
     restyle_identifier(Style, Key0, Key),
     restyle_value(Style, Value0, Value).
 
