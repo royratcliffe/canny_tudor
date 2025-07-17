@@ -182,6 +182,10 @@ the request.
 %   Issues a request to the Docker API  using the specified Ask term and
 %   returns the Reply. The Ask term  may   be  a compound specifying the
 %   operation to perform together with any required arguments.
+%
+%   - network_create(+NetworkConfig): Creates a Docker network with the
+%     specified configuration, such as name and labels.
+%   - network_delete(+IdOrName): Deletes a Docker network by its ID or name.
 
 docker(system_ping, Reply) :- docker(system_ping, Reply, []).
 docker(container_list, Reply) :-
