@@ -191,7 +191,8 @@ docker(network_create(NetworkConfig), Reply) :-
     post(NetworkConfig, Options),
     docker(network_create, Reply0, Options),
     reply(Reply0, Reply).
-docker(network_delete(Id), Reply) :- docker(network_delete, Reply, [id(Id)]).
+docker(network_delete(IdOrName), Reply) :-
+    docker(network_delete, Reply, [id(IdOrName)]).
 
 post(Data, [json_object(dict), post(json(Dict))]) :-
     is_dict(Data),
