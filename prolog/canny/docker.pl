@@ -108,13 +108,17 @@ use that label to find networks that match certain criteria. This allows
 for more organised and efficient management of Docker resources,
 especially in larger deployments with many networks and containers.
 
+### Restyling Keys
+
 The `docker/3` predicate transforms the keys in the input dictionary to
 CamelCase format using the `restyle_key/3` predicate, which applies the
 Docker-specific CamelCase naming convention to the keys. This
 transformation is useful for ensuring that the keys in the input
 dictionary match the expected format for the Docker API, making it
 easier to work with the API and ensuring compatibility with the expected
-request format. The transformation is applied recursively to all
+request format.
+
+The transformation is applied recursively to all
 key-value pairs in the input dictionary, ensuring that all keys are
 transformed to the correct format before making the request to the
 Docker API. The reverse transformation is applied to the reply
