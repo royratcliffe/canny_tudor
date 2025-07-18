@@ -443,9 +443,22 @@ format_path(Atomics0, Atomics, Options0, Options) -->
     !,
     { atom_codes(Name, NameCodes),
       Option =.. [Name, Value],
+      (   option(Option, Options0)
+      ->  Options_ = Options0
+      ;   % Prepending the new option would be possible.
+          % See the commented-out code below.
+          % However, it is more apropos to append
+          % the new option to the end of the options list.
+          % This allows the new option to appear after
+          % any existing options that may have been
+          % specified in the Options0 list.
+          %
+          % Options_ = [Option|Options0]
+          append(Options0, [Option], Options_)
+      ),
       append(Atomics0, [Value], Atomics_)
     },
-    format_path(Atomics_, Atomics, [Option|Options0], Options).
+    format_path(Atomics_, Atomics, Options_, Options).
 format_path(Atomics0, Atomics, Options0, Options) -->
     string_without("{", Codes),
     (   { Codes == []
