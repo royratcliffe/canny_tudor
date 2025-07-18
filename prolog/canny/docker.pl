@@ -366,7 +366,7 @@ docker(Operation, Reply, Options) :-
     append(Options0, Options_, Options__),
     http_get([path(Path), search(Search)|URL], Reply, Options__).
 
-%!  format_path(+Format:atom, -Path:atom, +Options:list) is det.
+%!  format_path(+Format:atom, -Path:atom, +Options:list)// is semidet.
 %
 %   Constructs a path by replacing  placeholders   in  the format string
 %   with values from the options  list.   Placeholders  are specified as
