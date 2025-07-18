@@ -75,6 +75,28 @@ These operations are defined in the Docker API specification and can be accessed
 through the `docker/3` predicate, which constructs the appropriate URL and
 options based on the operation and the settings defined in this module.
 
+### Example container operations
+
+The following examples demonstrate how to list and create Docker containers
+using the `docker/3` predicate. The first example lists all containers, and the
+second example creates a new container with a specified image and labels.
+```prolog
+?- docker(container_list, Reply).
+Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
+?- docker(container_create, Reply, [post(json(json(['Image'=ubuntu,
+   'Labels'=json(['Hello'=world)])))])).
+Reply = _{Id:"abc123", Warnings:[]}.
+```
+The `container_list/2` predicate retrieves a list of all containers, returning
+a list of dictionaries representing each container. Each dictionary contains
+information such as the container ID, image, and other metadata.
+The `container_create/3` predicate creates a new container with the specified
+image and labels. The labels are specified as a JSON object, allowing for
+flexible tagging of containers with metadata. The reply contains the ID of the
+created container and any warnings that may have occurred during the creation
+process. The labels can be used to organise and manage containers based on
+specific criteria, such as purpose or owner.
+
 ### Example network operations
 
 The following examples demonstrate how to create and delete a Docker network
