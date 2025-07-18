@@ -425,6 +425,14 @@ format_path(Atomics0, Atomics, Options) -->
 format_path(Atomics, Atomics, _Options) -->
     [].
 
+%!  format_path(+Atomics0, -Atomics, +Options0, -Options)// is semidet.
+%
+%   Formats a path by processing a list of atomics and options. The atomics
+%   are processed to construct a path, and the options are used to
+%   replace placeholders in the path. The predicate constructs a list of
+%   atoms representing the formatted path, and returns the updated list
+%   of options.
+
 format_path(Atomics0, Atomics, Options0, Options) -->
     "{",
     string_without("}", NameCodes),
