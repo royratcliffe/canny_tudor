@@ -9,4 +9,8 @@
 # the `utils` package. This will allow you to view the PDF output directly in
 # your default web browser. The `tinytex::xelatex` function raises an error if
 # the compilation fails.
+#
+# Set the working directory to the location of the current R script. This is
+# useful if you are running this code in an R script or R Markdown document.
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 utils::browseURL(tinytex::xelatex("canny_tudor.tex"))
