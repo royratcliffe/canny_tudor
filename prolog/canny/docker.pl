@@ -425,6 +425,9 @@ format_path(Atomics0, Atomics, Options) -->
 format_path(Atomics, Atomics, _Options) -->
     [].
 
+format_path(Atomics, Options) -->
+    format_path([], Atomics, [], Options).
+
 %!  format_path(+Atomics0, -Atomics, +Options0, -Options)// is semidet.
 %
 %   Formats a path by processing a list of atomics and options. The atomics
