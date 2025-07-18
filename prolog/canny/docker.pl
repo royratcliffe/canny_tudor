@@ -425,6 +425,29 @@ format_path(Atomics0, Atomics, Options) -->
 format_path(Atomics, Atomics, _Options) -->
     [].
 
+format_path(Atomics0, Atomics, Options0, Options) -->
+    "{",
+    string_without("}", NameCodes),
+    "}",
+    !,
+    { atom_codes(Name, NameCodes),
+      Option =.. [Name, Value],
+      append(Atomics0, [Value], Atomics_)
+    },
+    format_path(Atomics_, Atomics, [Option|Options0], Options).
+format_path(Atomics0, Atomics, Options0, Options) -->
+    string_without("{", Codes),
+    (   { Codes == []
+        }
+    ->  { Atomics = Atomics0,
+          Options = Options0
+        }
+    ;   { atom_codes(Atom, Codes),
+          append(Atomics0, [Atom], Atomics_)
+        },
+        format_path(Atomics_, Atomics, Options0, Options)
+    ).
+
 %!  docker_path_options(?Operation, -Path, -Options) is semidet.
 %
 %   Constructs the Path and Options for a Docker API operation. The predicate
