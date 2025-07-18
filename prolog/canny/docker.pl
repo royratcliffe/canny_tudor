@@ -27,7 +27,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_docker,
-          [ docker/3                            % +Operation, -Reply, +Options
+          [ docker/3,                           % +Operation, -Reply, +Options
+            docker_path_options/3               % ?Operation, -Path, -Options
           ]).
 :- autoload(library(apply), [convlist/3]).
 :- autoload(library(atom), [restyle_identifier/3]).
@@ -359,7 +360,7 @@ restyle_value(Style, Value0, Value) :-
 docker(Operation, Reply, Options) :-
     setting(daemon_url, URL),
     setting(api_version, Version),
-    url_options(Version, Operation, Path_, Options_),
+    docker_path_options(Version, Operation, Path_, Options_),
     format_path(Path_, Path, Options),
     select_option(search(Search), Options, Options0, []),
     append(Options0, Options_, Options__),
@@ -424,7 +425,32 @@ format_path(Atomics0, Atomics, Options) -->
 format_path(Atomics, Atomics, _Options) -->
     [].
 
-%!  url_options(+Version, ?Operation, -Path, -Options) is semidet.
+%!  docker_path_options(?Operation, -Path, -Options) is semidet.
+%
+%   Constructs the Path and Options for a Docker API operation. The predicate
+%   retrieves the operation details from the Docker API specification and
+%   formats the path according to the default version and operation. The
+%   resulting path and options can be used with the HTTP client to make requests
+%   to the Docker API.
+%
+%   The predicate uses the `docker_path_options/4` predicate to construct the
+%   path and options for the specified operation. It retrieves the operation
+%   details from the Docker API specification and formats the path according to
+%   the specified version and operation. The resulting path and options can be
+%   used with the HTTP client to make requests to the Docker API.
+%
+%   @param Operation The operation to perform, which determines the path and
+%   method, as well as any additional options.
+%   @param Path The path for the operation, which is derived from the
+%   Docker API specification.
+%   @param Options List of options for the HTTP request, such as `method` and
+%   `accept`.
+
+docker_path_options(Operation, Path, Options) :-
+    setting(api_version, Version),
+    docker_path_options(Version, Operation, Path, Options).
+
+%!  docker_path_options(+Version, ?Operation, -Path, -Options) is semidet.
 %
 %   The predicate succeeds if the given operation is present in the
 %   `load_docker_api_json/2` dictionary. The dictionary is read from a JSON file
@@ -435,9 +461,9 @@ format_path(Atomics, Atomics, _Options) -->
 %   method, as well as any additional options.
 %   @param Path The path for the operation, which is derived from the
 %   Docker API specification.
-%   @param Options List of options for the URL, such as `method` and `accept`.
+%   @param Options List of options for the HTTP request.
 
-url_options(Version, Operation, Path, [method(Method)|Options]) :-
+docker_path_options(Version, Operation, Path, [method(Method)|Options]) :-
     % Look up the operation in the Docker API specification. Fail if not found.
     % Support variable Operation for dynamic queries.
     (   var(Operation)
