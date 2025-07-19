@@ -38,6 +38,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- autoload(library(http/http_client), [http_get/3]).
 :- autoload(library(http/json), [json_read_dict/2]).
 :- use_module(library(settings), [setting/4, setting/2]).
+:- use_module(placeholders).
 
 :- setting(daemon_url, list, [ protocol(tcp),
                                host(localhost),
@@ -401,29 +402,7 @@ docker(Operation, Reply, Options) :-
 %   @param Options List of options to be used for formatting the path.
 
 format_path(Format, Path, Options) :-
-    atom_codes(Format, Codes),
-    phrase(format_path([], Atomics_, Options), Codes),
-    reverse(Atomics_, Atomics),
-    atomic_list_concat(Atomics, '', Path).
-
-format_path(Atomics0, Atomics, Options) -->
-    "{",
-    string_without("}", NameCodes),
-    "}",
-    !,
-    { atom_codes(Name, NameCodes),
-      Option =.. [Name, Value],
-      option(Option, Options)
-    },
-    format_path([Value|Atomics0], Atomics, Options).
-format_path(Atomics0, Atomics, Options) -->
-    [Code],
-    !,
-    { atom_codes(Atom, [Code])
-    },
-    format_path([Atom|Atomics0], Atomics, Options).
-format_path(Atomics, Atomics, _Options) -->
-    [].
+    format_placeholders(Format, Path, Options).
 
                 /*******************************
                 *          DOCKER API          *
