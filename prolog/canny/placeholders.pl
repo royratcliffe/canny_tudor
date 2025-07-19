@@ -70,7 +70,7 @@ format_placeholders(Format, Atom, Options, RestOptions) :-
 %   with corresponding values from the options list. The placeholders are
 %   replaced with the values associated with the names in the options list.
 %
-%   The result is a list of atoms and values, and an updated options list.
+%   The result is a list of atoms and values, and a completed options list.
 %
 %   @param Terms The list of terms to be formatted.
 %   @param Options The list of options containing values for placeholders.
