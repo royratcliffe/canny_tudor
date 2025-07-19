@@ -9,6 +9,8 @@
 
 test(container_list) :-
     docker(container_list, JSON, []),
+    % Check if the JSON response is a valid JSON term. An empty list is a valid
+    % response since `is_json_term([])` succeeds.
     is_json_term(JSON).
 
 :- end_tests(canny_docker).
