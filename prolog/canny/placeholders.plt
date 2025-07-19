@@ -2,11 +2,11 @@
 :- use_module(placeholders).
 
 test(format_placeholders) :-
-    format_placeholders('abc', 'abc', []).
+    format_placeholders("abc", abc, []).
 test(format_placeholders) :-
     format_placeholders('abc_{id}', abc_123, [id(123)]).
 test(format_placeholders, fail) :-
-    format_placeholders('abc', _, [x(1)]).
+    format_placeholders(abc, _, [x(1)]).
 
 test(format_placeholders, Terms-Options == []-[]) :-
     phrase(format_placeholders(Terms, Options), ``).
