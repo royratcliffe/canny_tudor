@@ -80,6 +80,10 @@ placeholders(Terms, Options) -->
 %!  placeholders(+Terms0, -Terms, +Options0, -Options)// is det.
 %
 %   Processes a format string with placeholders using a list of terms and options.
+%   The format string is the difference list of codes, where placeholders are
+%   replaced with values from the options list. The result is a list of terms
+%   and an updated options list.
+%
 %   Scans the input, replacing placeholders of the form `{name}` with values from
 %   the options list. The result is a list of atoms and values, and an updated
 %   options list. Uses DCG rules for flexible parsing and substitution.
