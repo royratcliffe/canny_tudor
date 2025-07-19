@@ -1,7 +1,35 @@
+/*  File:    swi/options.pl
+    Author:  Roy Ratcliffe
+    Created: Jul 19 2025
+    Purpose: Options Helpers
+
+Copyright (c) 2025, Roy Ratcliffe, Northumberland, United Kingdom
+
+Permission is hereby granted, free of charge,  to any person obtaining a
+copy  of  this  software  and    associated   documentation  files  (the
+"Software"), to deal in  the   Software  without  restriction, including
+without limitation the rights to  use,   copy,  modify,  merge, publish,
+distribute, sub-license, and/or sell copies  of   the  Software,  and to
+permit persons to whom the Software is   furnished  to do so, subject to
+the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT  WARRANTY OF ANY KIND, EXPRESS
+OR  IMPLIED,  INCLUDING  BUT  NOT   LIMITED    TO   THE   WARRANTIES  OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR   PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS  OR   COPYRIGHT  HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY,  WHETHER   IN  AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM,  OUT  OF   OR  IN  CONNECTION  WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+
 :- module(swi_options,
           [ select_options/4    % +Options,+RestOptions0,-RestOptions,+Defaults
           ]).
-:- autoload(library(option), [select_option/4]).
+:- use_module(library(option), [select_option/4]).
 
 %!  select_options(+Options,
 %!                 +RestOptions0,
@@ -28,6 +56,18 @@
 %   Options  is  the  argument  name  for  RestOptions0's  role  in  the
 %   option-selection process. Nevertheless, this   version  follows this
 %   renamed argument convention.
+%
+%   Example:
+%
+%       ?- select_options([a(A), b(B)], [a(1), b(2), c(3)], Rest, [a(0), b(0)]).
+%       Rest = [c(3)],
+%       A = 1,
+%       B = 2.
+%
+%   @param Options The list of options to select from.
+%   @param RestOptions0 The initial list of remaining options.
+%   @param RestOptions The remaining options after selection.
+%   @param Defaults The list of default values for options.
 
 select_options(Options, RestOptions0, RestOptions, Defaults) :-
     select_options(Options, RestOptions0, RestOptions, Defaults, _).
