@@ -20,6 +20,10 @@ format_placeholders(Terms, Options) -->
 %   the options list. The result is a list of atoms and values, and an updated
 %   options list. Uses DCG rules for flexible parsing and substitution.
 %
+%   The resulting list of terms contains atoms and values, where each placeholder
+%   is replaced with the corresponding value from the options list. The options
+%   list is updated to include any new options found in the format string.
+%
 %   @param Terms0 The initial list of terms to be processed.
 %   @param Terms The resulting list of terms after processing.
 %   @param Options0 The initial list of options to be processed.
