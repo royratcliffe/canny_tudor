@@ -8,7 +8,7 @@
           []).
 :- autoload(library(lists), [append/3]).
 :- autoload(library(option), [option/2]).
-:- autoload(library(dcg/basics), [string_without/4]).
+:- autoload(library(dcg/basics), [string_without//2]).
 
 format_placeholders(Terms, Options) -->
     format_placeholders([], Terms, [], Options).
