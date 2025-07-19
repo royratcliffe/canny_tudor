@@ -107,6 +107,8 @@ placeholders(Terms0, Terms, Options0, Options) -->
           % append the new option to the end of the options list. This allows
           % the new option to appear after any existing options that may have
           % been specified in the Options0 list.
+          % Delegate to the merge_options/3 predicate to handle the
+          % appending of the new option to the existing options list.
           %
           % Options_ = [Option|Options0]
           % append(Options0, [Option], Options_)
