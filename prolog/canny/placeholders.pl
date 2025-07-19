@@ -33,7 +33,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- autoload(library(option), [option/2]).
 :- autoload(library(dcg/basics), [string_without//2]).
 
-%!  format_placeholders(+Terms, +Options)// is det.
+%!  format_placeholders(-Terms, ?Options)// is det.
 %
 %   Formats a list of terms by replacing placeholders in the form of `{name}`
 %   with corresponding values from the options list. The placeholders are
@@ -47,7 +47,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 format_placeholders(Terms, Options) -->
     format_placeholders([], Terms, [], Options).
 
-%!  format_placeholders(+Terms0, -Terms, +Options0, -Options)// is semidet.
+%!  format_placeholders(+Terms0, -Terms, +Options0, -Options)// is det.
 %
 %   Processes a format string with placeholders using a list of terms and options.
 %   Scans the input, replacing placeholders of the form `{name}` with values from
