@@ -10,13 +10,24 @@
 :- autoload(library(option), [option/2]).
 :- autoload(library(dcg/basics), [string_without//2]).
 
+%!  format_placeholders(+Terms, +Options)// is det.
+%
+%   Formats a list of terms by replacing placeholders in the form of `{name}`
+%   with corresponding values from the options list. The placeholders are
+%   replaced with the values associated with the names in the options list.
+%
+%   The result is a list of atoms and values, and an updated options list.
+%
+%   @param Terms The list of terms to be formatted.
+%   @param Options The list of options containing values for placeholders.
+
 format_placeholders(Terms, Options) -->
     format_placeholders([], Terms, [], Options).
 
 %!  format_placeholders(+Terms0, -Terms, +Options0, -Options)// is semidet.
 %
 %   Processes a format string with placeholders using a list of terms and options.
-%   Scans the input, replacing placeholders of the form {name} with values from
+%   Scans the input, replacing placeholders of the form `{name}` with values from
 %   the options list. The result is a list of atoms and values, and an updated
 %   options list. Uses DCG rules for flexible parsing and substitution.
 %
