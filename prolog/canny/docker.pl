@@ -425,6 +425,10 @@ format_path(Atomics0, Atomics, Options) -->
 format_path(Atomics, Atomics, _Options) -->
     [].
 
+                /*******************************
+                *          DOCKER API          *
+                *******************************/
+
 %!  docker_path_options(?Operation, -Path, -Options) is semidet.
 %
 %   Constructs the Path and Options for a Docker API operation. The predicate
@@ -682,6 +686,10 @@ load_docker_api_json(Version, Dict) :-
 docker_api_json_path(Base, Abs) :-
     file_name_extension(Base, json, Name),
     context_file((..)/docker/Name, Abs, [access(exist)]).
+
+                /*******************************
+                *           CONTEXT            *
+                *******************************/
 
 %!  context_file(+Spec, -Abs, +Options) is det.
 %
