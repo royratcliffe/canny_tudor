@@ -53,6 +53,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   @param Format The format string containing placeholders.
 %   @param Atom The resulting atom with placeholders replaced.
 %   @param Options The list of options containing values for placeholders.
+%   @param RestOptions The remaining options after processing the placeholders.
 
 format_placeholders(Format, Atom, Options) :-
     format_placeholders(Format, Atom, Options, _).
