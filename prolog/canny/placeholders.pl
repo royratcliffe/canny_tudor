@@ -28,28 +28,42 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- module(canny_placeholders,
           [ format_placeholders/3,              % +Format, -Atom, +Options
-            format_placeholders//2
+            placeholders//2,
+            placeholders//4
           ]).
+:- autoload(library(error), [must_be/2]).
 :- autoload(library(lists), [append/3]).
-:- autoload(library(option), [option/2]).
-:- autoload(library(dcg/basics), [string_without//2]).
+:- autoload(library(option), [select_option/3]).
+:- autoload(library(dcg/basics), [string_without/4]).
 
 %!  format_placeholders(+Format, -Atom, +Options) is det.
+%!  format_placeholders(+Format, -Atom, +Options, -RestOptions) is det.
 %
 %   Formats a string with placeholders in the form of `{name}`. The
 %   placeholders are replaced with corresponding values from the options
 %   list. The result is an atom with the formatted string.
+%
+%   The Format string can be any atom or string containing placeholders.
+%   The Options list should contain terms of the form `name(Value)`, where
+%   `name` is the placeholder name and `Value` is the value to replace it
+%   with. If a placeholder does not have a corresponding value in the
+%   Options list, it will not be replaced, and the placeholder will remain
+%   in the resulting atom.
 %
 %   @param Format The format string containing placeholders.
 %   @param Atom The resulting atom with placeholders replaced.
 %   @param Options The list of options containing values for placeholders.
 
 format_placeholders(Format, Atom, Options) :-
+    format_placeholders(Format, Atom, Options, _).
+
+format_placeholders(Format, Atom, Options, RestOptions) :-
     atom_codes(Format, Codes),
-    phrase(format_placeholders(Terms, Options), Codes),
+    phrase(placeholders([], Terms, Options, RestOptions), Codes),
+    must_be(ground, Terms),
     atomic_list_concat(Terms, '', Atom).
 
-%!  format_placeholders(-Terms, ?Options)// is det.
+%!  placeholders(-Terms, ?Options)// is det.
 %
 %   Formats a list of terms by replacing placeholders in the form of `{name}`
 %   with corresponding values from the options list. The placeholders are
@@ -60,10 +74,10 @@ format_placeholders(Format, Atom, Options) :-
 %   @param Terms The list of terms to be formatted.
 %   @param Options The list of options containing values for placeholders.
 
-format_placeholders(Terms, Options) -->
-    format_placeholders([], Terms, [], Options).
+placeholders(Terms, Options) -->
+    placeholders([], Terms, [], Options).
 
-%!  format_placeholders(+Terms0, -Terms, +Options0, -Options)// is det.
+%!  placeholders(+Terms0, -Terms, +Options0, -Options)// is det.
 %
 %   Processes a format string with placeholders using a list of terms and options.
 %   Scans the input, replacing placeholders of the form `{name}` with values from
@@ -79,7 +93,7 @@ format_placeholders(Terms, Options) -->
 %   @param Options0 The initial list of options to be processed.
 %   @param Options The resulting list of options after processing.
 
-format_placeholders(Terms0, Terms, Options0, Options) -->
+placeholders(Terms0, Terms, Options0, Options) -->
     "{",
     string_without("}", NameCodes),
     "}",
@@ -95,12 +109,13 @@ format_placeholders(Terms0, Terms, Options0, Options) -->
           % been specified in the Options0 list.
           %
           % Options_ = [Option|Options0]
-          append(Options0, [Option], Options_)
+          % append(Options0, [Option], Options_)
+          merge_options([Option], Options0, Options_)
       ),
       append(Terms0, [Value], Terms_)
     },
-    format_placeholders(Terms_, Terms, Options_, Options).
-format_placeholders(Terms0, Terms, Options0, Options) -->
+    placeholders(Terms_, Terms, Options_, Options).
+placeholders(Terms0, Terms, Options0, Options) -->
     string_without("{", Codes),
     (   { Codes == []
         }
@@ -110,5 +125,5 @@ format_placeholders(Terms0, Terms, Options0, Options) -->
     ;   { atom_codes(Atom, Codes),
           append(Terms0, [Atom], Terms_)
         },
-        format_placeholders(Terms_, Terms, Options0, Options)
+        placeholders(Terms_, Terms, Options0, Options)
     ).

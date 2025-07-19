@@ -5,12 +5,14 @@ test(format_placeholders) :-
     format_placeholders("abc", abc, []).
 test(format_placeholders) :-
     format_placeholders('abc_{id}', abc_123, [id(123)]).
-test(format_placeholders, fail) :-
-    format_placeholders(abc, _, [x(1)]).
+test(format_placeholders) :-
+    format_placeholders(abc, abc, [x(1)]).
+test(format_placeholders, error(existence_error(matching_rule,swi_option:select_option(id(_),_,_)),context(swi_option:select_option/3,_))) :-
+    format_placeholders('abc{id}', _, _).
 
 test(format_placeholders, Terms-Options == []-[]) :-
-    phrase(format_placeholders(Terms, Options), ``).
+    phrase(placeholders(Terms, Options), ``).
 test(format_placeholders, Terms-RestOptions =@= [a,111,b,A,c]-[name(A)]) :-
-    phrase(format_placeholders(Terms, [id(111)|RestOptions]), `a{id}b{name}c`).
+    phrase(placeholders(Terms, [id(111)|RestOptions]), `a{id}b{name}c`).
 
 :- end_tests(canny_placeholders).
