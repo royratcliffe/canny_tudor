@@ -57,6 +57,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   option-selection process. Nevertheless, this   version  follows this
 %   renamed argument convention.
 %
+%   The predicate is  useful  for  selecting   options  from  a  list of
+%   options, especially when the options  are   not  known in advance or
+%   when they need to be filtered based on certain criteria.
+%
 %   Example:
 %
 %       ?- select_options([a(A), b(B)], [a(1), b(2), c(3)], Rest, [a(0), b(0)]).
@@ -74,8 +78,13 @@ select_options(Options, RestOptions0, RestOptions, Defaults) :-
 
 select_options([], RestOptions, RestOptions, Defaults, Defaults).
 select_options([Option|Options], RestOptions0, RestOptions, Defaults0, Defaults) :-
+    % Copy the option to avoid side effects on the original option. This is
+    % necessary to ensure that the original option remains unchanged.
     copy_term(Option, Option1),
     term_variables(Option1, [Default]),
+    % Use select_option/4 to select the option from the rest of the options. The
+    % selected option is unified with Option1, and the default value is unified
+    % with Default. The RestOptions1 is the remaining options after selection.
     select_option(Option1, Defaults0, Defaults1, _),
     select_option(Option, RestOptions0, RestOptions1, Default),
     select_options(Options, RestOptions1, RestOptions, Defaults1, Defaults).
