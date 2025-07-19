@@ -32,10 +32,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             placeholders//2,
             placeholders//4
           ]).
-:- autoload(library(error), [must_be/2]).
-:- autoload(library(lists), [append/3]).
-:- autoload(library(option), [select_option/3]).
-:- autoload(library(dcg/basics), [string_without/4]).
+:- use_module(library(error), [must_be/2]).
+:- use_module(library(lists), [append/3]).
+:- use_module(library(option), [select_option/3]).
+:- use_module(library(dcg/basics), [string_without/4]).
 
 %!  format_placeholders(+Format, -Atom, +Options) is det.
 %!  format_placeholders(+Format, -Atom, +Options, -RestOptions) is det.
