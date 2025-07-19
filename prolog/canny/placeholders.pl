@@ -27,11 +27,27 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_placeholders,
-          [ format_placeholders//2
+          [ format_placeholders/3,              % +Format, -Atom, +Options
+            format_placeholders//2
           ]).
 :- autoload(library(lists), [append/3]).
 :- autoload(library(option), [option/2]).
 :- autoload(library(dcg/basics), [string_without//2]).
+
+%!  format_placeholders(+Format, -Atom, +Options) is det.
+%
+%   Formats a string with placeholders in the form of `{name}`. The
+%   placeholders are replaced with corresponding values from the options
+%   list. The result is an atom with the formatted string.
+%
+%   @param Format The format string containing placeholders.
+%   @param Atom The resulting atom with placeholders replaced.
+%   @param Options The list of options containing values for placeholders.
+
+format_placeholders(Format, Atom, Options) :-
+    atom_codes(Format, Codes),
+    phrase(format_placeholders(Terms, Options), Codes),
+    atomic_list_concat(Terms, '', Atom).
 
 %!  format_placeholders(-Terms, ?Options)// is det.
 %
