@@ -81,18 +81,20 @@ placeholders(Terms, Options) -->
 
 %!  placeholders(+Terms0, -Terms, +Options0, -Options)// is det.
 %
-%   Processes a format string with placeholders using a list of terms and options.
-%   The format string is the difference list of codes, where placeholders are
-%   replaced with values from the options list. The result is a list of terms
-%   and an updated options list.
+%   Processes a format string with placeholders   using  a list of terms
+%   and options. The format string  is   the  difference  list of codes,
+%   where placeholders are replaced with values   from the options list.
+%   The result is a list of atomics and an updated options list.
 %
-%   Scans the input, replacing placeholders of the form `{name}` with values from
-%   the options list. The result is a list of atoms and values, and an updated
-%   options list. Uses DCG rules for flexible parsing and substitution.
+%   Scans the input, replacing placeholders of   the  form `{name}` with
+%   values from the options list. The  result   is  a  list of atoms and
+%   values, and an updated options  list.   Uses  DCG rules for flexible
+%   parsing and substitution.
 %
-%   The resulting list of terms contains atoms and values, where each placeholder
-%   is replaced with the corresponding value from the options list. The options
-%   list is updated to include any new options found in the format string.
+%   The resulting list of terms contains   atoms  and values, where each
+%   placeholder is replaced  with  the   corresponding  value  from  the
+%   options list. The options list is updated to include any new options
+%   found in the format string.
 %
 %   @param Terms0 The initial list of terms to be processed.
 %   @param Terms The resulting list of terms after processing.
