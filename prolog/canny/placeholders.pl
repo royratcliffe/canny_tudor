@@ -28,6 +28,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- module(canny_placeholders,
           [ format_placeholders/3,              % +Format, -Atom, +Options
+            format_placeholders/4,              % +Format, -Atom, +Options, -RestOptions
             placeholders//2,
             placeholders//4
           ]).
