@@ -10,5 +10,7 @@ test(select_options, [true(var(A))]) :-
     select_options([term(A)], [], [], []).
 test(select_options, [true(A==x)]) :-
     select_options([term(A)], [], [], [term(x)]).
+test(select_options, A-B-Rest == 1-2-[c(3)]) :-
+    select_options([a(A), b(B)], [a(1), b(2), c(3)], Rest, [a(0), b(0)]).
 
 :- end_tests(swi_options).
