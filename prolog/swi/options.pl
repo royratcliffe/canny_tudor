@@ -1,7 +1,7 @@
 /*  File:    swi/options.pl
     Author:  Roy Ratcliffe
     Created: Jul 19 2025
-    Purpose: SWI Options
+    Purpose: Sociaal-Wetenschappelijke Informatica Options
 
 Copyright (c) 2025, Roy Ratcliffe, Northumberland, United Kingdom
 
