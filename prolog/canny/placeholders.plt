@@ -12,9 +12,11 @@ test(format_placeholders) :-
 test(format_placeholders, error(existence_error(matching_rule,swi_option:select_option(id(_),_,_)),context(swi_option:select_option/3,_))) :-
     format_placeholders('abc{id}', _, _).
 
-test(format_placeholders, Terms-Options == []-[]) :-
+test(placeholders, Terms-Options == []-[]) :-
     phrase(placeholders(Terms, Options), ``).
-test(format_placeholders, Terms-RestOptions =@= [a,111,b,A,c]-[name(A)]) :-
+test(placeholders, Terms-RestOptions =@= [a,111,b,A,c]-[name(A)]) :-
     phrase(placeholders(Terms, [id(111)|RestOptions]), `a{id}b{name}c`).
+test(placeholders, Terms-Options = [A, B, C]-[a(A), b(B), c(C)]) :-
+    phrase(placeholders(Terms, Options), `{a}{b}{c}`).
 
 :- end_tests(canny_placeholders).
