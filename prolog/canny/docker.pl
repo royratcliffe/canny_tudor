@@ -607,7 +607,7 @@ method_option(produces-Produces, accept(Produces)).
 %   @param Paths Dictionary mapping paths to method dictionaries.
 %   @param Path The extracted path key.
 %   @param Method The extracted HTTP method.
-%   @param MethodDict Dictionary with details for the specified method.
+%   @param MethodDict Dictionary with details for the extracted method.
 
 path_and_method(Paths, Path, Method, MethodDict) :-
     dict_pairs(Paths, _, PathPairs),
