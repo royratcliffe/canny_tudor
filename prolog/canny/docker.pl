@@ -594,6 +594,21 @@ operation(Version, Operation, Path, Method, Options) :-
     convlist(method_option, Pairs, Options).
 
 method_option(produces-Produces, accept(Produces)).
+method_option(parameters-Parameters, query(Terms)) :-
+    convlist(query_parameter, Parameters, Terms).
+
+%!  query_parameter(+Parameter, -Term) is semidet.
+%
+%   Converts a query parameter from the Docker API specification into a
+%   Prolog term. The parameter is expected to be a dictionary with keys
+%   `in`, `name`, and `type`. The predicate constructs a term of the form
+%   `Name(Type)` where `Name` is the name of the parameter and `Type` is its type.
+
+query_parameter(Parameter, Term) :-
+    _{in:"query", name:Name, type:Type} :< Parameter,
+    atom_string(Name_, Name),
+    atom_string(Type_, Type),
+    Term =.. [Name_, Type_].
 
 %!  path_and_method(+Paths, -Path, -Method, -MethodDict) is nondet.
 %
