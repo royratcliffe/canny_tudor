@@ -133,8 +133,8 @@ placeholders(Terms0, Terms, Options0, Options) -->
     !,
     { atom_codes(Name, NameCodes),
       Option =.. [Name, Value],
-      (   select_option(Option, Options0, Options_)
-      ->  true
+      (   option(Option, Options0)
+      ->  Options_ = Options0
       ;   % Prepending the new option would be possible.
           % See the commented-out code below. However, it is more apropos to
           % append the new option to the end of the options list. This allows
