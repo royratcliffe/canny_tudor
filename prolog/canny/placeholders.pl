@@ -121,6 +121,10 @@ placeholders(Terms, Options) -->
 %   options list. The options list is updated to include any new options
 %   found in the format string.
 %
+%   Unifies the same placeholder with the same value in the options list if it
+%   appears more than once. Placeholders can appear in the format string
+%   multiple times, and each occurrence will be replaced with the same value.
+%
 %   @param Terms0 The initial list of terms to be processed.
 %   @param Terms The resulting list of terms after processing.
 %   @param Options0 The initial list of options to be processed.
