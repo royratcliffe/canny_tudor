@@ -583,6 +583,10 @@ docker_path_options(Version, Operation, Path, [method(Method)|Options]) :-
 %   @param Options List of options for the method, such as `accept` for
 %   the expected response format.
 
+% Tablise the operation/5 predicate to allow for efficient retrieval of
+% operations based on the version, operation name, path, method, and options. It
+% allows for quick lookups of operations without needing to repeatedly parse the
+% Docker API JSON specification.
 :- table operation/5.
 
 operation(Version, Operation, Path, Method, Options) :-
