@@ -225,18 +225,30 @@ the request.
 
 docker(Ask, Reply) :-
     Ask =.. [Functor|Arguments],
-    ask(Arguments, Functor, Path, Options),
-    setting(daemon_url, URL),
-    http_get([path(Path)|URL], Reply0, [json_object(dict)|Options]),
+    ask(Arguments, Functor, URL_, Options),
+    setting(daemon_url, URL0),
+    append(URL_, URL0, URL),
+    http_get(URL, Reply0, [json_object(dict)|Options]),
     restyle_value(one_two, Reply0, Reply).
 
-ask([], Functor, Path, Options) :-
+ask([], Functor, [path(Path)], Options) :-
     ask(Functor, [Path], [], _, Options).
-ask([Value], Functor, Path, Options) :-
+ask([Value], Functor, [path(Path)], Options) :-
     ask(Functor, Terms, [Placeholder], _, Options),
     !,
     Placeholder =.. [_, Value],
     atomic_list_concat(Terms, '', Path).
+ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
+    ask(Functor, Terms, [Placeholder], Queries0, Options),
+    !,
+    Placeholder =.. [_, Value],
+    atomic_list_concat(Terms, '', Path),
+    convlist(query_search(Queries0), Queries, Searches).
+
+query_search(Queries, Query, Search) :-
+    Query =.. [Name, _],
+    Search =.. [Name, _],
+    option(Search, Queries).
 
 %!  ask(+Operation, ?Terms, ?Placeholders, ?Queries, -Options) is semidet.
 %
