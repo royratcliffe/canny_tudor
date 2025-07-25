@@ -246,6 +246,12 @@ ask([Searches], Functor, [path(Path), search(Searches)], Options) :-
 ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
     ask(Functor, Terms, [Placeholder], Queries0, Options),
     !,
+    % The cut is not strictly necessary, but it ensures that
+    % no further clauses are considered, should any be added in future.
+    %
+    % Placeholder is a one-arity functor that will be unified with
+    % the Value argument. The placeholder is used to construct the
+    % path, and the Value is the argument that replaces the placeholder.
     Placeholder =.. [_, Value],
     atomic_list_concat(Terms, '', Path),
     convlist(query_search(Queries0), Queries, Searches).
