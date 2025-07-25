@@ -212,32 +212,49 @@ the request.
 %   returns the Reply. The Ask term  may   be  a compound specifying the
 %   operation to perform together with any required arguments.
 %
-%   - network_create(+NetworkConfig): Creates a Docker network with the
-%     specified configuration, such as name and labels.
-%   - network_delete(+IdOrName): Deletes a Docker network by its ID or name.
+%   The Docker API request comprises:
+%   - a path with zero or more placeholders,
+%   - a method,
+%   - zero or more required or optional search parameters,
+%   - a JSON body for POST requests.
+%   This implies that, for the least amount of additional information, a
+%   request is just a path with a method, e.g., a GET, HEAD or DELETE
+%   request. From that point onward, requests grow in complexity
+%   involving or more of the following: path placeholders, query
+%   parameters, a request body.
 
-docker(system_ping, Reply) :- docker(system_ping, Reply, []).
-docker(container_list, Reply) :-
-    docker(container_list, Reply0, [json_object(dict)]),
-    maplist(reply, Reply0, Reply).
-docker(network_create(NetworkConfig), Reply) :-
-    post(NetworkConfig, Options),
-    docker(network_create, Reply0, Options),
-    reply(Reply0, Reply).
-docker(network_delete(IdOrName), Reply) :-
-    docker(network_delete, Reply, [id(IdOrName)]).
+docker(Ask, Reply) :-
+    Ask =.. [Functor|Arguments],
+    ask(Arguments, Functor, Path, Options),
+    setting(daemon_url, URL),
+    http_get([path(Path)|URL], Reply0, [json_object(dict)|Options]),
+    restyle_value(one_two, Reply0, Reply).
 
-post(Data, [json_object(dict), post(json(Dict))]) :-
-    is_dict(Data),
+ask([], Functor, Path, Options) :-
+    ask(Functor, [Path], [], _, Options).
+ask([Value], Functor, Path, Options) :-
+    ask(Functor, Terms, [Placeholder], _, Options),
     !,
-    mapdict(restyle_key('OneTwo'), Data, Dict).
-post(Data, [post(json(Data))]).
+    Placeholder =.. [_, Value],
+    atomic_list_concat(Terms, '', Path).
 
-reply(Reply0, Reply) :-
-    is_dict(Reply0),
-    !,
-    mapdict(restyle_key(one_two), Reply0, Reply).
-reply(Reply, Reply).
+%!  ask(+Operation, ?Terms, ?Placeholders, ?Queries, -Options) is semidet.
+%
+%   Constructs a Docker API request based on the specified operation, terms,
+%   placeholders, queries, and options. The operation is an atom that identifies
+%   the Docker API operation to perform, such as `container_list` or
+%   `system_ping`. The Terms are a list of terms that represent the atom spans
+%   and placeholders in the operation's path. The Placeholders are a list of
+%   one-arity functors that will be unified in the path Terms with their
+%   corresponding arguments. The Queries are a list of terms that represent
+%   additional search parameters for the request. The Options are a list of
+%   terms that control how the HTTP request is made.
+
+ask(Operation, Terms, Placeholders, Queries, Options) :-
+    docker_path_options(Operation, Path, Options0),
+    select_option(query(Queries), Options0, Options),
+    atom_codes(Path, Codes),
+    phrase(placeholders([], Terms, [], Placeholders), Codes).
 
 %!  mapdict(+Goal, +Dict0, -Dict) is det.
 %
