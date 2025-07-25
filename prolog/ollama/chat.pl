@@ -151,6 +151,34 @@ read_dict(In, Dict, Options) :-
     ;   !
     ).
 
+%!  read_data(+In, -NotEndOfFileData, +Options) is det.
+%
+%   Reads data from the input stream `In` until it reaches the end of file
+%   or encounters an error. It uses the `http_read_data/3` predicate to read
+%   the data and unify it with `NotEndOfFileData`.
+%
+%   The `end_of_file(EndOfFile)` option allows specifying a custom end-of-file
+%   marker. If the end of file is reached, it fails gracefully rather than
+%   returning an empty list or an error. This is useful for ensuring that
+%   the reading process continues until all data is processed or an error occurs.
+%
+%   The `Options` argument allows passing additional options to the
+%   `http_read_data/3` predicate, such as `json_object(dict)` to specify
+%   the expected format of the data being read.
+%
+%   The predicate uses `repeat` to ensure that it keeps trying to read data
+%   until it either successfully reads some data or fails when it reaches the
+%   end of the file. If it reads data that is not equal to the end-of-file
+%   marker, it unifies `NotEndOfFileData` with the read data.
+%
+%   If the end of file is reached, it fails gracefully, allowing the caller
+%   to handle the situation appropriately without raising an error.
+%
+%   @param In The input stream from which data is read.
+%   @param NotEndOfFileData The data read from the input stream, excluding
+%   the end-of-file marker.
+%   @param Options Additional options for reading data, such as `end_of_file/1`.
+
 read_data(In, NotEndOfFileData, Options) :-
     select_option(end_of_file(EndOfFile), Options, Options_, end_of_file),
     repeat,
