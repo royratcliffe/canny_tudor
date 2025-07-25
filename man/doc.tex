@@ -103,6 +103,39 @@ Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
 Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
 log}.
 
+\section{[0.23.10] - 2025-07-25}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Docker API
+    \item Placeholder formatting
+\end{shortlist}
+
+\section{[0.23.9] - 2025-06-08}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Predicate \verb$scasp_just_dot_print(+Stream, +Src, +Options)$
+\end{shortlist}
+
+\section{[0.23.8] - 2025-05-31}
+
+\subsection{Added}
+
+\begin{shortlist}
+    \item Predicate \verb$ollama_chat(+Messages:list(dict), -Message:dict, +Options:list)$
+\end{shortlist}
+
+\section{[0.23.7] - 2025-05-11}
+
+\subsection{Added}
+
+\begin{itemize}
+    \item Predicate `directory_entry(+Directory, ?Entry)\Sidiv{}`, module \verb$dcg_files$
+\end{itemize}
+
 \section{[0.23.6] - 2023-09-16}
 
 \subsection{Added}
@@ -735,6 +768,359 @@ Accumulates CRC-16/MCRF4XX checksum using optimal shifting and
 exclusive-OR operations.
 \end{description}
 
+\chapter{library(canny/docker): Canny Docker}\label{sec:docker}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+    \tag{version}
+0.1.0
+\end{tags}
+
+This module provides an interface to the Docker API, allowing interaction with
+Docker services through HTTP requests. It defines settings for the Docker daemon
+URL and API version, and provides a predicate to construct URLs and options for
+various Docker operations.
+
+It supports operations such as listing containers, creating containers, and
+checking the Docker system status. The module uses Prolog dictionaries to
+represent JSON data structures, making it easy to work with the Docker API's
+responses. It also includes utility predicates for transforming dictionary
+key-value pairs and constructing paths for API requests. It is designed to be
+used in conjunction with the HTTP client library to make requests to the Docker
+API. It provides a flexible way to interact with Docker services, allowing for
+dynamic construction of API requests based on the specified operations and
+options.
+
+\section{Docker API Operations}
+
+The module supports various Docker API operations, such as:
+
+\begin{shortlist}
+    \item \verb$system_ping$: Check if the Docker daemon is reachable.
+    \item \verb$container_list$: List all containers.
+    \item \verb$container_create$: Create a new container.
+    \item \verb$network_create$: Create a new network.
+    \item \verb$network_delete$: Delete a network.
+\end{shortlist}
+
+These operations are defined in the Docker API specification and can be accessed
+through the \predref{docker}{3} predicate, which constructs the appropriate URL and
+options based on the operation and the settings defined in this module.
+
+\subsection{Example container operations}
+
+The following examples demonstrate how to list and create Docker containers
+using the \predref{docker}{3} predicate. The first example lists all containers, and the
+second example creates a new container with a specified image and labels.
+
+\begin{code}
+?- docker(container_list, Reply).
+Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
+?- docker(container_create, Reply, [post(json(json(['Image'=ubuntu,
+   'Labels'=json(['Hello'=world)])))])).
+Reply = _{Id:"abc123", Warnings:[]}.
+\end{code}
+
+The \predref{container_list}{2} predicate retrieves a list of all containers, returning
+a list of dictionaries representing each container. Each dictionary contains
+information such as the container ID, image, and other metadata.
+The \predref{container_create}{3} predicate creates a new container with the specified
+image and labels. The labels are specified as a JSON object, allowing for
+flexible tagging of containers with metadata. The reply contains the ID of the
+created container and any warnings that may have occurred during the creation
+process. The labels can be used to organise and manage containers based on
+specific criteria, such as purpose or owner.
+
+\subsection{Example network operations}
+
+The following examples demonstrate how to create and delete a Docker network
+using the \predref{docker}{3} predicate. The network is created with a name and labels,
+and then deleted by its name.
+
+\begin{code}
+?- docker(network_create(_{name:my_network, labels:_{'my.label':'my-value'}}), A).
+A = _{id:"1be0f5d2337ff6a6db79a59707049c199268591f49e3c9054fc698fe7916f9c3", warning:""}.
+
+38 ?- docker(network_delete(my_network), A).
+A = ''.
+\end{code}
+
+Note that the \predref{network_create}{2} predicate constructs a network with the
+specified name and labels, and returns a reply containing the network ID and any
+warnings. The \predref{network_delete}{2} predicate deletes the network by its name,
+returning an empty reply if successful.
+
+Labels can be used to tag networks with metadata, which can be useful
+for organising and managing Docker resources. The labels are specified
+as a dictionary with key-value pairs, where the keys and values are
+strings. The labels are included in the network configuration when
+creating a network, allowing for flexible and dynamic tagging of Docker
+resources.
+
+Labels can be used to filter and query networks, making it easier to
+manage Docker resources based on specific criteria. For example, you can
+create a network with a label indicating its purpose or owner, and then
+use that label to find networks that match certain criteria. This allows
+for more organised and efficient management of Docker resources,
+especially in larger deployments with many networks and containers.
+
+\subsection{Restyling Keys}
+
+The \predref{docker}{3} predicate transforms the keys in the input dictionary to
+CamelCase format using the \predref{restyle_key}{3} predicate, which applies the
+Docker-specific CamelCase naming convention to the keys. This
+transformation is useful for ensuring that the keys in the input
+dictionary match the expected format for the Docker API, making it
+easier to work with the API and ensuring compatibility with the expected
+request format.
+
+The transformation is applied recursively to all
+key-value pairs in the input dictionary, ensuring that all keys are
+transformed to the correct format before making the request to the
+Docker API. The reverse transformation is applied to the reply
+dictionary, which does not retain the original key names as returned by
+the Docker API. Label keys are also transformed to CamelCase format,
+ensuring consistency in the naming convention used for labels in the
+Docker API requests and responses.
+
+\section{Low-Level HTTP Requests}
+
+The module provides a low-level interface to the Docker API, allowing for custom
+HTTP requests to be made. The \predref{docker}{3} predicate constructs the URL and
+options for the specified operation, and uses the \predref{http_get}{3} predicate to make
+the request. The options can include HTTP methods, headers, and other parameters
+as needed for the specific operation.
+
+The \predref{url_options}{4} predicate is used to construct the URL and options for a
+specific Docker operation. It retrieves the operation details from the Docker
+API specification and formats the path according to the specified version and
+operation. The resulting URL and options can be used with the HTTP client to
+make requests to the Docker API.
+
+\subsection{Example usage}
+
+The \predref{url_options}{4} predicate can be used to construct the URL and options for a
+specific Docker operation. For example, to get the URL and options for the
+\verb$system_ping$ operation, you can use:
+
+\begin{code}
+?- [library(http/http_client)].
+true.
+
+?- canny_docker:url_options(system_ping, URL, Options),
+   http_get(URL, Reply, Options).
+URL = [path('/v1.49/_ping'), protocol(tcp), host(localhost), port(2375)],
+Options = [method(get), accept(["text/plain"])],
+Reply = 'OK'.
+\end{code}
+
+For listing containers, you can use:
+
+\begin{code}
+?- canny_docker:url_options(container_list, URL, Options),
+   http_get(URL, Reply, Options).
+URL = [path('/v1.49/containers/json'), protocol(tcp), host(localhost), port(2375)],
+Options = [method(get), accept(["application/json"])],
+Reply = [json(['Id'=..., ...|...])].
+\end{code}
+
+For creating a container, you can use:
+
+\begin{code}
+?- docker(container_create, A, [post(json(json(['Image'=ubuntu,
+   'Labels'=json(['Hello'=world])])))]).
+\end{code}
+
+This example creates a new Docker container with the specified image and labels.
+Notice that the post request uses \verb$json(json(...))$ to specify the JSON body of
+the request.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{docker}{2}{+Ask, -Reply}
+Issues a request to the Docker API using the specified \arg{Ask} term and
+returns the \arg{Reply}. The \arg{Ask} term may be a compound specifying the
+operation to perform together with any required arguments.
+
+The Docker API request comprises:
+
+\begin{itemize}
+    \item a path with zero or more placeholders,
+    \item a method,
+    \item zero or more required or optional search parameters,
+    \item a JSON body for POST requests.
+This implies that, for the least amount of additional information, a
+request is just a path with a method, e.g., a GET, HEAD or DELETE
+request. From that point onward, requests grow in complexity
+involving or more of the following: path placeholders, query
+parameters, a request body.
+\end{itemize}
+
+    \predicate[det]{docker}{3}{+Operation, -Reply, +Options}
+Makes a request to the Docker API using the specified operation and
+options. The operation is a string that identifies the Docker API
+operation to perform, such as \verb$container_list$ or \verb$system_ping$. The
+predicate constructs the URL and options based on the operation and
+the settings defined in this module.
+
+Builds HTTP request options for the Docker API using the base URL from
+the \verb$daemon_url$ setting. The path and HTTP method are determined by
+\predref{path_and_method}{4}, and the resulting options are suitable for making
+requests to the Docker API.
+
+The predicate constructs the URL by concatenating the base URL with
+the path and method. The \verb$daemon_url$ setting provides the base URL,
+and the \verb$api_version$ setting specifies the version of the Docker API.
+
+\begin{arguments}
+\arg{Operation} & The operation to perform, which determines the path and
+method, as well as any additional options. \\
+\arg{Reply} & The response from the Docker API, which is typically a
+Prolog dictionary or list, depending on the operation. \\
+\arg{Options} & This is a list of options that control both how the path is
+formatted and how the HTTP request is made. For path formatting, options are
+terms like \verb$id(Value)$ that provide values for placeholders in the path
+template. For the HTTP request, options can include settings such as
+headers, authentication, or other parameters supported by the HTTP client. \\
+\end{arguments}
+
+    \predicate[semidet]{docker_path_options}{3}{?Operation, -Path, -Options}
+Constructs the \arg{Path} and \arg{Options} for a Docker API operation. The predicate
+retrieves the operation details from the Docker API specification and
+formats the path according to the default version and operation. The
+resulting path and options can be used with the HTTP client to make requests
+to the Docker API.
+
+The predicate uses the \predref{docker_path_options}{4} predicate to construct the
+path and options for the specified operation. It retrieves the operation
+details from the Docker API specification and formats the path according to
+the specified version and operation. The resulting path and options can be
+used with the HTTP client to make requests to the Docker API.
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|L|}
+\hline
+build_prune & '/v1.49/build/prune' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+config_create & '/v1.49/configs/create' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+config_delete & '/v1.49/configs/\{id\}' & [\verb$method(delete)$,\verb$accept(["application/json"])$] \\
+config_inspect & '/v1.49/configs/\{id\}' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+config_list & '/v1.49/configs' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+config_update & '/v1.49/configs/\{id\}/update' & [\verb$method(post)$] \\
+container_archive & '/v1.49/containers/\{id\}/archive' & [\verb$method(get)$,\verb$accept(["application/x-tar"])$] \\
+container_archive_info & '/v1.49/containers/\{id\}/archive' & [\verb$method(head)$] \\
+container_attach & '/v1.49/containers/\{id\}/attach' & [\verb$method(post)$,\verb$accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])$] \\
+container_attach_websocket & '/v1.49/containers/\{id\}/attach/ws' & [\verb$method(get)$] \\
+container_changes & '/v1.49/containers/\{id\}/changes' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+container_create & '/v1.49/containers/create' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+container_delete & '/v1.49/containers/\{id\}' & [\verb$method(delete)$] \\
+container_exec & '/v1.49/containers/\{id\}/exec' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+container_export & '/v1.49/containers/\{id\}/export' & [\verb$method(get)$,\verb$accept(["application/octet-stream"])$] \\
+container_inspect & '/v1.49/containers/\{id\}/json' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+container_kill & '/v1.49/containers/\{id\}/kill' & [\verb$method(post)$] \\
+container_list & '/v1.49/containers/json' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+container_logs & '/v1.49/containers/\{id\}/logs' & [\verb$method(get)$,\verb$accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])$] \\
+container_pause & '/v1.49/containers/\{id\}/pause' & [\verb$method(post)$] \\
+container_prune & '/v1.49/containers/prune' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+container_rename & '/v1.49/containers/\{id\}/rename' & [\verb$method(post)$] \\
+container_resize & '/v1.49/containers/\{id\}/resize' & [\verb$method(post)$,\verb$accept(["text/plain"])$] \\
+container_restart & '/v1.49/containers/\{id\}/restart' & [\verb$method(post)$] \\
+container_start & '/v1.49/containers/\{id\}/start' & [\verb$method(post)$] \\
+container_stats & '/v1.49/containers/\{id\}/stats' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+container_stop & '/v1.49/containers/\{id\}/stop' & [\verb$method(post)$] \\
+container_top & '/v1.49/containers/\{id\}/top' & [\verb$method(get)$] \\
+container_unpause & '/v1.49/containers/\{id\}/unpause' & [\verb$method(post)$] \\
+container_update & '/v1.49/containers/\{id\}/update' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+container_wait & '/v1.49/containers/\{id\}/wait' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+distribution_inspect & '/v1.49/distribution/\{name\}/json' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+exec_inspect & '/v1.49/exec/\{id\}/json' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+exec_resize & '/v1.49/exec/\{id\}/resize' & [\verb$method(post)$] \\
+exec_start & '/v1.49/exec/\{id\}/start' & [\verb$method(post)$,\verb$accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])$] \\
+get_plugin_privileges & '/v1.49/plugins/privileges' & [\verb$method(get)$] \\
+image_build & '/v1.49/build' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+image_commit & '/v1.49/commit' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+image_create & '/v1.49/images/create' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+image_delete & '/v1.49/images/\{name\}' & [\verb$method(delete)$,\verb$accept(["application/json"])$] \\
+image_get & '/v1.49/images/\{name\}/get' & [\verb$method(get)$,\verb$accept(["application/x-tar"])$] \\
+image_get_all & '/v1.49/images/get' & [\verb$method(get)$,\verb$accept(["application/x-tar"])$] \\
+image_history & '/v1.49/images/\{name\}/history' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+image_inspect & '/v1.49/images/\{name\}/json' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+image_list & '/v1.49/images/json' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+image_load & '/v1.49/images/load' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+image_prune & '/v1.49/images/prune' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+image_push & '/v1.49/images/\{name\}/push' & [\verb$method(post)$] \\
+image_search & '/v1.49/images/search' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+image_tag & '/v1.49/images/\{name\}/tag' & [\verb$method(post)$] \\
+network_connect & '/v1.49/networks/\{id\}/connect' & [\verb$method(post)$] \\
+network_create & '/v1.49/networks/create' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+network_delete & '/v1.49/networks/\{id\}' & [\verb$method(delete)$] \\
+network_disconnect & '/v1.49/networks/\{id\}/disconnect' & [\verb$method(post)$] \\
+network_inspect & '/v1.49/networks/\{id\}' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+network_list & '/v1.49/networks' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+network_prune & '/v1.49/networks/prune' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+node_delete & '/v1.49/nodes/\{id\}' & [\verb$method(delete)$] \\
+node_inspect & '/v1.49/nodes/\{id\}' & [\verb$method(get)$] \\
+node_list & '/v1.49/nodes' & [\verb$method(get)$] \\
+node_update & '/v1.49/nodes/\{id\}/update' & [\verb$method(post)$] \\
+plugin_create & '/v1.49/plugins/create' & [\verb$method(post)$] \\
+plugin_delete & '/v1.49/plugins/\{name\}' & [\verb$method(delete)$] \\
+plugin_disable & '/v1.49/plugins/\{name\}/disable' & [\verb$method(post)$] \\
+plugin_enable & '/v1.49/plugins/\{name\}/enable' & [\verb$method(post)$] \\
+plugin_inspect & '/v1.49/plugins/\{name\}/json' & [\verb$method(get)$] \\
+plugin_list & '/v1.49/plugins' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+plugin_pull & '/v1.49/plugins/pull' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+plugin_push & '/v1.49/plugins/\{name\}/push' & [\verb$method(post)$] \\
+plugin_set & '/v1.49/plugins/\{name\}/set' & [\verb$method(post)$] \\
+plugin_upgrade & '/v1.49/plugins/\{name\}/upgrade' & [\verb$method(post)$] \\
+put_container_archive & '/v1.49/containers/\{id\}/archive' & [\verb$method(put)$] \\
+secret_create & '/v1.49/secrets/create' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+secret_delete & '/v1.49/secrets/\{id\}' & [\verb$method(delete)$,\verb$accept(["application/json"])$] \\
+secret_inspect & '/v1.49/secrets/\{id\}' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+secret_list & '/v1.49/secrets' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+secret_update & '/v1.49/secrets/\{id\}/update' & [\verb$method(post)$] \\
+service_create & '/v1.49/services/create' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+service_delete & '/v1.49/services/\{id\}' & [\verb$method(delete)$] \\
+service_inspect & '/v1.49/services/\{id\}' & [\verb$method(get)$] \\
+service_list & '/v1.49/services' & [\verb$method(get)$] \\
+service_logs & '/v1.49/services/\{id\}/logs' & [\verb$method(get)$,\verb$accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])$] \\
+service_update & '/v1.49/services/\{id\}/update' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+session & '/v1.49/session' & [\verb$method(post)$,\verb$accept(["application/vnd.docker.raw-stream"])$] \\
+swarm_init & '/v1.49/swarm/init' & [\verb$method(post)$,\verb$accept(["application/json","text/plain"])$] \\
+swarm_inspect & '/v1.49/swarm' & [\verb$method(get)$] \\
+swarm_join & '/v1.49/swarm/join' & [\verb$method(post)$] \\
+swarm_leave & '/v1.49/swarm/leave' & [\verb$method(post)$] \\
+swarm_unlock & '/v1.49/swarm/unlock' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+swarm_unlockkey & '/v1.49/swarm/unlockkey' & [\verb$method(get)$] \\
+swarm_update & '/v1.49/swarm/update' & [\verb$method(post)$] \\
+system_auth & '/v1.49/auth' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+system_data_usage & '/v1.49/system/df' & [\verb$method(get)$] \\
+system_events & '/v1.49/events' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+system_info & '/v1.49/info' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+system_ping & '/v1.49/_ping' & [\verb$method(get)$,\verb$accept(["text/plain"])$] \\
+system_ping_head & '/v1.49/_ping' & [\verb$method(head)$,\verb$accept(["text/plain"])$] \\
+system_version & '/v1.49/version' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+task_inspect & '/v1.49/tasks/\{id\}' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+task_list & '/v1.49/tasks' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+task_logs & '/v1.49/tasks/\{id\}/logs' & [\verb$method(get)$,\verb$accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])$] \\
+volume_create & '/v1.49/volumes/create' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+volume_delete & '/v1.49/volumes/\{name\}' & [\verb$method(delete)$] \\
+volume_inspect & '/v1.49/volumes/\{name\}' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+volume_list & '/v1.49/volumes' & [\verb$method(get)$,\verb$accept(["application/json"])$] \\
+volume_prune & '/v1.49/volumes/prune' & [\verb$method(post)$,\verb$accept(["application/json"])$] \\
+volume_update & '/v1.49/volumes/\{name\}' & [\verb$method(put)$,\verb$accept(["application/json"])$] \\
+\hline
+\end{tabulary}
+\end{quote}
+
+\begin{arguments}
+\arg{Operation} & The operation to perform, which determines the path and
+method, as well as any additional options. \\
+\arg{Path} & The path for the operation, which is derived from the
+Docker API specification. \\
+\arg{Options} & List of options for the HTTP request, such as \const{method} and
+\const{accept}. \\
+\end{arguments}
+\end{description}
+
 \chapter{library(canny/endian): Big- and little-endian grammars}\label{sec:endian}
 
 The endian predicates unify big- and little-endian words, longs and
@@ -1050,6 +1436,95 @@ single columns \const{a}, \const{b}, \const{c}; then \const{a} in the first row 
 the second; finally permutes \const{a}, \const{b}, \const{c} on a single row.
 Permutations always preserve the order of elements from first to
 last.
+\end{description}
+
+\chapter{library(canny/placeholders): Formatting Placeholders}\label{sec:placeholders}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+    \tag{version}
+0.1.0
+\end{tags}
+
+This module provides predicates for formatting strings with placeholders.
+Placeholders are specified in the form of \verb${name}$ within a format string.
+The placeholders are replaced with corresponding values from a list of
+options, where each option is specified as \verb$name(Value)$.
+The result is an atom containing the formatted string.
+The module uses DCG rules to parse the format string and replace the
+placeholders with the corresponding values.
+
+The main predicate is \predref{format_placeholders}{3}, which takes a format
+string, an atom to hold the result, and a list of options. It processes
+the format string, replacing placeholders with their corresponding values
+from the options list. If a placeholder does not have a corresponding value,
+it will fail.
+
+The \predref{format_placeholders}{3} predicate formats a string with placeholders, while
+\predref{format_placeholders}{4} allows for additional options to be returned; namely,
+the remaining options after processing the placeholders.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{format_placeholders}{3}{+Format, -Atom, +Options}
+\nodescription
+    \predicate[det]{format_placeholders}{4}{+Format, -Atom, +Options, -RestOptions}
+Formats a string with placeholders in the form of \verb${name}$. The
+placeholders are replaced with corresponding values from the options
+list. The result is an atom with the formatted string.
+
+The \arg{Format} string can be any atom or string containing placeholders.
+The \arg{Options} list should contain terms of the form \verb$name(Value)$, where
+\const{name} is the placeholder name and \arg{Value} is the value to replace it
+with. If a placeholder does not have a corresponding value in the
+\arg{Options} list, it will not be replaced, and the placeholder will remain
+in the resulting atom.
+
+\begin{arguments}
+\arg{Format} & The format string containing placeholders. \\
+\arg{Atom} & The resulting atom with placeholders replaced. \\
+\arg{Options} & The list of options containing values for placeholders. \\
+\arg{RestOptions} & The remaining options after processing the placeholders. \\
+\end{arguments}
+
+    \dcg[det]{placeholders}{2}{-Terms, ?Options}
+Formats a list of terms by replacing placeholders in the form of \verb${name}$
+with corresponding values from the options list. The placeholders are
+replaced with the values associated with the names in the options list.
+
+The result is a list of atoms and values, and a completed options list.
+
+\begin{arguments}
+\arg{Terms} & The list of terms to be formatted. \\
+\arg{Options} & The list of options containing values for placeholders. \\
+\end{arguments}
+
+    \dcg[det]{placeholders}{4}{+Terms0, -Terms, +Options0, -Options}
+Processes a format string with placeholders using a list of terms
+and options. The format string is the difference list of codes,
+where placeholders are replaced with values from the options list.
+The result is a list of atomics and an updated options list.
+
+Scans the input, replacing placeholders of the form \verb${name}$ with
+values from the options list. The result is a list of atoms and
+values, and an updated options list. Uses DCG rules for flexible
+parsing and substitution.
+
+The resulting list of terms contains atoms and values, where each
+placeholder is replaced with the corresponding value from the
+options list. The options list is updated to include any new options
+found in the format string.
+
+Unifies the same placeholder with the same value in the options list if it
+appears more than once. Placeholders can appear in the format string
+multiple times, and each occurrence will be replaced with the same value.
+
+\begin{arguments}
+\arg{Terms0} & The initial list of terms to be processed. \\
+\arg{Terms} & The resulting list of terms after processing. \\
+\arg{Options0} & The initial list of options to be processed. \\
+\arg{Options} & The resulting list of options after processing. \\
+\end{arguments}
 \end{description}
 
 \chapter{library(canny/pop)}\label{sec:pop}
@@ -1459,6 +1934,39 @@ little: recurse first or recurse last. Apart from that subtle but
 essential difference, the inner computation behaves identically.
 \end{description}
 
+\chapter{library(dcg/files)}\label{sec:files}
+
+\begin{description}
+    \dcg[nondet]{directory_entry}{2}{+Directory, ?Entry}
+Neatly traverses a file system using a grammar.
+
+Finds files and skips the special dot entries. Here, \arg{Entry} refers
+to a file. The grammar recursively traverses sub-directories beneath
+the given \arg{Directory} and yields every existing file path at
+\arg{Entry}. The directory acts as the root of the scan; it joins with
+the entry to yield the full path of the file, but \textbf{not} with the
+difference list. The second \arg{List} argument of \predref{phrase}{2} unifies
+with a list of the corresponding sub-path components \textbf{without} the
+root. The caller sees the full path \textbf{and} the relative
+sub-components.
+
+Note that the second clause appears in the DCG expanded form with the
+two hidden arguments: the pre-parsed input list \arg{S0} and the
+post-parsed output list \arg{S}. For non-directory entries, the input list
+unifies with nil \verb$[]$ because it represents a terminal node in the
+directory tree, and the post-parsed terms amount to the accumulated
+\arg{Entries} spanning the sub-directory entries in-between the original
+root directory and the file itself.
+
+    \predicate[nondet]{directory_entry}{2}{+Directory, ?Entry}
+Finds files and directories in the \arg{Directory} except special files: dot,
+the current directory; and double dot, the parent directory.
+
+No need to check if the \arg{Entry} exists. It does exist at the time of
+directory iteration. That could easily change by deleting, moving or
+renaming the entry.
+\end{description}
+
 \chapter{library(doc/latex)}\label{sec:latex}
 
 \begin{description}
@@ -1732,6 +2240,83 @@ normalises the vector \arg{V} in (-, +) mode; \arg{V} has unit length.
 The first argument \arg{X} is the exponent rather than \arg{Y}, first rather
 than second argument. This allows you to curry the predicate by
 fixing the first exponent argument. In other words, \verb$scalar_power(2, A, B)$ squares A to B.
+\end{description}
+
+\chapter{library(ollama/chat): Ollama Chat}\label{sec:chat}
+
+Idiomatic SWI-Prolog HTTP client module for interacting with an Ollama
+chat API.
+
+\section{Usage}
+
+How to use and abuse the interface? Take some examples. The following
+queries run with HTTP debugging enabled. Notice the headers.
+
+For streaming:
+
+\begin{code}
+?- ollama_chat([_{role:user, content:"Hello"}], Message, [stream(true)]).
+% http_open: Connecting to localhost:11434 ...
+%       ok <stream>(000001a4454d2630) ---> <stream>(000001a4454d2740)
+% HTTP/1.1 200 OK
+% Content-Type: application/x-ndjson
+% Date: Sat, 31 May 2025 10:48:49 GMT
+% Connection: close
+% Transfer-Encoding: chunked
+Message = _{content:" Hello", role:"assistant"} ;
+Message = _{content:"!", role:"assistant"} ;
+Message = _{content:" How", role:"assistant"} ;
+Message = _{content:" can", role:"assistant"} ;
+Message = _{content:" I", role:"assistant"} ;
+Message = _{content:" assist", role:"assistant"} ;
+Message = _{content:" you", role:"assistant"} ;
+Message = _{content:" today", role:"assistant"} ;
+Message = _{content:"?", role:"assistant"} ;
+Message = _{content:"", role:"assistant"}.
+\end{code}
+
+The streaming content type is \textbf{not} "application/json" but rather
+newline-delimited JSON. This is correct. Our addition to the JSON type
+multifile predicate catches this.
+
+For non-streaming:
+
+\begin{code}
+?- ollama_chat([_{role:user, content:"Hello"}], Message, [stream(false)]).
+% http_open: Connecting to localhost:11434 ...
+%       ok <stream>(000001a4454d3ea0) ---> <stream>(000001a4454d4e90)
+% HTTP/1.1 200 OK
+% Content-Type: application/json; charset=utf-8
+% Date: Sat, 31 May 2025 10:50:04 GMT
+% Content-Length: 347
+% Connection: close
+Message = _{content:" Sure, I'm here to help! How can I assist you today?", role:"assistant"}.
+\end{code}
+
+\vspace{0.7cm}
+
+\begin{description}
+    \predicate[nondet]{ollama_chat}{3}{+Messages:list(dict), -Message:dict, +Options:list}
+Leverages SWI-Prolog's HTTP libraries for Ollama chat API
+interaction. To stream or not to stream? That becomes an option,
+specify either \verb$stream(true)$ or \verb$stream(false)$, defaulting to
+streaming. This option selects the predicate's determinism.
+Predicate \predref{ollama_chat}{3} becomes non-deterministic \textbf{when}
+streaming, but falls back to deterministic when not.
+
+Pulls out the message from the reply; it becomes the result of the
+chat interaction: many messages in, one message out. Taking only the
+message assumes that the other keys within the reply dictionary have
+less value. Callers can usually ignore them. The predicate unifies
+with \verb$reply(Reply)$ in the \arg{Options} argument if the caller wants to
+view the detailed response information.
+
+Assumes that the reply is always a dictionary type without first
+checking. The implementation relies on the lower-level HTTP layers
+for parsing and rendering the correct term type. It also assumes
+that the dictionary always contains a "message" pair. Throws an
+exception when this presumption fails; this is a design feature
+because all responses must have a message.
 \end{description}
 
 \chapter{library(os/apps): Operation system apps}\label{sec:apps}
@@ -2136,6 +2721,98 @@ clauses testing for an existing module and its creation. Succeeds
 only for mode (-).
 \end{description}
 
+\chapter{library(read/until)}\label{sec:until}
+
+\begin{description}
+    \predicate[nondet]{read_stream_to_codes_until_end_of_file}{2}{+In, -Codes}
+\nodescription
+    \predicate[nondet]{read_stream_to_codes_until}{3}{+In, -Codes, +Until}
+Reads \arg{Codes} from a stream until it finds a specific code term, such
+as \verb$end_of_file$. The predicate reads the stream until it encounters
+the \arg{Until} code term, which defaults to \verb$end_of_file$. It succeeds
+non-deterministically for each chunk read before reaching the
+\arg{Until} code term. Use this predicate to process multiple messages
+or data chunks from a stream, handling each chunk separately. The
+\arg{Codes} variable contains the codes read from the stream, and the
+predicate succeeds until it reaches the \arg{Until} condition.
+
+\begin{arguments}
+\arg{In} & The input stream to read from. \\
+\arg{Codes} & The codes read from the stream. \\
+\arg{Until} & The code term that terminates the reading. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(scasp/just_dot)}\label{sec:justdot}
+
+\begin{description}
+    \predicate[det]{scasp_just_dot_print}{3}{+Stream, +Src, +Options}
+Reads a JSON file from \arg{Src}, which is expected to be in the format
+produced by the \verb$s(CASP)$ solver, and prints a DOT representation of the
+justification graph to the specified \arg{Stream}. The \arg{Options} parameter
+allows customisation of the output, such as indentation size, graph
+direction, background colour, node attributes, edge attributes, and
+nodes to elide.
+
+The JSON source should contain a dictionary with the following structure,
+simplified for clarity:
+
+\begin{code}
+{
+    "solver": {...},
+    "query": {...},
+    "answers": [
+        {
+            "bindings": {...},
+            "model": [{"truth": ..., "value": {...}}],
+            "tree": {
+                "node": {"value": {...}},
+                "children": [
+                    {
+                        "node": {"value": {...}},
+                        "children": [...]
+                    },
+                    ...
+                ]
+            }
+        },
+        ...
+    ]
+}
+\end{code}
+
+The \const{answers} field is a list of answers, each containing bindings, a
+model, and a tree structure. The \const{tree} field represents the
+justification tree, where each node has a value and may have children,
+forming a hierarchical structure of implications.
+
+The output is a DOT graph representation of the justification tree,
+where each node corresponds to a term in the justification, and edges
+represent implications between nodes. The graph is directed, with arrows
+indicating the direction of implications from one node to another.
+
+The output is formatted as a DOT graph, which can be visualised using
+graph visualisation tools like Graphviz. The output can be customised
+using the \arg{Options} parameter, which allows for setting various attributes
+of the graph, such as:
+
+\begin{itemize}
+    \item \verb$tab(Width)$: Specifies the indentation width for the output.
+    \item \verb$rankdir(Direction)$: Sets the direction of the graph layout, e.g.
+'LR' for left-to-right.
+    \item \verb$bgcolor(Color)$: Sets the background colour of the graph.
+    \item \verb$node(Attributes)$: Specifies attributes for the nodes in the graph.
+    \item \verb$edge(Attributes)$: Specifies attributes for the edges in the graph.
+    \item \verb$elides(Nodes)$: A list of nodes to elide in the graph, meaning they
+will not be displayed.
+\end{itemize}
+
+This predicate is useful for visualising the justification structure of
+\verb$s(CASP)$ queries, making it easier to understand the relationships
+between different terms and their implications in the context of logic
+programming and answer set programming.
+\end{description}
+
 \chapter{library(swi/atoms)}\label{sec:atoms}
 
 \begin{description}
@@ -2511,6 +3188,26 @@ select. This clashes with \predref{select_option}{4}'s naming convention since
 \arg{Options} is the argument name for \arg{RestOptions0}'s role in the
 option-selection process. Nevertheless, this version follows this
 renamed argument convention.
+
+The predicate is useful for selecting options from a list of
+options, especially when the options are not known in advance or
+when they need to be filtered based on certain criteria.
+
+Example:
+
+\begin{code}
+?- select_options([a(A), b(B)], [a(1), b(2), c(3)], Rest, [a(0), b(0)]).
+Rest = [c(3)],
+A = 1,
+B = 2.
+\end{code}
+
+\begin{arguments}
+\arg{Options} & The list of options to select from. \\
+\arg{RestOptions0} & The initial list of remaining options. \\
+\arg{RestOptions} & The remaining options after selection. \\
+\arg{Defaults} & The list of default values for options. \\
+\end{arguments}
 \end{description}
 
 \chapter{library(swi/paxos)}\label{sec:paxos}
