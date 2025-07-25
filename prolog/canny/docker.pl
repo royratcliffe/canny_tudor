@@ -27,7 +27,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_docker,
-          [ docker/3,                           % +Operation, -Reply, +Options
+          [ docker/2,                           % +Ask, -Reply
+            docker/3,                           % +Operation, -Reply, +Options
             docker_path_options/3               % ?Operation, -Path, -Options
           ]).
 :- use_module(library(apply), [maplist/3, convlist/3]).
