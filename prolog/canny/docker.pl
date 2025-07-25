@@ -234,10 +234,15 @@ docker(Ask, Reply) :-
 ask([], Functor, [path(Path)], Options) :-
     ask(Functor, [Path], [], _, Options).
 ask([Value], Functor, [path(Path)], Options) :-
+    atomic(Value),
     ask(Functor, Terms, [Placeholder], _, Options),
     !,
     Placeholder =.. [_, Value],
     atomic_list_concat(Terms, '', Path).
+ask([Searches], Functor, [path(Path), search(Searches)], Options) :-
+    is_list(Searches),
+    ask(Functor, [Path], [], _, Options),
+    !.
 ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
     ask(Functor, Terms, [Placeholder], Queries0, Options),
     !,
