@@ -240,12 +240,29 @@ ask([Value], Functor, [path(Path)], Options) :-
     !,
     Placeholder =.. [_, Value],
     atomic_list_concat(Terms, '', Path).
-ask([Searches], Functor, [path(Path), search(Searches)], Options) :-
-    is_list(Searches),
-    ask(Functor, [Path], [], _, Options),
-    !.
+ask([Queries], Functor, [path(Path), search(Searches)], Options) :-
+    is_list(Queries),
+    ask(Functor, [Path], [], Queries0, Options),
+    !,
+    convlist(query_search(Queries0), Queries, Searches).
+ask([Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
+    is_dict(Dict),
+    ask(Functor, Terms, [], _, Options),
+    !,
+    option(method(post), Options),
+    atomic_list_concat(Terms, '', Path).
 ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
+    atomic(Value),
+    is_list(Queries),
     ask(Functor, Terms, [Placeholder], Queries0, Options),
+    !,
+    Placeholder =.. [_, Value],
+    atomic_list_concat(Terms, '', Path),
+    convlist(query_search(Queries0), Queries, Searches).
+ask([Value, Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
+    atomic(Value),
+    is_dict(Dict),
+    ask(Functor, Terms, [Placeholder], _, Options),
     !,
     % The cut is not strictly necessary, but it ensures that
     % no further clauses are considered, should any be added in future.
