@@ -76,6 +76,44 @@
  * error streams. Removes line terminators.   App termination broadcasts
  * an exit(Code) term for its final Status.
  *
+ * ## Usage
+ *
+ * You can start or stop an app.
+ *
+ *     app_start(App)
+ *     app_stop(App)
+ *
+ * App is some compound that identifies which app to start and stop. You define an
+ * App using `os:property_for_app/2` multi-file predicate. You must at least define
+ * an app's path using, as an example:
+ *
+ *     os:property_for_app(path(path(mspaint)), mspaint) :- !.
+ *
+ * Note that the Path is a path Spec used by `process_create/3`, so can include a
+ * path-relative term as above. This is enough to launch the Microsoft Paint app on
+ * Windows. No need for arguments and options for this example. Starting a _running_
+ * app does not start a new instance. Rather, it succeeds for the existing
+ * instance. The green cut prevents unnecessary backtracking.
+ *
+ * You can start and continuously restart apps using `app_up/1`, and subsequently
+ * shut them down with `app_down/1`.
+ *
+ * ### Apps testing
+ *
+ * On a Windows system, try the following for example. It launches Microsoft Paint.
+ * Exit the Paint app after `app_up/1` below and it will relaunch automatically.
+ *
+ * ```prolog
+ * ?- [library(os/apps), library(os/apps_testing)].
+ * true.
+ *
+ * ?- app_up(mspaint).
+ * true.
+ *
+ * ?- app_down(mspaint).
+ * true.
+ * ```
+ *
  */
 
 :- dynamic app_pid/2.
