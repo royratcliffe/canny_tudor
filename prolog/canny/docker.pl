@@ -34,7 +34,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- use_module(library(apply), [maplist/3, convlist/3]).
 :- use_module(library(atom), [restyle_identifier/3]).
 :- use_module(library(lists), [append/3, member/2]).
-:- use_module(library(option), [select_option/4]).
+:- use_module(library(option), [select_option/4, option/2, select_option/3]).
 :- use_module(library(http/http_client), [http_get/3]).
 :- use_module(library(http/json), [json_read_dict/2]).
 :- use_module(library(settings), [setting/4, setting/2]).
