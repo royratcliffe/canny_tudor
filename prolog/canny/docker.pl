@@ -270,9 +270,9 @@ ask([Value, Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
     % Placeholder is a one-arity functor that will be unified with
     % the Value argument. The placeholder is used to construct the
     % path, and the Value is the argument that replaces the placeholder.
+    option(method(post), Options),
     Placeholder =.. [_, Value],
-    atomic_list_concat(Terms, '', Path),
-    convlist(query_search(Queries0), Queries, Searches).
+    atomic_list_concat(Terms, '', Path).
 
 query_search(Queries, Query, Search) :-
     Query =.. [Name, _],
