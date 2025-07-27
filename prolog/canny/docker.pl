@@ -214,15 +214,66 @@ the request.
 %   operation to perform together with any required arguments.
 %
 %   The Docker API request comprises:
+%
 %   - a path with zero or more placeholders,
 %   - a method,
 %   - zero or more required or optional search parameters,
 %   - a JSON body for POST requests.
+%
 %   This implies that, for the least amount of additional information, a
 %   request is just a path with a method, e.g., a GET, HEAD or DELETE
 %   request. From that point onward, requests grow in complexity
 %   involving or more of the following: path placeholders, query
 %   parameters, a request body.
+%
+%   The complexity of the request can vary significantly based on the
+%   operation being performed and the specific requirements of the
+%   Docker API. The `docker/2` predicate is designed to handle these
+%   variations and provide a consistent interface for interacting with
+%   the Docker API. It abstracts away the details of constructing the
+%   request and processing the response, allowing users to focus on
+%   the high-level operation they want to perform. Path placeholders
+%   appear in the first Ask term argument as atomic values. URL query parameters
+%   are specified as a list of key-value pairs in the Ask term argument.
+%   POST request payloads are specified as a Prolog dictionary as the Ask term.
+%
+%   The Ask term is a compound term that specifies the operation to
+%   perform, such as `container_list` or `system_ping`. The Reply is a
+%   Prolog term that represents the response from the Docker API, which
+%   is typically a Prolog dictionary or list, depending on the operation.
+%
+%   The predicate constructs the URL and options based on the operation
+%   and the settings defined in this module. It uses the `ask/4` predicate
+%   to determine the path, method, and any additional options required for
+%   the request. The URL is constructed by appending the path to the
+%   `daemon_url` setting, and the HTTP request is made using the
+%   `http_get/3` predicate from the HTTP client library.
+%
+%   The Reply is then processed to ensure that the keys in the response
+%   are transformed to CamelCase format using the `restyle_value/3`
+%   predicate. This transformation is useful for ensuring that the keys
+%   in the response match the expected format for the Docker API, making
+%   it easier to work with the API and ensuring compatibility with the
+%   expected response format.
+%
+%   @param Ask The Ask term specifies the operation to perform, which may
+%   include path placeholders, query parameters, and a request body. The Ask
+%   term is a compound term that identifies the operation and provides any
+%   necessary arguments or parameters for the request. The Ask term can be a
+%   simple atom for operations with no arguments, or it can be a more complex
+%   term that includes arguments. The Ask term is used to construct the URL and
+%   options for the request, allowing for flexible and dynamic construction of
+%   API requests based on the specified
+%   operation and options.
+%
+%   @param Reply The Reply is the response from the Docker API, which is
+%   typically a Prolog dictionary or list, depending on the operation. It can
+%   also be an atom. The Reply is a Prolog term that represents the data
+%   returned by the Docker API after processing the request. It contains the
+%   results of the operation, such as a list of containers, the status of a
+%   container, or the result of a command.
+
+:- meta_predicate docker(+, -).
 
 docker(Ask, Reply) :-
     Ask =.. [Functor|Arguments],
