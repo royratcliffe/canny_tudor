@@ -324,6 +324,9 @@ ask([Value, Dict], Functor, [path(Path)], [post(json(Dict_))|Options]) :-
 ask([ Queries, Dict
     ], Functor, [ path(Path), search(Searches)
                 ], [post(json(Dict_))|Options]) :-
+    % Handle a list of queries for the path plus a dictionary for the request
+    % body. The queries are used to construct the search parameters for the
+    % request, and the dictionary is used to construct the request body.
     is_list(Queries),
     is_dict(Dict),
     ask(Functor, [Path], [], Queries0, Options),
