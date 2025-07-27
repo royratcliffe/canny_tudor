@@ -411,6 +411,8 @@ The Docker API request comprises:
     \item a method,
     \item zero or more required or optional search parameters,
     \item a JSON body for POST requests.
+\end{itemize}
+
 This implies that, for the least amount of additional information, a
 request is just a path with a method, e.g., a GET, HEAD or DELETE
 request. From that point onward, requests grow in complexity
@@ -447,7 +449,8 @@ in the response match the expected format for the Docker API, making
 it easier to work with the API and ensuring compatibility with the
 expected response format.
 
-@param \arg{Ask} The \arg{Ask} term specifies the operation to perform, which may
+\begin{arguments}
+\arg{Ask} & The \arg{Ask} term specifies the operation to perform, which may
 include path placeholders, query parameters, and a request body. The \arg{Ask}
 term is a compound term that identifies the operation and provides any
 necessary arguments or parameters for the request. The \arg{Ask} term can be a
@@ -455,15 +458,14 @@ simple atom for operations with no arguments, or it can be a more complex
 term that includes arguments. The \arg{Ask} term is used to construct the URL and
 options for the request, allowing for flexible and dynamic construction of
 API requests based on the specified
-operation and options.
-
-@param \arg{Reply} The \arg{Reply} is the response from the Docker API, which is
+operation and options. \\
+\arg{Reply} & The \arg{Reply} is the response from the Docker API, which is
 typically a Prolog dictionary or list, depending on the operation. It can
 also be an atom. The \arg{Reply} is a Prolog term that represents the data
 returned by the Docker API after processing the request. It contains the
 results of the operation, such as a list of containers, the status of a
-container, or the result of a command.
-\end{itemize}
+container, or the result of a command. \\
+\end{arguments}
 
     \predicate[det]{docker}{3}{+Operation, -Reply, +Options}
 Makes a request to the Docker API using the specified operation and

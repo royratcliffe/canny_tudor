@@ -215,10 +215,10 @@ the request.
 %
 %   The Docker API request comprises:
 %
-%   - a path with zero or more placeholders,
-%   - a method,
-%   - zero or more required or optional search parameters,
-%   - a JSON body for POST requests.
+%       - a path with zero or more placeholders,
+%       - a method,
+%       - zero or more required or optional search parameters,
+%       - a JSON body for POST requests.
 %
 %   This implies that, for the least amount of additional information, a
 %   request is just a path with a method, e.g., a GET, HEAD or DELETE
