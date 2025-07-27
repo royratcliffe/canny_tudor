@@ -28,6 +28,32 @@
     put_dict(+, +, 3, +, -),
     findall_dict(?, ?, 0, -).
 
+/** <module> SWI-Prolog dictionary extensions
+ *
+ * This module provides extensions to the SWI-Prolog dictionary
+ * implementation. It includes predicates for merging dictionaries,
+ * putting values into dictionaries with custom merge behavior,
+ * and handling dictionary members and leaves in a more flexible way.
+ * It also includes predicates for creating dictionaries from lists
+ * and converting dictionaries to compounds.
+ *
+ * ### Non-deterministic `dict_member(?Dict, ?Member)`
+ *
+ * This predicate offers an alternative approach to dictionary iteration in
+ * Prolog. It makes a dictionary expose its leaves as a list exposes its
+ * elements, one by one non-deterministically. It does not unify with
+ * non-leaves, as for empty dictionaries.
+ *
+ * ```prolog
+ * ?- dict_member(a{b:c{d:e{f:g{h:i{j:999}}}}}, Key-Value).
+ * Key = a^b/c^d/e^f/g^h/i^j,
+ * Value = 999.
+ *
+ * ?- dict_member(Dict, a^b/c^d/e^f/g^h/i^j-999).
+ * Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
+ * ```
+ */
+
 %!  put_dict(+Key, +Dict0:dict, +OnNotEmpty:callable, +Value,
 %!  -Dict:dict) is det.
 %

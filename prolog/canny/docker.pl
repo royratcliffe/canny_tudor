@@ -34,7 +34,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- use_module(library(apply), [maplist/3, convlist/3]).
 :- use_module(library(atom), [restyle_identifier/3]).
 :- use_module(library(lists), [append/3, member/2]).
-:- use_module(library(option), [select_option/4]).
+:- use_module(library(option), [select_option/4, option/2, select_option/3]).
 :- use_module(library(http/http_client), [http_get/3]).
 :- use_module(library(http/json), [json_read_dict/2]).
 :- use_module(library(settings), [setting/4, setting/2]).
@@ -214,15 +214,66 @@ the request.
 %   operation to perform together with any required arguments.
 %
 %   The Docker API request comprises:
-%   - a path with zero or more placeholders,
-%   - a method,
-%   - zero or more required or optional search parameters,
-%   - a JSON body for POST requests.
+%
+%       - a path with zero or more placeholders,
+%       - a method,
+%       - zero or more required or optional search parameters,
+%       - a JSON body for POST requests.
+%
 %   This implies that, for the least amount of additional information, a
 %   request is just a path with a method, e.g., a GET, HEAD or DELETE
 %   request. From that point onward, requests grow in complexity
 %   involving or more of the following: path placeholders, query
 %   parameters, a request body.
+%
+%   The complexity of the request can vary significantly based on the
+%   operation being performed and the specific requirements of the
+%   Docker API. The `docker/2` predicate is designed to handle these
+%   variations and provide a consistent interface for interacting with
+%   the Docker API. It abstracts away the details of constructing the
+%   request and processing the response, allowing users to focus on
+%   the high-level operation they want to perform. Path placeholders
+%   appear in the first Ask term argument as atomic values. URL query parameters
+%   are specified as a list of key-value pairs in the Ask term argument.
+%   POST request payloads are specified as a Prolog dictionary as the Ask term.
+%
+%   The Ask term is a compound term that specifies the operation to
+%   perform, such as `container_list` or `system_ping`. The Reply is a
+%   Prolog term that represents the response from the Docker API, which
+%   is typically a Prolog dictionary or list, depending on the operation.
+%
+%   The predicate constructs the URL and options based on the operation
+%   and the settings defined in this module. It uses the `ask/4` predicate
+%   to determine the path, method, and any additional options required for
+%   the request. The URL is constructed by appending the path to the
+%   `daemon_url` setting, and the HTTP request is made using the
+%   `http_get/3` predicate from the HTTP client library.
+%
+%   The Reply is then processed to ensure that the keys in the response
+%   are transformed to CamelCase format using the `restyle_value/3`
+%   predicate. This transformation is useful for ensuring that the keys
+%   in the response match the expected format for the Docker API, making
+%   it easier to work with the API and ensuring compatibility with the
+%   expected response format.
+%
+%   @param Ask The Ask term specifies the operation to perform, which may
+%   include path placeholders, query parameters, and a request body. The Ask
+%   term is a compound term that identifies the operation and provides any
+%   necessary arguments or parameters for the request. The Ask term can be a
+%   simple atom for operations with no arguments, or it can be a more complex
+%   term that includes arguments. The Ask term is used to construct the URL and
+%   options for the request, allowing for flexible and dynamic construction of
+%   API requests based on the specified
+%   operation and options.
+%
+%   @param Reply The Reply is the response from the Docker API, which is
+%   typically a Prolog dictionary or list, depending on the operation. It can
+%   also be an atom. The Reply is a Prolog term that represents the data
+%   returned by the Docker API after processing the request. It contains the
+%   results of the operation, such as a list of containers, the status of a
+%   container, or the result of a command.
+
+:- meta_predicate docker(+, -).
 
 docker(Ask, Reply) :-
     Ask =.. [Functor|Arguments],
@@ -240,12 +291,29 @@ ask([Value], Functor, [path(Path)], Options) :-
     !,
     Placeholder =.. [_, Value],
     atomic_list_concat(Terms, '', Path).
-ask([Searches], Functor, [path(Path), search(Searches)], Options) :-
-    is_list(Searches),
-    ask(Functor, [Path], [], _, Options),
-    !.
+ask([Queries], Functor, [path(Path), search(Searches)], Options) :-
+    is_list(Queries),
+    ask(Functor, [Path], [], Queries0, Options),
+    !,
+    convlist(query_search(Queries0), Queries, Searches).
+ask([Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
+    is_dict(Dict),
+    ask(Functor, Terms, [], _, Options),
+    !,
+    option(method(post), Options),
+    atomic_list_concat(Terms, '', Path).
 ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
+    atomic(Value),
+    is_list(Queries),
     ask(Functor, Terms, [Placeholder], Queries0, Options),
+    !,
+    Placeholder =.. [_, Value],
+    atomic_list_concat(Terms, '', Path),
+    convlist(query_search(Queries0), Queries, Searches).
+ask([Value, Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
+    atomic(Value),
+    is_dict(Dict),
+    ask(Functor, Terms, [Placeholder], _, Options),
     !,
     % The cut is not strictly necessary, but it ensures that
     % no further clauses are considered, should any be added in future.
@@ -253,9 +321,9 @@ ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
     % Placeholder is a one-arity functor that will be unified with
     % the Value argument. The placeholder is used to construct the
     % path, and the Value is the argument that replaces the placeholder.
+    option(method(post), Options),
     Placeholder =.. [_, Value],
-    atomic_list_concat(Terms, '', Path),
-    convlist(query_search(Queries0), Queries, Searches).
+    atomic_list_concat(Terms, '', Path).
 
 query_search(Queries, Query, Search) :-
     Query =.. [Name, _],
@@ -462,113 +530,153 @@ format_path(Format, Path, Options) :-
 %   the specified version and operation. The resulting path and options can be
 %   used with the HTTP client to make requests to the Docker API.
 %
-%   | build_prune | '/v1.49/build/prune' | [method(post),accept(["application/json"])] |
-%   | config_create | '/v1.49/configs/create' | [method(post),accept(["application/json"])] |
-%   | config_delete | '/v1.49/configs/{id}' | [method(delete),accept(["application/json"])] |
-%   | config_inspect | '/v1.49/configs/{id}' | [method(get),accept(["application/json"])] |
-%   | config_list | '/v1.49/configs' | [method(get),accept(["application/json"])] |
-%   | config_update | '/v1.49/configs/{id}/update' | [method(post)] |
-%   | container_archive | '/v1.49/containers/{id}/archive' | [method(get),accept(["application/x-tar"])] |
-%   | container_archive_info | '/v1.49/containers/{id}/archive' | [method(head)] |
-%   | container_attach | '/v1.49/containers/{id}/attach' | [method(post),accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])] |
-%   | container_attach_websocket | '/v1.49/containers/{id}/attach/ws' | [method(get)] |
-%   | container_changes | '/v1.49/containers/{id}/changes' | [method(get),accept(["application/json"])] |
-%   | container_create | '/v1.49/containers/create' | [method(post),accept(["application/json"])] |
-%   | container_delete | '/v1.49/containers/{id}' | [method(delete)] |
-%   | container_exec | '/v1.49/containers/{id}/exec' | [method(post),accept(["application/json"])] |
-%   | container_export | '/v1.49/containers/{id}/export' | [method(get),accept(["application/octet-stream"])] |
-%   | container_inspect | '/v1.49/containers/{id}/json' | [method(get),accept(["application/json"])] |
-%   | container_kill | '/v1.49/containers/{id}/kill' | [method(post)] |
-%   | container_list | '/v1.49/containers/json' | [method(get),accept(["application/json"])] |
-%   | container_logs | '/v1.49/containers/{id}/logs' | [method(get),accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])] |
-%   | container_pause | '/v1.49/containers/{id}/pause' | [method(post)] |
-%   | container_prune | '/v1.49/containers/prune' | [method(post),accept(["application/json"])] |
-%   | container_rename | '/v1.49/containers/{id}/rename' | [method(post)] |
-%   | container_resize | '/v1.49/containers/{id}/resize' | [method(post),accept(["text/plain"])] |
-%   | container_restart | '/v1.49/containers/{id}/restart' | [method(post)] |
-%   | container_start | '/v1.49/containers/{id}/start' | [method(post)] |
-%   | container_stats | '/v1.49/containers/{id}/stats' | [method(get),accept(["application/json"])] |
-%   | container_stop | '/v1.49/containers/{id}/stop' | [method(post)] |
-%   | container_top | '/v1.49/containers/{id}/top' | [method(get)] |
-%   | container_unpause | '/v1.49/containers/{id}/unpause' | [method(post)] |
-%   | container_update | '/v1.49/containers/{id}/update' | [method(post),accept(["application/json"])] |
-%   | container_wait | '/v1.49/containers/{id}/wait' | [method(post),accept(["application/json"])] |
-%   | distribution_inspect | '/v1.49/distribution/{name}/json' | [method(get),accept(["application/json"])] |
-%   | exec_inspect | '/v1.49/exec/{id}/json' | [method(get),accept(["application/json"])] |
-%   | exec_resize | '/v1.49/exec/{id}/resize' | [method(post)] |
-%   | exec_start | '/v1.49/exec/{id}/start' | [method(post),accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])] |
-%   | get_plugin_privileges | '/v1.49/plugins/privileges' | [method(get)] |
-%   | image_build | '/v1.49/build' | [method(post),accept(["application/json"])] |
-%   | image_commit | '/v1.49/commit' | [method(post),accept(["application/json"])] |
-%   | image_create | '/v1.49/images/create' | [method(post),accept(["application/json"])] |
-%   | image_delete | '/v1.49/images/{name}' | [method(delete),accept(["application/json"])] |
-%   | image_get | '/v1.49/images/{name}/get' | [method(get),accept(["application/x-tar"])] |
-%   | image_get_all | '/v1.49/images/get' | [method(get),accept(["application/x-tar"])] |
-%   | image_history | '/v1.49/images/{name}/history' | [method(get),accept(["application/json"])] |
-%   | image_inspect | '/v1.49/images/{name}/json' | [method(get),accept(["application/json"])] |
-%   | image_list | '/v1.49/images/json' | [method(get),accept(["application/json"])] |
-%   | image_load | '/v1.49/images/load' | [method(post),accept(["application/json"])] |
-%   | image_prune | '/v1.49/images/prune' | [method(post),accept(["application/json"])] |
-%   | image_push | '/v1.49/images/{name}/push' | [method(post)] |
-%   | image_search | '/v1.49/images/search' | [method(get),accept(["application/json"])] |
-%   | image_tag | '/v1.49/images/{name}/tag' | [method(post)] |
-%   | network_connect | '/v1.49/networks/{id}/connect' | [method(post)] |
-%   | network_create | '/v1.49/networks/create' | [method(post),accept(["application/json"])] |
-%   | network_delete | '/v1.49/networks/{id}' | [method(delete)] |
-%   | network_disconnect | '/v1.49/networks/{id}/disconnect' | [method(post)] |
-%   | network_inspect | '/v1.49/networks/{id}' | [method(get),accept(["application/json"])] |
-%   | network_list | '/v1.49/networks' | [method(get),accept(["application/json"])] |
-%   | network_prune | '/v1.49/networks/prune' | [method(post),accept(["application/json"])] |
-%   | node_delete | '/v1.49/nodes/{id}' | [method(delete)] |
-%   | node_inspect | '/v1.49/nodes/{id}' | [method(get)] |
-%   | node_list | '/v1.49/nodes' | [method(get)] |
-%   | node_update | '/v1.49/nodes/{id}/update' | [method(post)] |
-%   | plugin_create | '/v1.49/plugins/create' | [method(post)] |
-%   | plugin_delete | '/v1.49/plugins/{name}' | [method(delete)] |
-%   | plugin_disable | '/v1.49/plugins/{name}/disable' | [method(post)] |
-%   | plugin_enable | '/v1.49/plugins/{name}/enable' | [method(post)] |
-%   | plugin_inspect | '/v1.49/plugins/{name}/json' | [method(get)] |
-%   | plugin_list | '/v1.49/plugins' | [method(get),accept(["application/json"])] |
-%   | plugin_pull | '/v1.49/plugins/pull' | [method(post),accept(["application/json"])] |
-%   | plugin_push | '/v1.49/plugins/{name}/push' | [method(post)] |
-%   | plugin_set | '/v1.49/plugins/{name}/set' | [method(post)] |
-%   | plugin_upgrade | '/v1.49/plugins/{name}/upgrade' | [method(post)] |
-%   | put_container_archive | '/v1.49/containers/{id}/archive' | [method(put)] |
-%   | secret_create | '/v1.49/secrets/create' | [method(post),accept(["application/json"])] |
-%   | secret_delete | '/v1.49/secrets/{id}' | [method(delete),accept(["application/json"])] |
-%   | secret_inspect | '/v1.49/secrets/{id}' | [method(get),accept(["application/json"])] |
-%   | secret_list | '/v1.49/secrets' | [method(get),accept(["application/json"])] |
-%   | secret_update | '/v1.49/secrets/{id}/update' | [method(post)] |
-%   | service_create | '/v1.49/services/create' | [method(post),accept(["application/json"])] |
-%   | service_delete | '/v1.49/services/{id}' | [method(delete)] |
-%   | service_inspect | '/v1.49/services/{id}' | [method(get)] |
-%   | service_list | '/v1.49/services' | [method(get)] |
-%   | service_logs | '/v1.49/services/{id}/logs' | [method(get),accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])] |
-%   | service_update | '/v1.49/services/{id}/update' | [method(post),accept(["application/json"])] |
-%   | session | '/v1.49/session' | [method(post),accept(["application/vnd.docker.raw-stream"])] |
-%   | swarm_init | '/v1.49/swarm/init' | [method(post),accept(["application/json","text/plain"])] |
-%   | swarm_inspect | '/v1.49/swarm' | [method(get)] |
-%   | swarm_join | '/v1.49/swarm/join' | [method(post)] |
-%   | swarm_leave | '/v1.49/swarm/leave' | [method(post)] |
-%   | swarm_unlock | '/v1.49/swarm/unlock' | [method(post),accept(["application/json"])] |
-%   | swarm_unlockkey | '/v1.49/swarm/unlockkey' | [method(get)] |
-%   | swarm_update | '/v1.49/swarm/update' | [method(post)] |
-%   | system_auth | '/v1.49/auth' | [method(post),accept(["application/json"])] |
-%   | system_data_usage | '/v1.49/system/df' | [method(get)] |
-%   | system_events | '/v1.49/events' | [method(get),accept(["application/json"])] |
-%   | system_info | '/v1.49/info' | [method(get),accept(["application/json"])] |
-%   | system_ping | '/v1.49/_ping' | [method(get),accept(["text/plain"])] |
-%   | system_ping_head | '/v1.49/_ping' | [method(head),accept(["text/plain"])] |
-%   | system_version | '/v1.49/version' | [method(get),accept(["application/json"])] |
-%   | task_inspect | '/v1.49/tasks/{id}' | [method(get),accept(["application/json"])] |
-%   | task_list | '/v1.49/tasks' | [method(get),accept(["application/json"])] |
-%   | task_logs | '/v1.49/tasks/{id}/logs' | [method(get),accept(["application/vnd.docker.raw-stream","application/vnd.docker.multiplexed-stream"])] |
-%   | volume_create | '/v1.49/volumes/create' | [method(post),accept(["application/json"])] |
-%   | volume_delete | '/v1.49/volumes/{name}' | [method(delete)] |
-%   | volume_inspect | '/v1.49/volumes/{name}' | [method(get),accept(["application/json"])] |
-%   | volume_list | '/v1.49/volumes' | [method(get),accept(["application/json"])] |
-%   | volume_prune | '/v1.49/volumes/prune' | [method(post),accept(["application/json"])] |
-%   | volume_update | '/v1.49/volumes/{name}' | [method(put),accept(["application/json"])] |
+%   | build_prune | '/v1.49/build/prune' | post |
+%   | config_create | '/v1.49/configs/create' | post |
+%   | config_delete | '/v1.49/configs/{id}' | delete |
+%   | config_inspect | '/v1.49/configs/{id}' | get |
+%   | config_list | '/v1.49/configs' | get |
+%   | config_update | '/v1.49/configs/{id}/update' | post |
+%
+%   For container operations, the following paths and options are defined:
+%
+%   | container_archive | '/v1.49/containers/{id}/archive' | get |
+%   | container_archive_info | '/v1.49/containers/{id}/archive' | head |
+%   | container_attach | '/v1.49/containers/{id}/attach' | post |
+%   | container_attach_websocket | '/v1.49/containers/{id}/attach/ws' | get |
+%   | container_changes | '/v1.49/containers/{id}/changes' | get |
+%   | container_create | '/v1.49/containers/create' | post |
+%   | container_delete | '/v1.49/containers/{id}' | delete |
+%   | container_exec | '/v1.49/containers/{id}/exec' | post |
+%   | container_export | '/v1.49/containers/{id}/export' | get |
+%   | container_inspect | '/v1.49/containers/{id}/json' | get |
+%   | container_kill | '/v1.49/containers/{id}/kill' | post |
+%   | container_list | '/v1.49/containers/json' | get |
+%   | container_logs | '/v1.49/containers/{id}/logs' | get |
+%   | container_pause | '/v1.49/containers/{id}/pause' | post |
+%   | container_prune | '/v1.49/containers/prune' | post |
+%   | container_rename | '/v1.49/containers/{id}/rename' | post |
+%   | container_resize | '/v1.49/containers/{id}/resize' | post |
+%   | container_restart | '/v1.49/containers/{id}/restart' | post |
+%   | container_start | '/v1.49/containers/{id}/start' | post |
+%   | container_stats | '/v1.49/containers/{id}/stats' | get |
+%   | container_stop | '/v1.49/containers/{id}/stop' | post |
+%   | container_top | '/v1.49/containers/{id}/top' | get |
+%   | container_unpause | '/v1.49/containers/{id}/unpause' | post |
+%   | container_update | '/v1.49/containers/{id}/update' | post |
+%   | container_wait | '/v1.49/containers/{id}/wait' | post |
+%   | put_container_archive | '/v1.49/containers/{id}/archive' | put |
+%
+%   For distribution operations, the following paths and options are defined:
+%
+%   | distribution_inspect | '/v1.49/distribution/{name}/json' | get |
+%
+%   For exec operations, the following paths and options are defined:
+%
+%   | exec_inspect | '/v1.49/exec/{id}/json' | get |
+%   | exec_resize | '/v1.49/exec/{id}/resize' | post |
+%   | exec_start | '/v1.49/exec/{id}/start' | post |
+%
+%   For image operations, the following paths and options are defined:
+%
+%   | image_build | '/v1.49/build' | post |
+%   | image_commit | '/v1.49/commit' | post |
+%   | image_create | '/v1.49/images/create' | post |
+%   | image_delete | '/v1.49/images/{name}' | delete |
+%   | image_get | '/v1.49/images/{name}/get' | get |
+%   | image_get_all | '/v1.49/images/get' | get |
+%   | image_history | '/v1.49/images/{name}/history' | get |
+%   | image_inspect | '/v1.49/images/{name}/json' | get |
+%   | image_list | '/v1.49/images/json' | get |
+%   | image_load | '/v1.49/images/load' | post |
+%   | image_prune | '/v1.49/images/prune' | post |
+%   | image_push | '/v1.49/images/{name}/push' | post |
+%   | image_search | '/v1.49/images/search' | get |
+%   | image_tag | '/v1.49/images/{name}/tag' | post |
+%
+%   For network operations, the following paths and options are defined:
+%
+%   | network_connect | '/v1.49/networks/{id}/connect' | post |
+%   | network_create | '/v1.49/networks/create' | post |
+%   | network_delete | '/v1.49/networks/{id}' | delete |
+%   | network_disconnect | '/v1.49/networks/{id}/disconnect' | post |
+%   | network_inspect | '/v1.49/networks/{id}' | get |
+%   | network_list | '/v1.49/networks' | get |
+%   | network_prune | '/v1.49/networks/prune' | post |
+%
+%   For node operations, the following paths and options are defined:
+%
+%   | node_delete | '/v1.49/nodes/{id}' | delete |
+%   | node_inspect | '/v1.49/nodes/{id}' | get |
+%   | node_list | '/v1.49/nodes' | get |
+%   | node_update | '/v1.49/nodes/{id}/update' | post |
+%
+%   For plugin operations, the following paths and options are defined:
+%
+%   | plugin_create | '/v1.49/plugins/create' | post |
+%   | plugin_delete | '/v1.49/plugins/{name}' | delete |
+%   | plugin_disable | '/v1.49/plugins/{name}/disable' | post |
+%   | plugin_enable | '/v1.49/plugins/{name}/enable' | post |
+%   | plugin_inspect | '/v1.49/plugins/{name}/json' | get |
+%   | plugin_list | '/v1.49/plugins' | get |
+%   | plugin_pull | '/v1.49/plugins/pull' | post |
+%   | plugin_push | '/v1.49/plugins/{name}/push' | post |
+%   | plugin_set | '/v1.49/plugins/{name}/set' | post |
+%   | plugin_upgrade | '/v1.49/plugins/{name}/upgrade' | post |
+%   | get_plugin_privileges | '/v1.49/plugins/privileges' | get |
+%
+%   | secret_create | '/v1.49/secrets/create' | post |
+%   | secret_delete | '/v1.49/secrets/{id}' | delete |
+%   | secret_inspect | '/v1.49/secrets/{id}' | get |
+%   | secret_list | '/v1.49/secrets' | get |
+%   | secret_update | '/v1.49/secrets/{id}/update' | post |
+%
+%   For service operations, the following paths and options are defined:
+%
+%   | service_create | '/v1.49/services/create' | post |
+%   | service_delete | '/v1.49/services/{id}' | delete |
+%   | service_inspect | '/v1.49/services/{id}' | get |
+%   | service_list | '/v1.49/services' | get |
+%   | service_logs | '/v1.49/services/{id}/logs' | get |
+%   | service_update | '/v1.49/services/{id}/update' | post |
+%
+%   For session operations, the following paths and options are defined:
+%
+%   | session | '/v1.49/session' | post |
+%
+%   For swarm operations, the following paths and options are defined:
+%
+%   | swarm_init | '/v1.49/swarm/init' | post |
+%   | swarm_inspect | '/v1.49/swarm' | get |
+%   | swarm_join | '/v1.49/swarm/join' | post |
+%   | swarm_leave | '/v1.49/swarm/leave' | post |
+%   | swarm_unlock | '/v1.49/swarm/unlock' | post |
+%   | swarm_unlockkey | '/v1.49/swarm/unlockkey' | get |
+%   | swarm_update | '/v1.49/swarm/update' | post |
+%
+%   For system operations, the following paths and options are defined:
+%
+%   | system_auth | '/v1.49/auth' | post |
+%   | system_data_usage | '/v1.49/system/df' | get |
+%   | system_events | '/v1.49/events' | get |
+%   | system_info | '/v1.49/info' | get |
+%   | system_ping | '/v1.49/_ping' | get |
+%   | system_ping_head | '/v1.49/_ping' | head |
+%   | system_version | '/v1.49/version' | get |
+%
+%   For task operations, the following paths and options are defined:
+%
+%   | task_inspect | '/v1.49/tasks/{id}' | get |
+%   | task_list | '/v1.49/tasks' | get |
+%   | task_logs | '/v1.49/tasks/{id}/logs' | get |
+%
+%   For volume operations, the following paths and options are defined:
+%
+%   | volume_create | '/v1.49/volumes/create' | post |
+%   | volume_delete | '/v1.49/volumes/{name}' | delete |
+%   | volume_inspect | '/v1.49/volumes/{name}' | get |
+%   | volume_list | '/v1.49/volumes' | get |
+%   | volume_prune | '/v1.49/volumes/prune' | post |
+%   | volume_update | '/v1.49/volumes/{name}' | put |
 %
 %   @param Operation The operation to perform, which determines the path and
 %   method, as well as any additional options.
