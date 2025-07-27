@@ -294,12 +294,13 @@ ask([Queries], Functor, [path(Path), search(Searches)], Options) :-
     ask(Functor, [Path], [], Queries0, Options),
     !,
     convlist(query_search(Queries0), Queries, Searches).
-ask([Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
+ask([Dict], Functor, [path(Path)], [post(json(Dict_))|Options]) :-
     is_dict(Dict),
     ask(Functor, Terms, [], _, Options),
     !,
     option(method(post), Options),
-    atomic_list_concat(Terms, '', Path).
+    atomic_list_concat(Terms, '', Path),
+    restyle_value('OneTwo', Dict, Dict_).
 ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
     atomic(Value),
     is_list(Queries),
@@ -308,7 +309,7 @@ ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
     Placeholder =.. [_, Value],
     atomic_list_concat(Terms, '', Path),
     convlist(query_search(Queries0), Queries, Searches).
-ask([Value, Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
+ask([Value, Dict], Functor, [path(Path)], [post(json(Dict_))|Options]) :-
     atomic(Value),
     is_dict(Dict),
     ask(Functor, Terms, [Placeholder], _, Options),
@@ -321,7 +322,8 @@ ask([Value, Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
     % path, and the Value is the argument that replaces the placeholder.
     option(method(post), Options),
     Placeholder =.. [_, Value],
-    atomic_list_concat(Terms, '', Path).
+    atomic_list_concat(Terms, '', Path),
+    restyle_value('OneTwo', Dict, Dict_).
 
 query_search(Queries, Query, Search) :-
     Query =.. [Name, _],
