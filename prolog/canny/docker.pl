@@ -314,21 +314,30 @@ ask([Value, Dict], Functor, [path(Path)], [post(json(Dict_))|Options]) :-
     is_dict(Dict),
     ask(Functor, Terms, [Placeholder], _, Options),
     !,
-    % The cut is not strictly necessary, but it ensures that
-    % no further clauses are considered, should any be added in future.
-    %
+    option(method(post), Options),
     % Placeholder is a one-arity functor that will be unified with
     % the Value argument. The placeholder is used to construct the
     % path, and the Value is the argument that replaces the placeholder.
-    option(method(post), Options),
     Placeholder =.. [_, Value],
     atomic_list_concat(Terms, '', Path),
     restyle_value('OneTwo', Dict, Dict_).
+ask([ Queries, Dict
+    ], Functor, [ path(Path), search(Searches)
+                ], [post(json(Dict_))|Options]) :-
+    is_list(Queries),
+    is_dict(Dict),
+    ask(Functor, [Path], [], Queries0, Options),
+    !,
+    % The cut is not strictly necessary, but it ensures that
+    % no further clauses are considered, should any be added in future.
+    option(method(post), Options),
+    convlist(query_search(Queries0), Queries, Searches),
+    restyle_value('OneTwo', Dict, Dict_).
 
-query_search(Queries, Query, Search) :-
-    Query =.. [Name, _],
+query_search(Queries, Search, Search) :-
     Search =.. [Name, _],
-    option(Search, Queries).
+    Query =.. [Name, _],
+    option(Query, Queries).
 
 %!  ask(+Operation, ?Terms, ?Placeholders, ?Queries, -Options) is semidet.
 %
