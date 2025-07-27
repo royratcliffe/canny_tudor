@@ -19,547 +19,9 @@ library sub-folders and module names delineate the disparate components. If the
 sub-modules grow to warrant a larger division, they can ultimately fork their
 own pack.
 
-The pack currently includes:
-
-\begin{itemize}
-    \item Docker-style random names
-    \item Operating system-related features:
-
-\begin{shortlist}
-    \item Search path manipulation
-    \item Start and stop, upping and downing apps
-\end{shortlist}
-
-    \item SWI-Prolog extensions for dictionaries and compounds
 The pack comprises experimental modules subject to change and revision
 due to its nature. The pack's major version will always remain 0.
-Work in progress!
-\end{itemize}
-
-\section{Apps}
-
-You can start or stop an app.
-
-\begin{code}
-app_start(App)
-app_stop(App)
-\end{code}
-
-App is some compound that identifies which app to start and stop. You define an
-App using \qpredref{os}{property_for_app}{2} multi-file predicate. You must at least define
-an app's path using, as an example:
-
-\begin{code}
-os:property_for_app(path(path(mspaint)), mspaint) :- !.
-\end{code}
-
-Note that the Path is a path Spec used by \predref{process_create}{3}, so can include a
-path-relative term as above. This is enough to launch the Microsoft Paint app on
-Windows. No need for arguments and options for this example. Starting a \textit{running}
-app does not start a new instance. Rather, it succeeds for the existing
-instance. The green cut prevents unnecessary backtracking.
-
-You can start and continuously restart apps using \predref{app_up}{1}, and subsequently
-shut them down with \predref{app_down}{1}.
-
-\subsection{Apps testing}
-
-On a Windows system, try the following for example. It launches Microsoft Paint.
-Exit the Paint app after \predref{app_up}{1} below and it will relaunch automatically.
-
-\begin{code}
-?- [library(os/apps), library(os/apps_testing)].
-true.
-
-?- app_up(mspaint).
-true.
-
-?- app_down(mspaint).
-true.
-\end{code}
-
-\section{SWI-Prolog extensions}
-
-This includes the following.
-
-\subsection{Non-deterministic `dict_member(?Dict, ?Member)`}
-
-This predicate offers an alternative approach to dictionary iteration in
-Prolog. It makes a dictionary expose its leaves as a list exposes its
-elements, one by one non-deterministically. It does not unify with
-non-leaves, as for empty dictionaries.
-
-\begin{code}
-?- dict_member(a{b:c{d:e{f:g{h:i{j:999}}}}}, Key-Value).
-Key = a^b/c^d/e^f/g^h/i^j,
-Value = 999.
-
-?- dict_member(Dict, a^b/c^d/e^f/g^h/i^j-999).
-Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
-\end{code}
-
-\chapter{Change Log}
-
-Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
-log}.
-
-\section{[0.23.10] - 2025-07-25}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Docker API
-    \item Placeholder formatting
-\end{shortlist}
-
-\section{[0.23.9] - 2025-06-08}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Predicate \verb$scasp_just_dot_print(+Stream, +Src, +Options)$
-\end{shortlist}
-
-\section{[0.23.8] - 2025-05-31}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Predicate \verb$ollama_chat(+Messages:list(dict), -Message:dict, +Options:list)$
-\end{shortlist}
-
-\section{[0.23.7] - 2025-05-11}
-
-\subsection{Added}
-
-\begin{itemize}
-    \item Predicate `directory_entry(+Directory, ?Entry)\Sidiv{}`, module \verb$dcg_files$
-\end{itemize}
-
-\section{[0.23.6] - 2023-09-16}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Predicate \dcgref{bit_shift}{3}, module \verb$canny_shifter$
-\end{shortlist}
-
-\section{[0.23.5] - 2023-08-29}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Predicate \dcgref{endian}{3}, module \verb$dcg_endian$
-\end{shortlist}
-
-\section{[0.23.4] - 2023-08-28}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Predicates \const{crc}/\{2, 3\} and \predref{crc_property}{2}
-    \item Predicates \verb$crc_16_mcrf4xx$/\{2, 3\}
-    \item Predicate \predref{rbit}{3}
-    \item Table of contents to manual
-\end{shortlist}
-
-\section{[0.23.3] - 2022-10-04}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Option \predref{key}{1} and \predref{id}{1} for \verb$xread_call$/\{5, 6\}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Cut choice for \predref{threshold}{1} option
-\end{shortlist}
-
-\section{[0.23.2] - 2022-10-02}
-
-\subsection{Changed}
-
-\begin{shortlist}
-    \item Bumped pack version to patch level 2
-    \item Skipping release for patch level 1
-\end{shortlist}
-
-\section{[0.23.0] - 2022-10-02}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Half-duplex hdx/\{4, 3, 2\} predicates
-\end{shortlist}
-
-\section{[0.22.0] - 2022-10-02}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Canny predicates for Redis and Redis streams
-\end{shortlist}
-
-\section{[0.21.1] - 2022-08-15}
-
-\subsection{Changed}
-
-\begin{shortlist}
-    \item Refactored \predref{bit_fields}{3} and \predref{bit_fields}{4}
-\end{shortlist}
-
-\section{[0.21.0] - 2022-08-13}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_octet$ module
-\end{shortlist}
-
-\section{[0.20.0] - 2022-08-12}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_z$ module
-\end{shortlist}
-
-\section{[0.19.1] - 2022-08-12}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Link to PDF on main branch after switch to simpler GitHub Flow
-    \item Also switch to \href{https://www.overleaf.com/learn/latex/Font_typefaces}{Bookman-oriented \const{tgbonum} font pack}
-\end{itemize}
-
-\section{[0.19.0] - 2022-08-03}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$swi_memfilesio$ module
-\end{shortlist}
-
-\section{[0.18.0] - 2021-08-04}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$swi_settings$ module
-    \item \verb$swi_zip$ module
-\end{shortlist}
-
-\section{[0.17.0] - 2021-06-15}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$paxos_udp_broadcast$ module for Paxos over UDP broadcast
-\end{shortlist}
-
-\section{[0.16.0] - 2021-06-07}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_a$ module for \predref{a_star}{3}
-\end{shortlist}
-
-\section{[0.15.0] - 2021-06-06}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_exe$ module
-\end{shortlist}
-
-\section{[0.14.0] - 2021-05-05}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Continuous Integration using GitHub Actions
-    \item Test coverage shields
-    \item Prototype for GitHub API
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Patches for test coverage
-\end{shortlist}
-
-\section{[0.13.0] - 2021-04-12}
-
-\subsection{Added}
-
-\begin{itemize}
-    \item \dcgref{loadavg}{5} and \predref{loadavg}{5} predicates
-    \item \predref{current_arch}{1}, \predref{current_arch_os}{2} and \predref{current_os}{1} predicates
-\end{itemize}
-
-\section{[0.12.0] - 2021-03-13}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{pop_lsbs}{2} predicate
-\end{shortlist}
-
-\section{[0.11.0] - 2021-02-18}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{columns_to_rows}{2} predicate
-\end{shortlist}
-
-\section{[0.10.0] - 2021-02-15}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{select_options}{4} predicate
-    \item \predref{comb2}{2} predicate
-\end{shortlist}
-
-\section{[0.9.0] - 2020-12-30}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{pairs}{2} predicate
-\end{shortlist}
-
-\subsection{Changed}
-
-\begin{shortlist}
-    \item \predref{indexed_pairs}{2} renamed to \predref{indexed}{2}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item \predref{pengine_collect}{4} filters using \verb$pengine_property(Id, self(Id))$
-\end{shortlist}
-
-\section{[0.8.3] - 2020-10-17}
-
-\subsection{Added}
-
-\begin{itemize}
-    \item \verb$canny_files$ module
-    \item Refactored \predref{latex_for_pack}{3}
-    \item \predref{pengine_collect}{2}, \predref{pengine_collect}{4} and \predref{pengine_wait}{1} (swi_pengines module)
-    \item \verb$os_file_searches$ refactored to \verb$os_windows$
-    \item \predref{prefix_atom_suffix}{4}
-\end{itemize}
-
-\section{[0.8.2] - 2020-09-09}
-
-\subsection{Added}
-
-\begin{itemize}
-    \item \verb$canny_arity$ module
-    \item \predref{payload}{1}, \predref{apply_to}{1} and \predref{property_of}{1} for canny_payloads
-\end{itemize}
-
-\section{[0.8.1] - 2020-09-04}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Maths predicate \predref{remainder}{3} to \predref{frem}{3}; avoids clash with \dcgref{remainder}{1}
-    \item LaTeX manual; omits undocumented modules
-\end{itemize}
-
-\section{[0.8.0] - 2020-08-29}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_payloads$ module
-    \item \verb$canny_endian$ module
-    \item \verb$canny_bits$ module
-    \item \verb$ieee_754$ module
-    \item LaTeX generator for PDF manual
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Situations now permit non-variable Now terms. This allows for dictionaries
-with unbound tags.
-    \item Situations also now support time-differential calculations with \verb$for(Seconds)$
-in place of When. Current and previous situations compute the time delay
-between historic situation samples: the difference in time between the current
-and now, or the time delay between the previous and the current.
-\end{itemize}
-
-\section{[0.7.2] - 2020-07-25}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{append_path}{3}
-    \item \predref{dict_pair}{2}
-    \item \predref{take_at_most}{3}
-    \item \predref{select1}{3}, \predref{select_apply1}{3}
-\end{shortlist}
-
-\section{[0.7.1] - 2020-06-14}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$indexed_pairs/{2,3}$
-    \item \predref{list_dict}{3}
-    \item \predref{dict_leaf}{2}
-    \item \predref{split_lines}{2}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item \predref{make}{0} warnings
-    \item Situation debugging reports WAS, NOW
-    \item Clean up test side effects
-\end{shortlist}
-
-\section{[0.7.0] - 2020-04-10}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Key restyling for \predref{dict_compound}{2}
-\end{shortlist}
-
-\section{[0.6.1] - 2020-04-09}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{restyle_identifier_ex}{3}
-    \item \predref{is_key}{1}
-    \item \predref{dict_compound}{2}
-\end{shortlist}
-
-\section{[0.6.0] - 2020-04-06}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{permute_sum_of_int}{2}
-    \item \predref{permute_list_to_grid}{2}
-    \item \predref{dict_tag}{2}
-    \item \predref{print_situation_history_lengths}{0}
-    \item \predref{create_dict}{3}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Code stylings
-\end{shortlist}
-
-\section{[0.5.2] - 2020-01-11}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{close_streams}{2}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Do not independently broadcast \predref{was}{2} and \predref{now}{2} for situation transitions
-\end{itemize}
-
-\section{[0.5.1] - 2019-12-03}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Situation mutator renamed \predref{situation_apply}{2}
-\end{shortlist}
-
-\section{[0.5.0] - 2019-12-03}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Linear algebra
-    \item Canny maths
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Canny situations
-\end{shortlist}
-
-\section{[0.4.0] - 2019-10-19}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Canny situations
-    \item \predref{random_temporary_module}{1} predicate
-    \item \predref{zip}{3} predicate (swi_lists)
-    \item \predref{print_table}{1} predicate
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item \predref{with_output_to}{3} uses \predref{random_name_chk}{1}
-\end{shortlist}
-
-\section{[0.3.0] - 2019-09-06}
-
-\subsection{Added}
-
-\begin{itemize}
-    \item \predref{random_name_chk}{1} versus non-deterministic \predref{random_name}{1}
-\end{itemize}
-
-\section{[0.2.1] - 2019-09-03}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Fix the fix; \predref{dict_member}{2} unifies with empty dictionary leaf nodes
-\end{itemize}
-
-\section{[0.2.0] - 2019-09-02}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Allow dictionary leaf values for \predref{dict_member}{2}
-\end{shortlist}
-
-\section{[0.1.1] - 2019-08-02}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Missing pack maintainer, home and download links
-\end{shortlist}
-
-\section{[0.1.0] - 2019-08-02}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Initial spike
-\end{shortlist}
-
-\chapter{library(canny/a)}\label{sec:a}
+Work in progress!\chapter{library(canny/a)}\label{sec:a}
 
 \begin{description}
     \predicate[det]{a_star}{3}{+Heuristics0, -Heuristics, +Options}
@@ -954,6 +416,53 @@ request is just a path with a method, e.g., a GET, HEAD or DELETE
 request. From that point onward, requests grow in complexity
 involving or more of the following: path placeholders, query
 parameters, a request body.
+
+The complexity of the request can vary significantly based on the
+operation being performed and the specific requirements of the
+Docker API. The \predref{docker}{2} predicate is designed to handle these
+variations and provide a consistent interface for interacting with
+the Docker API. It abstracts away the details of constructing the
+request and processing the response, allowing users to focus on
+the high-level operation they want to perform. Path placeholders
+appear in the first \arg{Ask} term argument as atomic values. URL query parameters
+are specified as a list of key-value pairs in the \arg{Ask} term argument.
+POST request payloads are specified as a Prolog dictionary as the \arg{Ask} term.
+
+The \arg{Ask} term is a compound term that specifies the operation to
+perform, such as \verb$container_list$ or \verb$system_ping$. The \arg{Reply} is a
+Prolog term that represents the response from the Docker API, which
+is typically a Prolog dictionary or list, depending on the operation.
+
+The predicate constructs the URL and options based on the operation
+and the settings defined in this module. It uses the \predref{ask}{4} predicate
+to determine the path, method, and any additional options required for
+the request. The URL is constructed by appending the path to the
+\verb$daemon_url$ setting, and the HTTP request is made using the
+\predref{http_get}{3} predicate from the HTTP client library.
+
+The \arg{Reply} is then processed to ensure that the keys in the response
+are transformed to CamelCase format using the \predref{restyle_value}{3}
+predicate. This transformation is useful for ensuring that the keys
+in the response match the expected format for the Docker API, making
+it easier to work with the API and ensuring compatibility with the
+expected response format.
+
+@param \arg{Ask} The \arg{Ask} term specifies the operation to perform, which may
+include path placeholders, query parameters, and a request body. The \arg{Ask}
+term is a compound term that identifies the operation and provides any
+necessary arguments or parameters for the request. The \arg{Ask} term can be a
+simple atom for operations with no arguments, or it can be a more complex
+term that includes arguments. The \arg{Ask} term is used to construct the URL and
+options for the request, allowing for flexible and dynamic construction of
+API requests based on the specified
+operation and options.
+
+@param \arg{Reply} The \arg{Reply} is the response from the Docker API, which is
+typically a Prolog dictionary or list, depending on the operation. It can
+also be an atom. The \arg{Reply} is a Prolog term that represents the data
+returned by the Docker API after processing the request. It contains the
+results of the operation, such as a list of containers, the status of a
+container, or the result of a command.
 \end{itemize}
 
     \predicate[det]{docker}{3}{+Operation, -Reply, +Options}
@@ -2388,7 +1897,51 @@ Sends three broadcast messages for any given App, as follows:
 Running apps send zero or more os:\verb$app_decoded(App, Term)$ messages,
 one for every line appearing in their standard output and standard
 error streams. Removes line terminators. App termination broadcasts
-an \verb$exit(Code)$ term for its final Status.\vspace{0.7cm}
+an \verb$exit(Code)$ term for its final Status.
+
+\section{Usage}
+
+You can start or stop an app.
+
+\begin{code}
+app_start(App)
+app_stop(App)
+\end{code}
+
+App is some compound that identifies which app to start and stop. You define an
+App using \qpredref{os}{property_for_app}{2} multi-file predicate. You must at least define
+an app's path using, as an example:
+
+\begin{code}
+os:property_for_app(path(path(mspaint)), mspaint) :- !.
+\end{code}
+
+Note that the Path is a path Spec used by \predref{process_create}{3}, so can include a
+path-relative term as above. This is enough to launch the Microsoft Paint app on
+Windows. No need for arguments and options for this example. Starting a \textit{running}
+app does not start a new instance. Rather, it succeeds for the existing
+instance. The green cut prevents unnecessary backtracking.
+
+You can start and continuously restart apps using \predref{app_up}{1}, and subsequently
+shut them down with \predref{app_down}{1}.
+
+\subsection{Apps testing}
+
+On a Windows system, try the following for example. It launches Microsoft Paint.
+Exit the Paint app after \predref{app_up}{1} below and it will relaunch automatically.
+
+\begin{code}
+?- [library(os/apps), library(os/apps_testing)].
+true.
+
+?- app_up(mspaint).
+true.
+
+?- app_down(mspaint).
+true.
+\end{code}
+
+\vspace{0.7cm}
 
 \begin{description}
     \predicate[nondet]{app_property}{2}{?App:compound, ?Property}
@@ -2888,7 +2441,32 @@ the argument is really a compound, not just unifies with a slash
 compound since Path/Component unifies with any unbound variable.
 \end{description}
 
-\chapter{library(swi/dicts)}\label{sec:dicts}
+\chapter{library(swi/dicts): SWI-Prolog dictionary extensions}\label{sec:dicts}
+
+This module provides extensions to the SWI-Prolog dictionary
+implementation. It includes predicates for merging dictionaries,
+putting values into dictionaries with custom merge behavior,
+and handling dictionary members and leaves in a more flexible way.
+It also includes predicates for creating dictionaries from lists
+and converting dictionaries to compounds.
+
+\subsection{Non-deterministic `dict_member(?Dict, ?Member)`}
+
+This predicate offers an alternative approach to dictionary iteration in
+Prolog. It makes a dictionary expose its leaves as a list exposes its
+elements, one by one non-deterministically. It does not unify with
+non-leaves, as for empty dictionaries.
+
+\begin{code}
+?- dict_member(a{b:c{d:e{f:g{h:i{j:999}}}}}, Key-Value).
+Key = a^b/c^d/e^f/g^h/i^j,
+Value = 999.
+
+?- dict_member(Dict, a^b/c^d/e^f/g^h/i^j-999).
+Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
+\end{code}
+
+\vspace{0.7cm}
 
 \begin{description}
     \predicate[det]{put_dict}{5}{+Key, +Dict0:dict, +OnNotEmpty:callable, +Value, -Dict:dict}
