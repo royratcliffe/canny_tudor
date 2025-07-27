@@ -1,3 +1,4 @@
+.PHONY: doc.tex
 doc.tex:
 	swipl --no-packs -g "attach_packs(../..)" -s doc.pl -t halt
 
