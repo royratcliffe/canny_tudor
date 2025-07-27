@@ -3,6 +3,14 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.23.12] - 2025-07-27
+### Changed
+- Remove meta-predicate
+
+## [0.23.11] - 2025-07-27
+### Changed
+- Enhance Docker predicates and improve documentation
+
 ## [0.23.10] - 2025-07-25
 ### Added
 - Docker API
