@@ -273,8 +273,6 @@ the request.
 %   results of the operation, such as a list of containers, the status of a
 %   container, or the result of a command.
 
-:- meta_predicate docker(+, -).
-
 docker(Ask, Reply) :-
     Ask =.. [Functor|Arguments],
     ask(Arguments, Functor, URL_, Options),
