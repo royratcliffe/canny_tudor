@@ -294,12 +294,13 @@ ask([Queries], Functor, [path(Path), search(Searches)], Options) :-
     ask(Functor, [Path], [], Queries0, Options),
     !,
     convlist(query_search(Queries0), Queries, Searches).
-ask([Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
+ask([Dict], Functor, [path(Path)], [post(json(Body))|Options]) :-
     is_dict(Dict),
     ask(Functor, Terms, [], _, Options),
     !,
     option(method(post), Options),
-    atomic_list_concat(Terms, '', Path).
+    atomic_list_concat(Terms, '', Path),
+    restyle_body(Dict, Body).
 ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
     atomic(Value),
     is_list(Queries),
@@ -308,25 +309,44 @@ ask([Value, Queries], Functor, [path(Path), search(Searches)], Options) :-
     Placeholder =.. [_, Value],
     atomic_list_concat(Terms, '', Path),
     convlist(query_search(Queries0), Queries, Searches).
-ask([Value, Dict], Functor, [path(Path)], [post(json(Dict))|Options]) :-
+ask([Value, Dict], Functor, [path(Path)], [post(json(Body))|Options]) :-
     atomic(Value),
     is_dict(Dict),
     ask(Functor, Terms, [Placeholder], _, Options),
     !,
-    % The cut is not strictly necessary, but it ensures that
-    % no further clauses are considered, should any be added in future.
-    %
+    option(method(post), Options),
     % Placeholder is a one-arity functor that will be unified with
     % the Value argument. The placeholder is used to construct the
     % path, and the Value is the argument that replaces the placeholder.
-    option(method(post), Options),
     Placeholder =.. [_, Value],
-    atomic_list_concat(Terms, '', Path).
+    atomic_list_concat(Terms, '', Path),
+    restyle_body(Dict, Body).
+ask([ Queries, Dict
+    ], Functor, [ path(Path), search(Searches)
+                ], [post(json(Body))|Options]) :-
+    % Handle a list of queries for the path plus a dictionary for the request
+    % body. The queries are used to construct the search parameters for the
+    % request, and the dictionary is used to construct the request body.
+    is_list(Queries),
+    is_dict(Dict),
+    ask(Functor, [Path], [], Queries0, Options),
+    !,
+    % The cut is not strictly necessary, but it ensures that
+    % no further clauses are considered, should any be added in future.
+    option(method(post), Options),
+    convlist(query_search(Queries0), Queries, Searches),
+    restyle_body(Dict, Body).
 
-query_search(Queries, Query, Search) :-
-    Query =.. [Name, _],
+query_search(Queries, Search, Search) :-
     Search =.. [Name, _],
-    option(Search, Queries).
+    Query =.. [Name, _],
+    option(Query, Queries).
+
+restyle_body(Body0, Body), del_dict(labels, Body0, Labels, Dict0) =>
+    restyle_value('OneTwo', Dict0, Dict),
+    put_dict(labels, Dict, Labels, Body).
+restyle_body(Body0, Body) =>
+    restyle_value('OneTwo', Body0, Body).
 
 %!  ask(+Operation, ?Terms, ?Placeholders, ?Queries, -Options) is semidet.
 %

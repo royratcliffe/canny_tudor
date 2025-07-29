@@ -3,6 +3,13 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.23.13] - 2025-07-29
+### Changed
+- Refactor Docker ask predicate for JSON dictionary value restyling
+- Enhance ask predicate for list queries and dictionary posts; fix query_search/3
+- Improve ask predicate for list queries and JSON request bodies
+- Streamline ask predicate for JSON body handling and dictionary processing
+
 ## [0.23.12] - 2025-07-27
 ### Changed
 - Remove meta-predicate
