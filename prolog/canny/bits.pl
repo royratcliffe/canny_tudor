@@ -27,9 +27,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_bits,
-          [ bits/5,
-            bits/4,
-            bits/3,
+          [ bits/5,                             % +Shift, +Width, ?Word, ?Bits, ?Rest
+            bits/4,                             % +ShiftWidthPair, ?Word, ?Bits, ?Rest
+            bits/3,                             % +ShiftWidthPair, ?Word, ?Bits
             bit_fields/3,                       % +Fields,+Shift,+Int
             bit_fields/4,                       % +Fields,+Shift,+Int0,-Int
             rbit/3,                             % +Shift:integer,+Int,?Reverse
