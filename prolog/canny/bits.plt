@@ -20,4 +20,9 @@ test(rbit, [true(A==16'80_00)]) :-
 test(rbit, [true(A==16'8408)]) :-
     rbit(16, 16'1_1021, A).
 
+test(xdigit_weights_and_bytes, Bytes == [171, 205]) :-
+    xdigit_weights_and_bytes([10, 11, 12, 13], Bytes).
+test(xdigit_weights_and_bytes, Weights == [10, 11, 12, 13]) :-
+    xdigit_weights_and_bytes(Weights, [171, 205]).
+
 :- end_tests(canny_bits).
