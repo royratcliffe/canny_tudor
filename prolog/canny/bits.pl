@@ -32,7 +32,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             bits/3,
             bit_fields/3,                       % +Fields,+Shift,+Int
             bit_fields/4,                       % +Fields,+Shift,+Int0,-Int
-            rbit/3                              % +Shift:integer,+Int,?Reverse
+            rbit/3,                             % +Shift:integer,+Int,?Reverse
+            xdigit_weights_and_bytes/2          % ?Weights:list(integer), ?Bytes:list(integer)
           ]).
 
 :- use_module(library(clpfd)).
