@@ -33,7 +33,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             bit_fields/3,                       % +Fields,+Shift,+Int
             bit_fields/4,                       % +Fields,+Shift,+Int0,-Int
             rbit/3,                             % +Shift:integer,+Int,?Reverse
-            xdigit_weights_and_bytes/2          % ?Weights:list(integer), ?Bytes:list(integer)
+            xdigit_weights_and_bytes/2,         % ?Weights:list(integer), ?Bytes:list(integer)
+            xbytes//1                           % ?Bytes
           ]).
 
 :- use_module(library(clpfd)).
@@ -158,3 +159,23 @@ xdigit_weights_and_bytes([H1, H2|T0], [H|T]) :-
     H1 in 16'0..16'f,
     H2 in 16'0..16'f,
     xdigit_weights_and_bytes(T0, T).
+
+%!  xbytes(?Bytes:list(integer))// is semidet.
+%
+%   Converts a list of Bytes to a   list  of hexadecimal digits, or vice
+%   versa.
+%
+%   This predicate is semidet, meaning it  can succeed or fail depending
+%   on the input. The elements of the Bytes   list  must be in the range
+%   0..255.
+%
+%   @arg Bytes A list of bytes (0-255).
+
+xbytes(Bytes) -->
+    { nonvar(Bytes), !, xdigit_weights_and_bytes(Weights, Bytes)
+    },
+    xdigits(Weights).
+xbytes(Bytes) -->
+    xdigits(Weights),
+    { xdigit_weights_and_bytes(Weights, Bytes)
+    }.

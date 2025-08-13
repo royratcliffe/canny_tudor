@@ -25,4 +25,8 @@ test(xdigit_weights_and_bytes, Bytes == [171, 205]) :-
 test(xdigit_weights_and_bytes, Weights == [10, 11, 12, 13]) :-
     xdigit_weights_and_bytes(Weights, [171, 205]).
 
+test(xbytes) :- phrase(xbytes([]), ``).
+test(xbytes, Codes == `aabb`) :- phrase(xbytes([16'aa, 16'bb]), Codes).
+test(xbytes, Bytes == [1, 2, 3]) :- phrase(xbytes(Bytes), `010203`).
+
 :- end_tests(canny_bits).
