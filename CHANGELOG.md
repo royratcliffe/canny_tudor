@@ -3,6 +3,20 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.23.14] - 2025-10-01
+### Added
+- New predicate `xdigit_weights_and_bytes(?Weights:list(integer), ?Bytes:list(integer))`
+  from `canny_bits` module. It relates a list of hexadecimal digit weights
+  to a list of corresponding byte values. Each weight is a power of 16, starting
+  from the least significant digit (rightmost) with a weight of 1 (16^0), and
+  increasing by powers of 16 for each subsequent digit to the left.
+- New grammar predicate `xbytes(?Bytes:list(integer))//` from `canny_bits` module.
+  It parses a sequence of hexadecimal byte values represented as pairs of
+  hexadecimal digit characters (0-9, A-F, a-f) into a list of integers,
+  each ranging from 0 to 255. The input is expected to be a sequence of
+  hexadecimal digits without any separators, and the total number of digits
+  must be even to form complete bytes.
+
 ## [0.23.13] - 2025-07-29
 ### Changed
 - Refactor Docker ask predicate for JSON dictionary value restyling
