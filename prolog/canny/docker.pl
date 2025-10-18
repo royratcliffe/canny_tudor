@@ -70,23 +70,45 @@ Key features:
 
 ## Docker API Operations
 
-The module supports various Docker API operations, such as:
+The module supports various Docker API operations organised by resource
+type:
 
-    - `system_ping`: Check if the Docker daemon is reachable.
-    - `container_list`: List all containers.
-    - `container_create`: Create a new container.
-    - `network_create`: Create a new network.
-    - `network_delete`: Delete a network.
+**System Operations:**
+  - `system_ping`: Check if the Docker daemon is reachable
+  - `system_info`: Get system information
+  - `system_version`: Get Docker version information
+  - `system_events`: Stream real-time events
+  - `system_data_usage`: Get data usage information
 
-This list is not exhaustive; the full list includes many other operations for
-managing containers, images, networks, and other Docker resources. Each
-operation is defined in the Docker API specification and can be accessed through
-the `docker/3` predicate, which constructs the appropriate URL and options based
-on the operation and the settings defined in this module.
+**Container Operations:**
+  - `container_list`: List all containers
+  - `container_create`: Create a new container
+  - `container_start`: Start a container
+  - `container_stop`: Stop a container
+  - `container_inspect`: Get detailed container information
+  - `container_delete`: Remove a container
+  - `container_logs`: Get container logs
 
-The full set of operations are defined in the Docker API specification and can
-be accessed through the `docker/3` predicate, which constructs the appropriate
-URL and options based on the operation and the settings defined in this module.
+**Image Operations:**
+  - `image_list`: List available images
+  - `image_create`: Pull or import an image
+  - `image_build`: Build an image from Dockerfile
+  - `image_delete`: Remove an image
+  - `image_inspect`: Get detailed image information
+
+**Network Operations:**
+  - `network_list`: List networks
+  - `network_create`: Create a new network
+  - `network_delete`: Delete a network
+  - `network_inspect`: Get network details
+
+**Volume Operations:**
+  - `volume_list`: List volumes
+  - `volume_create`: Create a new volume
+  - `volume_delete`: Remove a volume
+
+The complete set of 80+ operations is dynamically loaded from the Docker API v1.49
+specification and accessible through the `docker/2` and `docker/3` predicates.
 
 ### Example container operations
 
@@ -102,15 +124,18 @@ Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
 Reply = _{Id:"abc123", Warnings:[]}.
 ```
 
-The `container_list/2` predicate retrieves a list of all containers, returning
-a list of dictionaries representing each container. Each dictionary contains
-information such as the container ID, image, and other metadata.
-The `container_create/3` predicate creates a new container with the specified
-image and labels. The labels are specified as a JSON object, allowing for
-flexible tagging of containers with metadata. The reply contains the ID of the
-created container and any warnings that may have occurred during the creation
-process. The labels can be used to organise and manage containers based on
-specific criteria, such as purpose or owner.
+The =|container_list/0|= ask term retrieves a list of all containers,
+returning a list of dictionaries representing each container. Each
+dictionary contains information such as the container ID, image, and
+other metadata.
+
+The `container_create/3` ask term creates a new
+container with the specified image and labels. The labels are specified
+as a JSON object, allowing for flexible tagging of containers with
+metadata. The reply contains the ID of the created container and any
+warnings that may have occurred during the creation process. The labels
+can be used to organise and manage containers based on specific
+criteria, such as purpose or owner.
 
 ### Example network operations
 
@@ -122,7 +147,7 @@ and then deleted by its name.
 ?- docker(network_create(_{name:my_network, labels:_{'my.label':'my-value'}}), A).
 A = _{id:"1be0f5d2337ff6a6db79a59707049c199268591f49e3c9054fc698fe7916f9c3", warning:""}.
 
-38 ?- docker(network_delete(my_network), A).
+?- docker(network_delete(my_network), A).
 A = ''.
 ```
 
