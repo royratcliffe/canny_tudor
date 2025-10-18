@@ -48,17 +48,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /** <module> Canny Docker
 
-This module provides an interface to the Docker API, allowing Prolog
-programs to interact with Docker services through HTTP requests. It
+This module provides an interface  to   the  Docker API, allowing Prolog
+programs to interact with Docker  services   through  HTTP  requests. It
 defines configurable settings for the Docker daemon URL and API version,
 and provides predicates to perform Docker operations programmatically.
 
-The module supports comprehensive Docker operations including container
-management (list, create, start, stop), image operations, network
-management, and system monitoring. It uses Prolog dictionaries to
-represent JSON data structures from the Docker API, with automatic
-key transformation between Prolog naming conventions and Docker's
-CamelCase format.
+The module supports comprehensive Docker  operations including container
+management  (list,  create,  start,  stop),  image  operations,  network
+management, and system  monitoring.  It   uses  Prolog  dictionaries  to
+represent JSON data structures from the   Docker API, with automatic key
+transformation between Prolog naming conventions  and Docker's CamelCase
+format.
 
 Key features:
 - Dynamic URL construction based on operation type and parameters
@@ -70,7 +70,7 @@ Key features:
 
 ## Docker API Operations
 
-The module supports various Docker API operations organised by resource
+The module supports various Docker API  operations organised by resource
 type:
 
 **System Operations:**
@@ -107,14 +107,19 @@ type:
   - `volume_create`: Create a new volume
   - `volume_delete`: Remove a volume
 
-The complete set of 80+ operations is dynamically loaded from the Docker API v1.49
-specification and accessible through the `docker/2` and `docker/3` predicates.
+The complete set of 80+ operations is dynamically loaded from the Docker
+API v1.49 specification  and  accessible   through  the  `docker/2`  and
+`docker/3`  predicates.  The  two-arity  predicate    `docker/2`   is  a
+high-level interface for  operations  using   Prolog  dictionaries  with
+automatic key restyling, while  the   three-arity  predicate  `docker/3`
+allows for more detailed control.
 
 ### Example container operations
 
-The following examples demonstrate how to list and create Docker containers
-using the `docker/3` predicate. The first example lists all containers, and the
-second example creates a new container with a specified image and labels.
+The following examples  demonstrate  how  to   list  and  create  Docker
+containers using the `docker/3` predicate. The   first example lists all
+containers, and the second  example  creates   a  new  container  with a
+specified image and labels.
 
 ```prolog
 ?- docker(container_list, Reply, []).
@@ -124,18 +129,18 @@ Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
 Reply = _{Id:"abc123", Warnings:[]}.
 ```
 
-The =|container_list/0|= ask term retrieves a list of all containers,
-returning a list of dictionaries representing each container. Each
-dictionary contains information such as the container ID, image, and
+The =|container_list/0|= ask term retrieves a   list  of all containers,
+returning a list  of  dictionaries   representing  each  container. Each
+dictionary contains information such as  the   container  ID, image, and
 other metadata.
 
-The =|container_create/3|= ask term creates a new
-container with the specified image and labels. The labels are specified
-as a JSON object, allowing for flexible tagging of containers with
-metadata. The reply contains the ID of the created container and any
-warnings that may have occurred during the creation process. The labels
-can be used to organise and manage containers based on specific
-criteria, such as purpose or owner.
+The =|container_create/3|= ask term creates  a   new  container with the
+specified image and labels. The labels are   specified as a JSON object,
+allowing for flexible tagging of  containers   with  metadata. The reply
+contains the ID of the created container  and any warnings that may have
+occurred during the creation process. The labels can be used to organise
+and manage containers based on  specific   criteria,  such as purpose or
+owner.
 
 ### Example network operations
 
