@@ -117,7 +117,7 @@ using the `docker/3` predicate. The first example lists all containers, and the
 second example creates a new container with a specified image and labels.
 
 ```prolog
-?- docker(container_list, Reply).
+?- docker(container_list, Reply, []).
 Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
 ?- docker(container_create, Reply, [post(json(json(['Image'=ubuntu,
    'Labels'=json(['Hello'=world)])))])).
