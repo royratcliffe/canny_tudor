@@ -170,6 +170,45 @@ residual and the predicate discards them. The order of the sub-terms
 is not very important, except for failures. Placing \const{succ} first
 ensures that recursive shifting fails if \arg{Shift} is not a positive
 integer; it triggers an exception if not actually an integer.
+
+    \predicate[semidet]{xdigit_weights_and_bytes}{2}{?Weights:list(integer), ?Bytes:list(integer)}
+Convert a list of hexadecimal digit weights to a list of bytes, or
+vice versa. Uses CLP(FD) constraints to ensure valid two-way
+conversions.
+
+Examples:
+
+\begin{code}
+?- xdigit_weights_and_bytes([10, 11, 12, 13], Bytes).
+Bytes = [171, 205].
+
+?- xdigit_weights_and_bytes(Weights, [171, 205]).
+Weights = [10, 11, 12, 13].
+\end{code}
+
+This predicate is semidet, meaning it can succeed or fail depending
+on the input. The elements of the \arg{Weights} list must be in the range
+0..15, and the elements of the \arg{Bytes} list must be in the range
+0..255. The length of the \arg{Weights} and \arg{Bytes} lists must differ by a
+factor of two for the conversion to succeed. Two hexadecimal digit
+weights correspond to one byte.
+
+\begin{arguments}
+\arg{Weights} & A list of hexadecimal digit weights (0-15). \\
+\arg{Bytes} & A list of bytes (0-255). \\
+\end{arguments}
+
+    \dcg[semidet]{xbytes}{1}{?Bytes:list(integer)}
+Converts a list of \arg{Bytes} to a list of hexadecimal digits, or vice
+versa.
+
+This predicate is semidet, meaning it can succeed or fail depending
+on the input. The elements of the \arg{Bytes} list must be in the range
+0..255.
+
+\begin{arguments}
+\arg{Bytes} & A list of bytes (0-255). \\
+\end{arguments}
 \end{description}
 
 \chapter{library(canny/cover)}\label{sec:cover}
@@ -239,79 +278,136 @@ Roy Ratcliffe
 0.1.0
 \end{tags}
 
-This module provides an interface to the Docker API, allowing interaction with
-Docker services through HTTP requests. It defines settings for the Docker daemon
-URL and API version, and provides a predicate to construct URLs and options for
-various Docker operations.
+This module provides an interface to the Docker API, allowing Prolog
+programs to interact with Docker services through HTTP requests. It
+defines configurable settings for the Docker daemon URL and API version,
+and provides predicates to perform Docker operations programmatically.
 
-It supports operations such as listing containers, creating containers, and
-checking the Docker system status. The module uses Prolog dictionaries to
-represent JSON data structures, making it easy to work with the Docker API's
-responses. It also includes utility predicates for transforming dictionary
-key-value pairs and constructing paths for API requests. It is designed to be
-used in conjunction with the HTTP client library to make requests to the Docker
-API. It provides a flexible way to interact with Docker services, allowing for
-dynamic construction of API requests based on the specified operations and
-options.
+The module supports comprehensive Docker operations including container
+management (list, create, start, stop), image operations, network
+management, and system monitoring. It uses Prolog dictionaries to
+represent JSON data structures from the Docker API, with automatic key
+transformation between Prolog naming conventions and Docker's CamelCase
+format.
+
+Key features:
+
+\begin{itemize}
+    \item Dynamic URL construction based on operation type and parameters
+    \item Automatic placeholder substitution in API paths
+    \item JSON request/response handling with dictionary mapping
+    \item Configurable daemon connection settings
+    \item Support for query parameters and request bodies
+    \item Comprehensive coverage of Docker API v1.49 operations
+\end{itemize}
 
 \section{Docker API Operations}
 
-The module supports various Docker API operations, such as:
+The module supports various Docker API operations organised by resource
+type:
+
+\textbf{System Operations:}
 
 \begin{shortlist}
-    \item \verb$system_ping$: Check if the Docker daemon is reachable.
-    \item \verb$container_list$: List all containers.
-    \item \verb$container_create$: Create a new container.
-    \item \verb$network_create$: Create a new network.
-    \item \verb$network_delete$: Delete a network.
+    \item \verb$system_ping$: Check if the Docker daemon is reachable
+    \item \verb$system_info$: Get system information
+    \item \verb$system_version$: Get Docker version information
+    \item \verb$system_events$: Stream real-time events
+    \item \verb$system_data_usage$: Get data usage information
 \end{shortlist}
 
-These operations are defined in the Docker API specification and can be accessed
-through the \predref{docker}{3} predicate, which constructs the appropriate URL and
-options based on the operation and the settings defined in this module.
+\textbf{Container Operations:}
+
+\begin{shortlist}
+    \item \verb$container_list$: List all containers
+    \item \verb$container_create$: Create a new container
+    \item \verb$container_start$: Start a container
+    \item \verb$container_stop$: Stop a container
+    \item \verb$container_inspect$: Get detailed container information
+    \item \verb$container_delete$: Remove a container
+    \item \verb$container_logs$: Get container logs
+\end{shortlist}
+
+\textbf{Image Operations:}
+
+\begin{shortlist}
+    \item \verb$image_list$: List available images
+    \item \verb$image_create$: Pull or import an image
+    \item \verb$image_build$: Build an image from Dockerfile
+    \item \verb$image_delete$: Remove an image
+    \item \verb$image_inspect$: Get detailed image information
+\end{shortlist}
+
+\textbf{Network Operations:}
+
+\begin{shortlist}
+    \item \verb$network_list$: List networks
+    \item \verb$network_create$: Create a new network
+    \item \verb$network_delete$: Delete a network
+    \item \verb$network_inspect$: Get network details
+\end{shortlist}
+
+\textbf{Volume Operations:}
+
+\begin{shortlist}
+    \item \verb$volume_list$: List volumes
+    \item \verb$volume_create$: Create a new volume
+    \item \verb$volume_delete$: Remove a volume
+\end{shortlist}
+
+The complete set of 80+ operations is dynamically loaded from the Docker
+API v1.49 specification and accessible through the \predref{docker}{2} and
+\predref{docker}{3} predicates. The two-arity predicate \predref{docker}{2} is a
+high-level interface for operations using Prolog dictionaries with
+automatic key restyling, while the three-arity predicate \predref{docker}{3}
+allows for more detailed control.
 
 \subsection{Example container operations}
 
-The following examples demonstrate how to list and create Docker containers
-using the \predref{docker}{3} predicate. The first example lists all containers, and the
-second example creates a new container with a specified image and labels.
+The following examples demonstrate how to list and create Docker
+containers using the \predref{docker}{3} predicate. The first example lists all
+containers, and the second example creates a new container with a
+specified image and labels.
 
 \begin{code}
-?- docker(container_list, Reply).
+?- docker(container_list, Reply, []).
 Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
 ?- docker(container_create, Reply, [post(json(json(['Image'=ubuntu,
    'Labels'=json(['Hello'=world)])))])).
 Reply = _{Id:"abc123", Warnings:[]}.
 \end{code}
 
-The \predref{container_list}{2} predicate retrieves a list of all containers, returning
-a list of dictionaries representing each container. Each dictionary contains
-information such as the container ID, image, and other metadata.
-The \predref{container_create}{3} predicate creates a new container with the specified
-image and labels. The labels are specified as a JSON object, allowing for
-flexible tagging of containers with metadata. The reply contains the ID of the
-created container and any warnings that may have occurred during the creation
-process. The labels can be used to organise and manage containers based on
-specific criteria, such as purpose or owner.
+The \verb$container_list/0$ ask term retrieves a list of all containers,
+returning a list of dictionaries representing each container. Each
+dictionary contains information such as the container ID, image, and
+other metadata.
+
+The \verb$container_create/3$ ask term creates a new container with the
+specified image and labels. The labels are specified as a JSON object,
+allowing for flexible tagging of containers with metadata. The reply
+contains the ID of the created container and any warnings that may have
+occurred during the creation process. The labels can be used to organise
+and manage containers based on specific criteria, such as purpose or
+owner.
 
 \subsection{Example network operations}
 
 The following examples demonstrate how to create and delete a Docker network
-using the \predref{docker}{3} predicate. The network is created with a name and labels,
+using the \predref{docker}{2} predicate. The network is created with a name and labels,
 and then deleted by its name.
 
 \begin{code}
 ?- docker(network_create(_{name:my_network, labels:_{'my.label':'my-value'}}), A).
 A = _{id:"1be0f5d2337ff6a6db79a59707049c199268591f49e3c9054fc698fe7916f9c3", warning:""}.
 
-38 ?- docker(network_delete(my_network), A).
+?- docker(network_delete(my_network), A).
 A = ''.
 \end{code}
 
-Note that the \predref{network_create}{2} predicate constructs a network with the
-specified name and labels, and returns a reply containing the network ID and any
-warnings. The \predref{network_delete}{2} predicate deletes the network by its name,
-returning an empty reply if successful.
+Note that the \verb$network_create/2$ ask term constructs a network with
+the specified name and labels, and returns a reply containing the
+network ID and any warnings. The \verb$network_delete/2$ ask term deletes
+the network by its name, returning an empty reply if successful.
 
 Labels can be used to tag networks with metadata, which can be useful
 for organising and managing Docker resources. The labels are specified
@@ -329,7 +425,7 @@ especially in larger deployments with many networks and containers.
 
 \subsection{Restyling Keys}
 
-The \predref{docker}{3} predicate transforms the keys in the input dictionary to
+The \predref{docker}{2} predicate transforms the keys in the input dictionary to
 CamelCase format using the \predref{restyle_key}{3} predicate, which applies the
 Docker-specific CamelCase naming convention to the keys. This
 transformation is useful for ensuring that the keys in the input
@@ -337,66 +433,13 @@ dictionary match the expected format for the Docker API, making it
 easier to work with the API and ensuring compatibility with the expected
 request format.
 
-The transformation is applied recursively to all
-key-value pairs in the input dictionary, ensuring that all keys are
-transformed to the correct format before making the request to the
-Docker API. The reverse transformation is applied to the reply
-dictionary, which does not retain the original key names as returned by
-the Docker API. Label keys are also transformed to CamelCase format,
-ensuring consistency in the naming convention used for labels in the
-Docker API requests and responses.
-
-\section{Low-Level HTTP Requests}
-
-The module provides a low-level interface to the Docker API, allowing for custom
-HTTP requests to be made. The \predref{docker}{3} predicate constructs the URL and
-options for the specified operation, and uses the \predref{http_get}{3} predicate to make
-the request. The options can include HTTP methods, headers, and other parameters
-as needed for the specific operation.
-
-The \predref{url_options}{4} predicate is used to construct the URL and options for a
-specific Docker operation. It retrieves the operation details from the Docker
-API specification and formats the path according to the specified version and
-operation. The resulting URL and options can be used with the HTTP client to
-make requests to the Docker API.
-
-\subsection{Example usage}
-
-The \predref{url_options}{4} predicate can be used to construct the URL and options for a
-specific Docker operation. For example, to get the URL and options for the
-\verb$system_ping$ operation, you can use:
-
-\begin{code}
-?- [library(http/http_client)].
-true.
-
-?- canny_docker:url_options(system_ping, URL, Options),
-   http_get(URL, Reply, Options).
-URL = [path('/v1.49/_ping'), protocol(tcp), host(localhost), port(2375)],
-Options = [method(get), accept(["text/plain"])],
-Reply = 'OK'.
-\end{code}
-
-For listing containers, you can use:
-
-\begin{code}
-?- canny_docker:url_options(container_list, URL, Options),
-   http_get(URL, Reply, Options).
-URL = [path('/v1.49/containers/json'), protocol(tcp), host(localhost), port(2375)],
-Options = [method(get), accept(["application/json"])],
-Reply = [json(['Id'=..., ...|...])].
-\end{code}
-
-For creating a container, you can use:
-
-\begin{code}
-?- docker(container_create, A, [post(json(json(['Image'=ubuntu,
-   'Labels'=json(['Hello'=world])])))]).
-\end{code}
-
-This example creates a new Docker container with the specified image and labels.
-Notice that the post request uses \verb$json(json(...))$ to specify the JSON body of
-the request.\vspace{0.7cm}
+The transformation is applied recursively to all key-value pairs in the
+input dictionary, ensuring that all keys are transformed to the correct
+format before making the request to the Docker API. The reverse
+transformation is applied to the reply dictionary, which does not retain
+the original key names as returned by the Docker API. Label keys are
+also transformed to CamelCase format, ensuring consistency in the naming
+convention used for labels in the Docker API requests and responses.\vspace{0.7cm}
 
 \begin{description}
     \predicate[det]{docker}{2}{+Ask, -Reply}
@@ -424,23 +467,25 @@ operation being performed and the specific requirements of the
 Docker API. The \predref{docker}{2} predicate is designed to handle these
 variations and provide a consistent interface for interacting with
 the Docker API. It abstracts away the details of constructing the
-request and processing the response, allowing users to focus on
-the high-level operation they want to perform. Path placeholders
-appear in the first \arg{Ask} term argument as atomic values. URL query parameters
-are specified as a list of key-value pairs in the \arg{Ask} term argument.
-POST request payloads are specified as a Prolog dictionary as the \arg{Ask} term.
+request and processing the response, allowing users to focus on the
+high-level operation they want to perform. Path placeholders appear
+in the first \arg{Ask} term argument as atomic values. URL query
+parameters are specified as a list of key-value pairs in the \arg{Ask}
+term argument. POST request payloads are specified as a Prolog
+dictionary as the \arg{Ask} term.
 
 The \arg{Ask} term is a compound term that specifies the operation to
 perform, such as \verb$container_list$ or \verb$system_ping$. The \arg{Reply} is a
 Prolog term that represents the response from the Docker API, which
-is typically a Prolog dictionary or list, depending on the operation.
+is typically a Prolog dictionary or list, depending on the
+operation.
 
 The predicate constructs the URL and options based on the operation
-and the settings defined in this module. It uses the \predref{ask}{4} predicate
-to determine the path, method, and any additional options required for
-the request. The URL is constructed by appending the path to the
-\verb$daemon_url$ setting, and the HTTP request is made using the
-\predref{http_get}{3} predicate from the HTTP client library.
+and the settings defined in this module. It uses the \predref{ask}{4}
+predicate to determine the path, method, and any additional options
+required for the request. The URL is constructed by appending the
+path to the \verb$daemon_url$ setting, and the HTTP request is made using
+the \predref{http_get}{3} predicate from the HTTP client library.
 
 The \arg{Reply} is then processed to ensure that the keys in the response
 are transformed to CamelCase format using the \predref{restyle_value}{3}
@@ -450,21 +495,21 @@ it easier to work with the API and ensuring compatibility with the
 expected response format.
 
 \begin{arguments}
-\arg{Ask} & The \arg{Ask} term specifies the operation to perform, which may
-include path placeholders, query parameters, and a request body. The \arg{Ask}
-term is a compound term that identifies the operation and provides any
-necessary arguments or parameters for the request. The \arg{Ask} term can be a
-simple atom for operations with no arguments, or it can be a more complex
-term that includes arguments. The \arg{Ask} term is used to construct the URL and
-options for the request, allowing for flexible and dynamic construction of
-API requests based on the specified
-operation and options. \\
+\arg{Ask} & The \arg{Ask} term specifies the operation to perform, which
+may include path placeholders, query parameters, and a request body.
+The \arg{Ask} term is a compound term that identifies the operation and
+provides any necessary arguments or parameters for the request. The
+\arg{Ask} term can be a simple atom for operations with no arguments, or
+it can be a more complex term that includes arguments. The \arg{Ask} term
+is used to construct the URL and options for the request, allowing
+for flexible and dynamic construction of API requests based on the
+specified operation and options. \\
 \arg{Reply} & The \arg{Reply} is the response from the Docker API, which is
-typically a Prolog dictionary or list, depending on the operation. It can
-also be an atom. The \arg{Reply} is a Prolog term that represents the data
-returned by the Docker API after processing the request. It contains the
-results of the operation, such as a list of containers, the status of a
-container, or the result of a command. \\
+typically a Prolog dictionary or list, depending on the operation.
+It can also be an atom. The \arg{Reply} is a Prolog term that represents
+the data returned by the Docker API after processing the request. It
+contains the results of the operation, such as a list of containers,
+the status of a container, or the result of a command. \\
 \end{arguments}
 
     \predicate[det]{docker}{3}{+Operation, -Reply, +Options}
@@ -481,32 +526,35 @@ requests to the Docker API.
 
 The predicate constructs the URL by concatenating the base URL with
 the path and method. The \verb$daemon_url$ setting provides the base URL,
-and the \verb$api_version$ setting specifies the version of the Docker API.
+and the \verb$api_version$ setting specifies the version of the Docker
+API.
 
 \begin{arguments}
-\arg{Operation} & The operation to perform, which determines the path and
-method, as well as any additional options. \\
+\arg{Operation} & The operation to perform, which determines the path
+and method, as well as any additional options. \\
 \arg{Reply} & The response from the Docker API, which is typically a
 Prolog dictionary or list, depending on the operation. \\
-\arg{Options} & This is a list of options that control both how the path is
-formatted and how the HTTP request is made. For path formatting, options are
-terms like \verb$id(Value)$ that provide values for placeholders in the path
-template. For the HTTP request, options can include settings such as
-headers, authentication, or other parameters supported by the HTTP client. \\
+\arg{Options} & This is a list of options that control both how the
+path is formatted and how the HTTP request is made. For path
+formatting, options are terms like \verb$id(Value)$ that provide values
+for placeholders in the path template. For the HTTP request, options
+can include settings such as headers, authentication, or other
+parameters supported by the HTTP client. \\
 \end{arguments}
 
     \predicate[semidet]{docker_path_options}{3}{?Operation, -Path, -Options}
-Constructs the \arg{Path} and \arg{Options} for a Docker API operation. The predicate
-retrieves the operation details from the Docker API specification and
-formats the path according to the default version and operation. The
-resulting path and options can be used with the HTTP client to make requests
-to the Docker API.
+Constructs the \arg{Path} and \arg{Options} for a Docker API operation. The
+predicate retrieves the operation details from the Docker API
+specification and formats the path according to the default version
+and operation. The resulting path and options can be used with the
+HTTP client to make requests to the Docker API.
 
-The predicate uses the \predref{docker_path_options}{4} predicate to construct the
-path and options for the specified operation. It retrieves the operation
-details from the Docker API specification and formats the path according to
-the specified version and operation. The resulting path and options can be
-used with the HTTP client to make requests to the Docker API.
+The predicate uses the \predref{docker_path_options}{4} predicate to
+construct the path and options for the specified operation. It
+retrieves the operation details from the Docker API specification
+and formats the path according to the specified version and
+operation. The resulting path and options can be used with the HTTP
+client to make requests to the Docker API.
 
 \begin{quote}
 \begin{tabulary}{0.9\textwidth}{|l|L|l|}
@@ -747,12 +795,12 @@ volume_update & '/v1.49/volumes/\{name\}' & put \\
 \end{quote}
 
 \begin{arguments}
-\arg{Operation} & The operation to perform, which determines the path and
-method, as well as any additional options. \\
+\arg{Operation} & The operation to perform, which determines the path
+and method, as well as any additional options. \\
 \arg{Path} & The path for the operation, which is derived from the
 Docker API specification. \\
-\arg{Options} & List of options for the HTTP request, such as \const{method} and
-\const{accept}. \\
+\arg{Options} & List of options for the HTTP request, such as
+\const{method} and \const{accept}. \\
 \end{arguments}
 \end{description}
 

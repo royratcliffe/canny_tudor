@@ -48,160 +48,150 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /** <module> Canny Docker
 
-This module provides an interface to the Docker API, allowing interaction with
-Docker services through HTTP requests. It defines settings for the Docker daemon
-URL and API version, and provides a predicate to construct URLs and options for
-various Docker operations.
+This module provides an interface  to   the  Docker API, allowing Prolog
+programs to interact with Docker  services   through  HTTP  requests. It
+defines configurable settings for the Docker daemon URL and API version,
+and provides predicates to perform Docker operations programmatically.
 
-It supports operations such as listing containers, creating containers, and
-checking the Docker system status. The module uses Prolog dictionaries to
-represent JSON data structures, making it easy to work with the Docker API's
-responses. It also includes utility predicates for transforming dictionary
-key-value pairs and constructing paths for API requests. It is designed to be
-used in conjunction with the HTTP client library to make requests to the Docker
-API. It provides a flexible way to interact with Docker services, allowing for
-dynamic construction of API requests based on the specified operations and
-options.
+The module supports comprehensive Docker  operations including container
+management  (list,  create,  start,  stop),  image  operations,  network
+management, and system  monitoring.  It   uses  Prolog  dictionaries  to
+represent JSON data structures from the   Docker API, with automatic key
+transformation between Prolog naming conventions  and Docker's CamelCase
+format.
+
+Key features:
+- Dynamic URL construction based on operation type and parameters
+- Automatic placeholder substitution in API paths
+- JSON request/response handling with dictionary mapping
+- Configurable daemon connection settings
+- Support for query parameters and request bodies
+- Comprehensive coverage of Docker API v1.49 operations
 
 ## Docker API Operations
 
-The module supports various Docker API operations, such as:
+The module supports various Docker API  operations organised by resource
+type:
 
-    - `system_ping`: Check if the Docker daemon is reachable.
-    - `container_list`: List all containers.
-    - `container_create`: Create a new container.
-    - `network_create`: Create a new network.
-    - `network_delete`: Delete a network.
+**System Operations:**
+  - `system_ping`: Check if the Docker daemon is reachable
+  - `system_info`: Get system information
+  - `system_version`: Get Docker version information
+  - `system_events`: Stream real-time events
+  - `system_data_usage`: Get data usage information
 
-These operations are defined in the Docker API specification and can be accessed
-through the `docker/3` predicate, which constructs the appropriate URL and
-options based on the operation and the settings defined in this module.
+**Container Operations:**
+  - `container_list`: List all containers
+  - `container_create`: Create a new container
+  - `container_start`: Start a container
+  - `container_stop`: Stop a container
+  - `container_inspect`: Get detailed container information
+  - `container_delete`: Remove a container
+  - `container_logs`: Get container logs
+
+**Image Operations:**
+  - `image_list`: List available images
+  - `image_create`: Pull or import an image
+  - `image_build`: Build an image from Dockerfile
+  - `image_delete`: Remove an image
+  - `image_inspect`: Get detailed image information
+
+**Network Operations:**
+  - `network_list`: List networks
+  - `network_create`: Create a new network
+  - `network_delete`: Delete a network
+  - `network_inspect`: Get network details
+
+**Volume Operations:**
+  - `volume_list`: List volumes
+  - `volume_create`: Create a new volume
+  - `volume_delete`: Remove a volume
+
+The complete set of 80+ operations is dynamically loaded from the Docker
+API v1.49 specification  and  accessible   through  the  `docker/2`  and
+`docker/3`  predicates.  The  two-arity  predicate    `docker/2`   is  a
+high-level interface for  operations  using   Prolog  dictionaries  with
+automatic key restyling, while  the   three-arity  predicate  `docker/3`
+allows for more detailed control.
 
 ### Example container operations
 
-The following examples demonstrate how to list and create Docker containers
-using the `docker/3` predicate. The first example lists all containers, and the
-second example creates a new container with a specified image and labels.
+The following examples  demonstrate  how  to   list  and  create  Docker
+containers using the `docker/3` predicate. The   first example lists all
+containers, and the second  example  creates   a  new  container  with a
+specified image and labels.
+
 ```prolog
-?- docker(container_list, Reply).
+?- docker(container_list, Reply, []).
 Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
 ?- docker(container_create, Reply, [post(json(json(['Image'=ubuntu,
    'Labels'=json(['Hello'=world)])))])).
 Reply = _{Id:"abc123", Warnings:[]}.
 ```
-The `container_list/2` predicate retrieves a list of all containers, returning
-a list of dictionaries representing each container. Each dictionary contains
-information such as the container ID, image, and other metadata.
-The `container_create/3` predicate creates a new container with the specified
-image and labels. The labels are specified as a JSON object, allowing for
-flexible tagging of containers with metadata. The reply contains the ID of the
-created container and any warnings that may have occurred during the creation
-process. The labels can be used to organise and manage containers based on
-specific criteria, such as purpose or owner.
+
+The =|container_list/0|= ask term retrieves a   list  of all containers,
+returning a list  of  dictionaries   representing  each  container. Each
+dictionary contains information such as  the   container  ID, image, and
+other metadata.
+
+The =|container_create/3|= ask term creates  a   new  container with the
+specified image and labels. The labels are   specified as a JSON object,
+allowing for flexible tagging of  containers   with  metadata. The reply
+contains the ID of the created container  and any warnings that may have
+occurred during the creation process. The labels can be used to organise
+and manage containers based on  specific   criteria,  such as purpose or
+owner.
 
 ### Example network operations
 
 The following examples demonstrate how to create and delete a Docker network
-using the `docker/3` predicate. The network is created with a name and labels,
+using the `docker/2` predicate. The network is created with a name and labels,
 and then deleted by its name.
 
 ```prolog
 ?- docker(network_create(_{name:my_network, labels:_{'my.label':'my-value'}}), A).
 A = _{id:"1be0f5d2337ff6a6db79a59707049c199268591f49e3c9054fc698fe7916f9c3", warning:""}.
 
-38 ?- docker(network_delete(my_network), A).
+?- docker(network_delete(my_network), A).
 A = ''.
 ```
 
-Note that the `network_create/2` predicate constructs a network with the
-specified name and labels, and returns a reply containing the network ID and any
-warnings. The `network_delete/2` predicate deletes the network by its name,
-returning an empty reply if successful.
+Note that the =|network_create/2|= ask term   constructs  a network with
+the specified name and  labels,  and   returns  a  reply  containing the
+network ID and any warnings. The   =|network_delete/2|= ask term deletes
+the network by its name, returning an empty reply if successful.
 
-Labels can be used to tag networks with metadata, which can be useful
-for organising and managing Docker resources. The labels are specified
-as a dictionary with key-value pairs, where the keys and values are
-strings. The labels are included in the network configuration when
-creating a network, allowing for flexible and dynamic tagging of Docker
+Labels can be used to tag networks   with  metadata, which can be useful
+for organising and managing Docker resources.   The labels are specified
+as a dictionary with key-value pairs,  where   the  keys  and values are
+strings. The labels are  included  in   the  network  configuration when
+creating a network, allowing for flexible  and dynamic tagging of Docker
 resources.
 
-Labels can be used to filter and query networks, making it easier to
+Labels can be used to filter  and   query  networks, making it easier to
 manage Docker resources based on specific criteria. For example, you can
-create a network with a label indicating its purpose or owner, and then
+create a network with a label indicating  its purpose or owner, and then
 use that label to find networks that match certain criteria. This allows
-for more organised and efficient management of Docker resources,
+for  more  organised  and  efficient  management  of  Docker  resources,
 especially in larger deployments with many networks and containers.
 
 ### Restyling Keys
 
-The `docker/3` predicate transforms the keys in the input dictionary to
-CamelCase format using the `restyle_key/3` predicate, which applies the
-Docker-specific CamelCase naming convention to the keys. This
-transformation is useful for ensuring that the keys in the input
-dictionary match the expected format for the Docker API, making it
+The `docker/2` predicate transforms the keys  in the input dictionary to
+CamelCase format using the `restyle_key/3`  predicate, which applies the
+Docker-specific  CamelCase  naming  convention   to    the   keys.  This
+transformation is useful  for  ensuring  that   the  keys  in  the input
+dictionary match the expected  format  for   the  Docker  API, making it
 easier to work with the API and ensuring compatibility with the expected
 request format.
 
-The transformation is applied recursively to all
-key-value pairs in the input dictionary, ensuring that all keys are
-transformed to the correct format before making the request to the
-Docker API. The reverse transformation is applied to the reply
-dictionary, which does not retain the original key names as returned by
-the Docker API. Label keys are also transformed to CamelCase format,
-ensuring consistency in the naming convention used for labels in the
-Docker API requests and responses.
-
-## Low-Level HTTP Requests
-
-The module provides a low-level interface to the Docker API, allowing for custom
-HTTP requests to be made. The `docker/3` predicate constructs the URL and
-options for the specified operation, and uses the `http_get/3` predicate to make
-the request. The options can include HTTP methods, headers, and other parameters
-as needed for the specific operation.
-
-The `url_options/4` predicate is used to construct the URL and options for a
-specific Docker operation. It retrieves the operation details from the Docker
-API specification and formats the path according to the specified version and
-operation. The resulting URL and options can be used with the HTTP client to
-make requests to the Docker API.
-
-### Example usage
-
-The `url_options/4` predicate can be used to construct the URL and options for a
-specific Docker operation. For example, to get the URL and options for the
-`system_ping` operation, you can use:
-
-```prolog
-?- [library(http/http_client)].
-true.
-
-?- canny_docker:url_options(system_ping, URL, Options),
-   http_get(URL, Reply, Options).
-URL = [path('/v1.49/_ping'), protocol(tcp), host(localhost), port(2375)],
-Options = [method(get), accept(["text/plain"])],
-Reply = 'OK'.
-```
-
-For listing containers, you can use:
-
-```prolog
-?- canny_docker:url_options(container_list, URL, Options),
-   http_get(URL, Reply, Options).
-URL = [path('/v1.49/containers/json'), protocol(tcp), host(localhost), port(2375)],
-Options = [method(get), accept(["application/json"])],
-Reply = [json(['Id'=..., ...|...])].
-```
-
-For creating a container, you can use:
-
-```prolog
-?- docker(container_create, A, [post(json(json(['Image'=ubuntu,
-   'Labels'=json(['Hello'=world])])))]).
-```
-
-This example creates a new Docker container with the specified image and labels.
-Notice that the post request uses `json(json(...))` to specify the JSON body of
-the request.
+The transformation is applied recursively to  all key-value pairs in the
+input dictionary, ensuring that all keys  are transformed to the correct
+format before making  the  request  to   the  Docker  API.  The  reverse
+transformation is applied to the reply dictionary, which does not retain
+the original key names as returned  by   the  Docker API. Label keys are
+also transformed to CamelCase format, ensuring consistency in the naming
+convention used for labels in the Docker API requests and responses.
 
 @author Roy Ratcliffe
 @version 0.1.0
@@ -221,33 +211,35 @@ the request.
 %       - a JSON body for POST requests.
 %
 %   This implies that, for the least amount of additional information, a
-%   request is just a path with a method, e.g., a GET, HEAD or DELETE
-%   request. From that point onward, requests grow in complexity
-%   involving or more of the following: path placeholders, query
+%   request is just a path with a method,   e.g.,  a GET, HEAD or DELETE
+%   request.  From  that  point  onward,  requests  grow  in  complexity
+%   involving  or  more  of  the  following:  path  placeholders,  query
 %   parameters, a request body.
 %
-%   The complexity of the request can vary significantly based on the
-%   operation being performed and the specific requirements of the
-%   Docker API. The `docker/2` predicate is designed to handle these
-%   variations and provide a consistent interface for interacting with
-%   the Docker API. It abstracts away the details of constructing the
-%   request and processing the response, allowing users to focus on
-%   the high-level operation they want to perform. Path placeholders
-%   appear in the first Ask term argument as atomic values. URL query parameters
-%   are specified as a list of key-value pairs in the Ask term argument.
-%   POST request payloads are specified as a Prolog dictionary as the Ask term.
+%   The complexity of the request can   vary  significantly based on the
+%   operation being performed  and  the   specific  requirements  of the
+%   Docker API. The `docker/2` predicate  is   designed  to handle these
+%   variations and provide a consistent   interface for interacting with
+%   the Docker API. It abstracts away   the  details of constructing the
+%   request and processing the response, allowing  users to focus on the
+%   high-level operation they want to  perform. Path placeholders appear
+%   in  the  first  Ask  term  argument  as  atomic  values.  URL  query
+%   parameters are specified as a list  of   key-value  pairs in the Ask
+%   term argument. POST request  payloads  are   specified  as  a Prolog
+%   dictionary as the Ask term.
 %
-%   The Ask term is a compound term that specifies the operation to
-%   perform, such as `container_list` or `system_ping`. The Reply is a
-%   Prolog term that represents the response from the Docker API, which
-%   is typically a Prolog dictionary or list, depending on the operation.
+%   The Ask term is a compound  term   that  specifies  the operation to
+%   perform, such as `container_list` or `system_ping`.   The Reply is a
+%   Prolog term that represents the response  from the Docker API, which
+%   is  typically  a  Prolog  dictionary  or   list,  depending  on  the
+%   operation.
 %
-%   The predicate constructs the URL and options based on the operation
-%   and the settings defined in this module. It uses the `ask/4` predicate
-%   to determine the path, method, and any additional options required for
-%   the request. The URL is constructed by appending the path to the
-%   `daemon_url` setting, and the HTTP request is made using the
-%   `http_get/3` predicate from the HTTP client library.
+%   The predicate constructs the URL and  options based on the operation
+%   and the settings  defined  in  this   module.  It  uses  the `ask/4`
+%   predicate to determine the path, method,  and any additional options
+%   required for the request. The URL   is  constructed by appending the
+%   path to the `daemon_url` setting, and the HTTP request is made using
+%   the `http_get/3` predicate from the HTTP client library.
 %
 %   The Reply is then processed to ensure that the keys in the response
 %   are transformed to CamelCase format using the `restyle_value/3`
@@ -256,22 +248,22 @@ the request.
 %   it easier to work with the API and ensuring compatibility with the
 %   expected response format.
 %
-%   @param Ask The Ask term specifies the operation to perform, which may
-%   include path placeholders, query parameters, and a request body. The Ask
-%   term is a compound term that identifies the operation and provides any
-%   necessary arguments or parameters for the request. The Ask term can be a
-%   simple atom for operations with no arguments, or it can be a more complex
-%   term that includes arguments. The Ask term is used to construct the URL and
-%   options for the request, allowing for flexible and dynamic construction of
-%   API requests based on the specified
-%   operation and options.
+%   @param Ask The Ask term specifies   the  operation to perform, which
+%   may include path placeholders, query parameters, and a request body.
+%   The Ask term is a compound term   that  identifies the operation and
+%   provides any necessary arguments or parameters  for the request. The
+%   Ask term can be a simple atom   for operations with no arguments, or
+%   it can be a more complex term  that includes arguments. The Ask term
+%   is used to construct the URL and   options for the request, allowing
+%   for flexible and dynamic construction of   API requests based on the
+%   specified operation and options.
 %
 %   @param Reply The Reply is the response from the Docker API, which is
-%   typically a Prolog dictionary or list, depending on the operation. It can
-%   also be an atom. The Reply is a Prolog term that represents the data
-%   returned by the Docker API after processing the request. It contains the
-%   results of the operation, such as a list of containers, the status of a
-%   container, or the result of a command.
+%   typically a Prolog dictionary or list,   depending on the operation.
+%   It can also be an atom. The Reply   is a Prolog term that represents
+%   the data returned by the Docker API after processing the request. It
+%   contains the results of the operation, such as a list of containers,
+%   the status of a container, or the result of a command.
 
 docker(Ask, Reply) :-
     Ask =.. [Functor|Arguments],
@@ -350,15 +342,16 @@ restyle_body(Body0, Body) =>
 
 %!  ask(+Operation, ?Terms, ?Placeholders, ?Queries, -Options) is semidet.
 %
-%   Constructs a Docker API request based on the specified operation, terms,
-%   placeholders, queries, and options. The operation is an atom that identifies
-%   the Docker API operation to perform, such as `container_list` or
-%   `system_ping`. The Terms are a list of terms that represent the atom spans
-%   and placeholders in the operation's path. The Placeholders are a list of
-%   one-arity functors that will be unified in the path Terms with their
-%   corresponding arguments. The Queries are a list of terms that represent
-%   additional search parameters for the request. The Options are a list of
-%   terms that control how the HTTP request is made.
+%   Constructs a Docker API request based   on  the specified operation,
+%   terms, placeholders, queries, and options. The  operation is an atom
+%   that identifies the  Docker  API  operation   to  perform,  such  as
+%   `container_list` or `system_ping`. The Terms  are   a  list of terms
+%   that represent the atom spans and   placeholders  in the operation's
+%   path. The Placeholders are a list of one-arity functors that will be
+%   unified in the path Terms with   their  corresponding arguments. The
+%   Queries are a  list  of  terms   that  represent  additional  search
+%   parameters for the request. The Options  are   a  list of terms that
+%   control how the HTTP request is made.
 
 ask(Operation, Terms, Placeholders, Queries, Options) :-
     docker_path_options(Operation, Path, Options0),
@@ -470,19 +463,23 @@ restyle_value(Style, Value0, Value) :-
 %   `path_and_method/4`, and the resulting options are suitable for making
 %   requests to the Docker API.
 %
-%   The predicate constructs the URL by concatenating the base URL with
+%   The predicate constructs the URL by  concatenating the base URL with
 %   the path and method. The `daemon_url` setting provides the base URL,
-%   and the `api_version` setting specifies the version of the Docker API.
+%   and the `api_version` setting specifies the   version  of the Docker
+%   API.
 %
-%   @param Operation The operation to perform, which determines the path and
-%   method, as well as any additional options.
-%   @param Reply The response from the Docker API, which is typically a
+%   @param Operation The operation to perform, which determines the path
+%   and method, as well as any additional options.
+%
+%   @param Reply The response from the Docker  API, which is typically a
 %   Prolog dictionary or list, depending on the operation.
-%   @param Options This is a list of options that control both how the path is
-%   formatted and how the HTTP request is made. For path formatting, options are
-%   terms like `id(Value)` that provide values for placeholders in the path
-%   template. For the HTTP request, options can include settings such as
-%   headers, authentication, or other parameters supported by the HTTP client.
+%
+%   @param Options This is a list of   options that control both how the
+%   path is formatted and  how  the  HTTP   request  is  made.  For path
+%   formatting, options are terms like   `id(Value)` that provide values
+%   for placeholders in the path template. For the HTTP request, options
+%   can include settings  such  as   headers,  authentication,  or other
+%   parameters supported by the HTTP client.
 
 docker(Operation, Reply, Options) :-
     setting(daemon_url, URL),
@@ -536,17 +533,18 @@ format_path(Format, Path, Options) :-
 
 %!  docker_path_options(?Operation, -Path, -Options) is semidet.
 %
-%   Constructs the Path and Options for a Docker API operation. The predicate
-%   retrieves the operation details from the Docker API specification and
-%   formats the path according to the default version and operation. The
-%   resulting path and options can be used with the HTTP client to make requests
-%   to the Docker API.
+%   Constructs the Path and Options  for   a  Docker  API operation. The
+%   predicate retrieves the  operation  details   from  the  Docker  API
+%   specification and formats the path according  to the default version
+%   and operation. The resulting path and options   can be used with the
+%   HTTP client to make requests to the Docker API.
 %
-%   The predicate uses the `docker_path_options/4` predicate to construct the
-%   path and options for the specified operation. It retrieves the operation
-%   details from the Docker API specification and formats the path according to
-%   the specified version and operation. The resulting path and options can be
-%   used with the HTTP client to make requests to the Docker API.
+%   The  predicate  uses  the    `docker_path_options/4`   predicate  to
+%   construct the path and  options  for   the  specified  operation. It
+%   retrieves the operation details from   the  Docker API specification
+%   and  formats  the  path  according  to  the  specified  version  and
+%   operation. The resulting path and options can  be used with the HTTP
+%   client to make requests to the Docker API.
 %
 %   | build_prune | '/v1.49/build/prune' | post |
 %   | config_create | '/v1.49/configs/create' | post |
@@ -696,12 +694,14 @@ format_path(Format, Path, Options) :-
 %   | volume_prune | '/v1.49/volumes/prune' | post |
 %   | volume_update | '/v1.49/volumes/{name}' | put |
 %
-%   @param Operation The operation to perform, which determines the path and
-%   method, as well as any additional options.
-%   @param Path The path for the operation, which is derived from the
+%   @param Operation The operation to perform, which determines the path
+%   and method, as well as any additional options.
+%
+%   @param Path The path for the operation,   which  is derived from the
 %   Docker API specification.
-%   @param Options List of options for the HTTP request, such as `method` and
-%   `accept`.
+%
+%   @param Options List  of  options  for   the  HTTP  request,  such as
+%   `method` and `accept`.
 
 docker_path_options(Operation, Path, Options) :-
     setting(api_version, Version),
@@ -709,15 +709,18 @@ docker_path_options(Operation, Path, Options) :-
 
 %!  docker_path_options(+Version, ?Operation, -Path, -Options) is semidet.
 %
-%   The predicate succeeds if the given operation is present in the
-%   `load_docker_api_json/2` dictionary. The dictionary is read from a JSON file
-%   that contains the Docker API specification.
+%   The predicate succeeds if the  given   operation  is  present in the
+%   `load_docker_api_json/2` dictionary. The dictionary is   read from a
+%   JSON file that contains the Docker API specification.
 %
 %   @param Version The version of the Docker API to read.
-%   @param Operation The operation to perform, which determines the path and
-%   method, as well as any additional options.
-%   @param Path The path for the operation, which is derived from the
+%
+%   @param Operation The operation to perform, which determines the path
+%   and method, as well as any additional options.
+%
+%   @param Path The path for the operation,   which  is derived from the
 %   Docker API specification.
+%
 %   @param Options List of options for the HTTP request.
 
 docker_path_options(Version, Operation, Path, [method(Method)|Options]) :-
@@ -732,21 +735,26 @@ docker_path_options(Version, Operation, Path, [method(Method)|Options]) :-
 
 %!  operation(+Version, ?Operation, -Path, -Method, -Options) is nondet.
 %
-%   Retrieves the operation, path, and method from the Docker API JSON
-%   specification. The predicate uses the `load_docker_api_json/2` predicate to
-%   read the Docker API specification and extract the operation details.
+%   Retrieves the operation, path, and method   from the Docker API JSON
+%   specification.  The  predicate  uses   the  `load_docker_api_json/2`
+%   predicate to read the  Docker  API   specification  and  extract the
+%   operation details.
 %
-%   The predicate succeeds if the given operation is present in the
-%   `load_docker_api_json/2` dictionary. The dictionary is read from a JSON file
-%   that contains the Docker API specification.
+%   The predicate succeeds if the  given   operation  is  present in the
+%   `load_docker_api_json/2` dictionary. The dictionary is   read from a
+%   JSON file that contains the Docker API specification.
 %
 %   @param Version The version of the Docker API to read.
-%   @param Operation The operation to perform, which determines the path and
-%   method, as well as any additional options.
-%   @param Path The path for the operation, which is derived from the
+%
+%   @param Operation The operation to perform, which determines the path
+%   and method, as well as any additional options.
+%
+%   @param Path The path for the operation,   which  is derived from the
 %   Docker API specification.
-%   @param Method The HTTP method for the operation, such as `get`, `post`,
-%   or `delete`.
+%
+%   @param Method The HTTP method  for   the  operation,  such as `get`,
+%   `post`, or `delete`.
+%
 %   @param Options List of options for the method, such as `accept` for
 %   the expected response format.
 
@@ -770,10 +778,11 @@ method_option(parameters-Parameters, query(Terms)) :-
 
 %!  query_parameter(+Parameter, -Term) is semidet.
 %
-%   Converts a query parameter from the Docker API specification into a
-%   Prolog term. The parameter is expected to be a dictionary with keys
-%   `in`, `name`, and `type`. The predicate constructs a term of the form
-%   `Name(Type)` where `Name` is the name of the parameter and `Type` is its type.
+%   Converts a query parameter from the  Docker API specification into a
+%   Prolog term. The parameter is expected to  be a dictionary with keys
+%   `in`, `name`, and `type`. The  predicate   constructs  a term of the
+%   form `Name(Type)` where `Name` is  the   name  of  the parameter and
+%   `Type` is its type.
 
 query_parameter(Parameter, Term) :-
     _{in:"query", name:Name, type:Type} :< Parameter,
@@ -807,8 +816,9 @@ path_and_method(Paths, Path, Method, MethodDict) :-
 %   contents as a Prolog dictionary. The   predicate constructs the file
 %   path based on the version and reads the JSON data from the file.
 %
-%   The predicate uses the `docker_api_json_path/2` predicate to resolve the
-%   file path relative to the current module's source file directory.
+%   The predicate uses the `docker_api_json_path/2` predicate to resolve
+%   the  file  path  relative  to  the   current  module's  source  file
+%   directory.
 %
 %   @param Version The version of the Docker  API to read. The predicate
 %   reads the JSON data from the  file   and  unifies it with the `Dict`

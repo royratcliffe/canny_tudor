@@ -36,7 +36,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             xdigit_weights_and_bytes/2,         % ?Weights:list(integer), ?Bytes:list(integer)
             xbytes//1                           % ?Bytes
           ]).
-
+:- use_module(library(dcg/basics)).
 :- use_module(library(clpfd)).
 
 %!  bits(+Shift, +Width, ?Word, ?Bits, ?Rest) is semidet.
