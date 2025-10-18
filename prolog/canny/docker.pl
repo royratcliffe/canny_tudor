@@ -194,58 +194,6 @@ the Docker API. Label keys are also transformed to CamelCase format,
 ensuring consistency in the naming convention used for labels in the
 Docker API requests and responses.
 
-## Low-Level HTTP Requests
-
-The module provides a low-level interface to the Docker API, allowing for custom
-HTTP requests to be made. The `docker/3` predicate constructs the URL and
-options for the specified operation, and uses the `http_get/3` predicate to make
-the request. The options can include HTTP methods, headers, and other parameters
-as needed for the specific operation.
-
-The `url_options/4` predicate is used to construct the URL and options for a
-specific Docker operation. It retrieves the operation details from the Docker
-API specification and formats the path according to the specified version and
-operation. The resulting URL and options can be used with the HTTP client to
-make requests to the Docker API.
-
-### Example usage
-
-The `url_options/4` predicate can be used to construct the URL and options for a
-specific Docker operation. For example, to get the URL and options for the
-`system_ping` operation, you can use:
-
-```prolog
-?- [library(http/http_client)].
-true.
-
-?- canny_docker:url_options(system_ping, URL, Options),
-   http_get(URL, Reply, Options).
-URL = [path('/v1.49/_ping'), protocol(tcp), host(localhost), port(2375)],
-Options = [method(get), accept(["text/plain"])],
-Reply = 'OK'.
-```
-
-For listing containers, you can use:
-
-```prolog
-?- canny_docker:url_options(container_list, URL, Options),
-   http_get(URL, Reply, Options).
-URL = [path('/v1.49/containers/json'), protocol(tcp), host(localhost), port(2375)],
-Options = [method(get), accept(["application/json"])],
-Reply = [json(['Id'=..., ...|...])].
-```
-
-For creating a container, you can use:
-
-```prolog
-?- docker(container_create, A, [post(json(json(['Image'=ubuntu,
-   'Labels'=json(['Hello'=world])])))]).
-```
-
-This example creates a new Docker container with the specified image and labels.
-Notice that the post request uses `json(json(...))` to specify the JSON body of
-the request.
-
 @author Roy Ratcliffe
 @version 0.1.0
 */
