@@ -48,20 +48,25 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /** <module> Canny Docker
 
-This module provides an interface to the Docker API, allowing interaction with
-Docker services through HTTP requests. It defines settings for the Docker daemon
-URL and API version, and provides a predicate to construct URLs and options for
-various Docker operations.
+This module provides an interface to the Docker API, allowing Prolog
+programs to interact with Docker services through HTTP requests. It
+defines configurable settings for the Docker daemon URL and API version,
+and provides predicates to perform Docker operations programmatically.
 
-It supports operations such as listing containers, creating containers, and
-checking the Docker system status. The module uses Prolog dictionaries to
-represent JSON data structures, making it easy to work with the Docker API's
-responses. It also includes utility predicates for transforming dictionary
-key-value pairs and constructing paths for API requests. It is designed to be
-used in conjunction with the HTTP client library to make requests to the Docker
-API. It provides a flexible way to interact with Docker services, allowing for
-dynamic construction of API requests based on the specified operations and
-options.
+The module supports comprehensive Docker operations including container
+management (list, create, start, stop), image operations, network
+management, and system monitoring. It uses Prolog dictionaries to
+represent JSON data structures from the Docker API, with automatic
+key transformation between Prolog naming conventions and Docker's
+CamelCase format.
+
+Key features:
+- Dynamic URL construction based on operation type and parameters
+- Automatic placeholder substitution in API paths
+- JSON request/response handling with dictionary mapping
+- Configurable daemon connection settings
+- Support for query parameters and request bodies
+- Comprehensive coverage of Docker API v1.49 operations
 
 ## Docker API Operations
 
@@ -73,15 +78,22 @@ The module supports various Docker API operations, such as:
     - `network_create`: Create a new network.
     - `network_delete`: Delete a network.
 
-These operations are defined in the Docker API specification and can be accessed
-through the `docker/3` predicate, which constructs the appropriate URL and
-options based on the operation and the settings defined in this module.
+This list is not exhaustive; the full list includes many other operations for
+managing containers, images, networks, and other Docker resources. Each
+operation is defined in the Docker API specification and can be accessed through
+the `docker/3` predicate, which constructs the appropriate URL and options based
+on the operation and the settings defined in this module.
+
+The full set of operations are defined in the Docker API specification and can
+be accessed through the `docker/3` predicate, which constructs the appropriate
+URL and options based on the operation and the settings defined in this module.
 
 ### Example container operations
 
 The following examples demonstrate how to list and create Docker containers
 using the `docker/3` predicate. The first example lists all containers, and the
 second example creates a new container with a specified image and labels.
+
 ```prolog
 ?- docker(container_list, Reply).
 Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
@@ -89,6 +101,7 @@ Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
    'Labels'=json(['Hello'=world)])))])).
 Reply = _{Id:"abc123", Warnings:[]}.
 ```
+
 The `container_list/2` predicate retrieves a list of all containers, returning
 a list of dictionaries representing each container. Each dictionary contains
 information such as the container ID, image, and other metadata.
