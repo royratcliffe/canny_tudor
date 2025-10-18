@@ -177,7 +177,7 @@ especially in larger deployments with many networks and containers.
 
 ### Restyling Keys
 
-The `docker/3` predicate transforms the keys in the input dictionary to
+The `docker/2` predicate transforms the keys in the input dictionary to
 CamelCase format using the `restyle_key/3` predicate, which applies the
 Docker-specific CamelCase naming convention to the keys. This
 transformation is useful for ensuring that the keys in the input
