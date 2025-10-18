@@ -129,7 +129,7 @@ returning a list of dictionaries representing each container. Each
 dictionary contains information such as the container ID, image, and
 other metadata.
 
-The `container_create/3` ask term creates a new
+The =|container_create/3|= ask term creates a new
 container with the specified image and labels. The labels are specified
 as a JSON object, allowing for flexible tagging of containers with
 metadata. The reply contains the ID of the created container and any
@@ -151,9 +151,9 @@ A = _{id:"1be0f5d2337ff6a6db79a59707049c199268591f49e3c9054fc698fe7916f9c3", war
 A = ''.
 ```
 
-Note that the `network_create/2` predicate constructs a network with the
+Note that the =|network_create/2|= ask term constructs a network with the
 specified name and labels, and returns a reply containing the network ID and any
-warnings. The `network_delete/2` predicate deletes the network by its name,
+warnings. The =|network_delete/2|= ask term deletes the network by its name,
 returning an empty reply if successful.
 
 Labels can be used to tag networks with metadata, which can be useful
