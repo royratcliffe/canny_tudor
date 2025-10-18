@@ -140,7 +140,7 @@ criteria, such as purpose or owner.
 ### Example network operations
 
 The following examples demonstrate how to create and delete a Docker network
-using the `docker/3` predicate. The network is created with a name and labels,
+using the `docker/2` predicate. The network is created with a name and labels,
 and then deleted by its name.
 
 ```prolog
