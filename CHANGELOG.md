@@ -3,6 +3,12 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.24.1] - 2025-12-20
+### Added
+- Introduce a new module for computing prefix sums and range sums, enhancing
+  efficiency for range-sum queries. Update documentation and version to reflect
+  these changes.
+
 ## [0.23.14] - 2025-10-01
 ### Added
 - New predicate `xdigit_weights_and_bytes(?Weights:list(integer), ?Bytes:list(integer))`
