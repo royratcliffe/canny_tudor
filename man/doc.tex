@@ -2356,7 +2356,69 @@ services:
       - 8080:8080/tcp
 \end{code}
 
-\vspace{0.7cm}\chapter{library(print/(table))}\label{sec:table}
+\vspace{0.7cm}\chapter{library(prefix/sum): Prefix Sums}\label{sec:sum}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+\end{tags}
+
+This module provides functionality to compute the prefix sum of an
+array and to calculate the sum of elements in a specified range using
+the prefix sum array. It is useful for efficiently answering
+range-sum queries after a preprocessing step. The prefix sum at each
+index is the sum of all previous elements including the current one.
+It allows for quick calculation of sums over subarrays and is a
+common technique in algorithm design.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{prefix_sum}{2}{+Numbers:list(number), -PrefixSum:list(number)}
+Calculates the inclusive prefix sum of the given array. The prefix
+sum at each index is the sum of all previous elements including the
+current one. This is useful for efficiently computing cumulative
+sums. The function is deterministic and will always produce the same
+output for the same input.
+
+The \arg{Numbers} array must be ground numerical values. The resulting
+\arg{PrefixSum} array will have the same length as the input \arg{Numbers}
+array.
+
+Why is this useful?
+
+\begin{itemize}
+    \item It allows for quick calculation of sums over subarrays.
+    \item It can be used in various algorithms that require cumulative
+sums.
+\end{itemize}
+
+It answers range-sum queries in constant time O(1) after a linear
+time O(n) preprocessing step. This is particularly useful in
+scenarios where multiple range-sum queries are performed on the same
+array. The sum of A[i..j] can be computed as \arg{PrefixSum}[j] -
+\arg{PrefixSum}[i-1].
+
+\begin{arguments}
+\arg{Numbers} & A list of numerical values for which the prefix sum is
+to be calculated. \\
+\arg{PrefixSum} & The resulting array containing the prefix sums. \\
+\end{arguments}
+
+    \predicate[det]{range_sum}{4}{+PrefixSum:list(number), +Index0:integer, +Index:integer, -Sum:number}
+Computes the sum of elements in the original array from \arg{Index0} to
+\arg{Index} using the provided \arg{PrefixSum} array.
+
+This function assumes that the \arg{PrefixSum} array has been computed
+using the \predref{prefix_sum}{2} predicate.
+
+\begin{arguments}
+\arg{PrefixSum} & The prefix sum array. \\
+\arg{Index0} & The starting index of the range (inclusive). \\
+\arg{Index} & The ending index of the range (inclusive). \\
+\arg{Sum} & The resulting sum of elements from \arg{Index0} to \arg{Index}. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(print/(table))}\label{sec:table}
 
 \begin{description}
     \predicate[det]{print_table}{1}{:Goal}
