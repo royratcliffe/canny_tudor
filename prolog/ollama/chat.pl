@@ -40,6 +40,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
            'URL of Ollama API.').
 :- setting(ollama_model, string, env('OLLAMA_MODEL', "nemotron-mini"),
            'Ollama model to use.').
+:- setting(ollama_tools, list(dict), [],
+           'Ollama tools to use.').
 
 /** <module> Ollama Chat
 
