@@ -126,12 +126,15 @@ ollama_chat(Messages, Message, Options) :-
     option(stream(Stream), Options, true),
     setting(ollama_model, DefaultModel),
     option(model(Model), Options, DefaultModel),
+    setting(ollama_tools, DefaultTools),
+    option(tools(Tools), Options, DefaultTools),
     option(reply(Reply), Options, Reply),
     setting(ollama_url, DefaultURL),
     option(url(URL), Options, DefaultURL),
     chat(URL, _{stream:Stream,
                 model:Model,
-                messages:Messages}, Reply, Options),
+                messages:Messages,
+                tools:Tools}, Reply, Options),
     Message = Reply.message.
 
 chat(URL, Dict, Reply, Options) :-
