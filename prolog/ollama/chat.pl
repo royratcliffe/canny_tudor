@@ -40,6 +40,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
            'URL of Ollama API.').
 :- setting(ollama_model, string, env('OLLAMA_MODEL', "nemotron-mini"),
            'Ollama model to use.').
+:- setting(ollama_tools, list(dict), [],
+           'Ollama tools to use.').
 
 /** <module> Ollama Chat
 
@@ -124,12 +126,15 @@ ollama_chat(Messages, Message, Options) :-
     option(stream(Stream), Options, true),
     setting(ollama_model, DefaultModel),
     option(model(Model), Options, DefaultModel),
+    setting(ollama_tools, DefaultTools),
+    option(tools(Tools), Options, DefaultTools),
     option(reply(Reply), Options, Reply),
     setting(ollama_url, DefaultURL),
     option(url(URL), Options, DefaultURL),
     chat(URL, _{stream:Stream,
                 model:Model,
-                messages:Messages}, Reply, Options),
+                messages:Messages,
+                tools:Tools}, Reply, Options),
     Message = Reply.message.
 
 chat(URL, Dict, Reply, Options) :-

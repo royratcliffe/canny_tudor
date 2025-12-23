@@ -3,6 +3,12 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.24.2] - 2025-12-23
+### Added
+- Add `ollama_tools` setting to configure tools for Ollama chat interactions.
+- Merged `canny_url` module with documentation and tests for url_encoded//1
+  and url_coded/2 predicates.
+
 ## [0.24.1] - 2025-12-20
 ### Added
 - Introduce a new module for computing prefix sums and range sums, enhancing

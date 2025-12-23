@@ -1526,6 +1526,39 @@ history comes first. Filters out single-element histories for the
 sake of noise minimisation.
 \end{description}
 
+\chapter{library(canny/url)}\label{sec:url}
+
+\begin{description}
+    \dcg[nondet]{url_encoded}{1}{?Code}
+Similar to \predref{uri_encoded}{3} but simpler.
+
+URL encodes a \arg{Code}. Uses the C-symbol code type (including letters,
+digits and underscores) conservatively to determine whether or not
+to encode to percentage-prefixed hexadecimal. Liberally decodes by
+accepting any code except the percentage code. Percents must decode
+with a pair of hexadecimal digits; decoding otherwise fails.
+
+\begin{arguments}
+\arg{Code} & is a character code. \\
+\end{arguments}
+
+    \predicate[semidet]{url_coded}{2}{?Decoded, ?Encoded}
+Encodes or decodes a sequence of codes. Uses \dcgref{url_encoded}{1} to
+perform the encoding or decoding. Succeeds once.
+
+Examples:
+
+\Sdirective{} \verb$url_coded(`Hello_World!`, Encoded)$.
+\arg{Encoded} = \arg{Hello_World\%21}.
+\Sdirective{} \verb$url_coded(Decoded, `Hello_World%21`)$.
+\arg{Decoded} = `Hello_World!`.
+
+\begin{arguments}
+\arg{Decoded} & is a list of character codes. \\
+\arg{Encoded} & is a list of character codes. \\
+\end{arguments}
+\end{description}
+
 \chapter{library(canny/z)}\label{sec:z}
 
 \begin{description}
