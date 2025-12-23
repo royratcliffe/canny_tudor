@@ -13,4 +13,7 @@ test(decoded, fail) :- url_coded(_, `%2`).
 test(encoded, A == `\xff`) :- url_coded(A, `%FF`).
 test(encoded, A == `\xff`) :- url_coded(A, `%ff`).
 
+test(coded, Encoded == `Hello_World%21`) :- url_coded(`Hello_World!`, Encoded).
+test(coded, Decoded == `Hello_World!`) :- url_coded(Decoded, `Hello_World%21`).
+
 :- end_tests(canny_url).

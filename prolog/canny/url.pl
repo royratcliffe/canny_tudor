@@ -30,17 +30,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           [ url_encoded//1,
             url_coded/2                         % ?Decoded, ?Encoded
           ]).
-:- autoload(library(dcg/high_order), [sequence/4]).
+:- autoload(library(dcg/high_order), [sequence//2]).
 
 %!  url_encoded(?Code)// is nondet.
 %
 %   Similar to uri_encoded/3 but simpler.
 %
-%   URL encodes a Code. Uses the C-symbol code type (including letters,
-%   digits and underscores) conservatively to determine whether or not
-%   to encode to percentage-prefixed hexadecimal. Liberally decodes by
-%   accepting any code except the percentage code. Percents must decode
+%   URL encodes a Code. Uses the  C-symbol code type (including letters,
+%   digits and underscores) conservatively to   determine whether or not
+%   to encode to percentage-prefixed hexadecimal.   Liberally decodes by
+%   accepting any code except the percentage  code. Percents must decode
 %   with a pair of hexadecimal digits; decoding otherwise fails.
+%
+%   @arg Code is a character code.
 
 url_encoded(Code) -->
     { nonvar(Code)
@@ -71,7 +73,18 @@ decoded(Code) --> [Code].
 
 %!  url_coded(?Decoded, ?Encoded) is semidet.
 %
-%   Encodes or decodes a sequence of codes.
+%   Encodes or decodes a  sequence  of   codes.  Uses  url_encoded//1 to
+%   perform the encoding or decoding. Succeeds once.
+%
+%   Examples:
+%
+%   ?- url_coded(`Hello_World!`, Encoded).
+%   Encoded = `Hello_World%21`.
+%   ?- url_coded(Decoded, `Hello_World%21`).
+%   Decoded = `Hello_World!`.
+%
+%   @arg Decoded is a list of character codes.
+%   @arg Encoded is a list of character codes.
 
 url_coded(Decoded, Encoded) :-
     once(phrase(sequence(url_encoded, Decoded), Encoded)).
