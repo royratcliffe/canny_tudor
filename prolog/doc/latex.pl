@@ -30,12 +30,6 @@ latex_for_pack_(Pack, File) :-
     md(Spec),
     absolute_file_name(Spec, File, [extensions([md]), relative_to(Pack)]).
 latex_for_pack_(Pack, File) :-
-    directory_member(Pack, File0, [extensions([md]), recursive(true)]),
-    absolute_file_name(File0, File),
-    file_base_name(File, Name),
-    file_name_extension(Base, md, Name),
-    \+ md(Base).
-latex_for_pack_(Pack, File) :-
     absolute_file_name(Pack/prolog, Absolute),
     directory_member(Absolute, File, [file_type(prolog), recursive(true)]),
     doc_file_objects(File, _, Objects, FileOptions, []),
@@ -45,7 +39,6 @@ latex_for_pack_(Pack, File) :-
     ).
 
 md(readme).
-md(changelog).
 
 pack_file(Spec, File) :-
     absolute_file_name(Spec, Absolute),

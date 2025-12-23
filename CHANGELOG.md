@@ -3,6 +3,62 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.24.2] - 2025-12-23
+### Added
+- Add `ollama_tools` setting to configure tools for Ollama chat interactions.
+
+## [0.24.1] - 2025-12-20
+### Added
+- Introduce a new module for computing prefix sums and range sums, enhancing
+  efficiency for range-sum queries. Update documentation and version to reflect
+  these changes.
+
+## [0.23.14] - 2025-10-01
+### Added
+- New predicate `xdigit_weights_and_bytes(?Weights:list(integer), ?Bytes:list(integer))`
+  from `canny_bits` module. It relates a list of hexadecimal digit weights
+  to a list of corresponding byte values. Each weight is a power of 16, starting
+  from the least significant digit (rightmost) with a weight of 1 (16^0), and
+  increasing by powers of 16 for each subsequent digit to the left.
+- New grammar predicate `xbytes(?Bytes:list(integer))//` from `canny_bits` module.
+  It parses a sequence of hexadecimal byte values represented as pairs of
+  hexadecimal digit characters (0-9, A-F, a-f) into a list of integers,
+  each ranging from 0 to 255. The input is expected to be a sequence of
+  hexadecimal digits without any separators, and the total number of digits
+  must be even to form complete bytes.
+
+## [0.23.13] - 2025-07-29
+### Changed
+- Refactor Docker ask predicate for JSON dictionary value restyling
+- Enhance ask predicate for list queries and dictionary posts; fix query_search/3
+- Improve ask predicate for list queries and JSON request bodies
+- Streamline ask predicate for JSON body handling and dictionary processing
+
+## [0.23.12] - 2025-07-27
+### Changed
+- Remove meta-predicate
+
+## [0.23.11] - 2025-07-27
+### Changed
+- Enhance Docker predicates and improve documentation
+
+## [0.23.10] - 2025-07-25
+### Added
+- Docker API
+- Placeholder formatting
+
+## [0.23.9] - 2025-06-08
+### Added
+- Predicate `scasp_just_dot_print(+Stream, +Src, +Options)`
+
+## [0.23.8] - 2025-05-31
+### Added
+- Predicate `ollama_chat(+Messages:list(dict), -Message:dict, +Options:list)`
+
+## [0.23.7] - 2025-05-11
+### Added
+- Predicate `directory_entry(+Directory, ?Entry)//`, module `dcg_files`
+
 ## [0.23.6] - 2023-09-16
 ### Added
 - Predicate `bit_shift//3`, module `canny_shifter`

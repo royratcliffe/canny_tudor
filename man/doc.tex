@@ -19,514 +19,9 @@ library sub-folders and module names delineate the disparate components. If the
 sub-modules grow to warrant a larger division, they can ultimately fork their
 own pack.
 
-The pack currently includes:
-
-\begin{itemize}
-    \item Docker-style random names
-    \item Operating system-related features:
-
-\begin{shortlist}
-    \item Search path manipulation
-    \item Start and stop, upping and downing apps
-\end{shortlist}
-
-    \item SWI-Prolog extensions for dictionaries and compounds
 The pack comprises experimental modules subject to change and revision
 due to its nature. The pack's major version will always remain 0.
-Work in progress!
-\end{itemize}
-
-\section{Apps}
-
-You can start or stop an app.
-
-\begin{code}
-app_start(App)
-app_stop(App)
-\end{code}
-
-App is some compound that identifies which app to start and stop. You define an
-App using \qpredref{os}{property_for_app}{2} multi-file predicate. You must at least define
-an app's path using, as an example:
-
-\begin{code}
-os:property_for_app(path(path(mspaint)), mspaint) :- !.
-\end{code}
-
-Note that the Path is a path Spec used by \predref{process_create}{3}, so can include a
-path-relative term as above. This is enough to launch the Microsoft Paint app on
-Windows. No need for arguments and options for this example. Starting a \textit{running}
-app does not start a new instance. Rather, it succeeds for the existing
-instance. The green cut prevents unnecessary backtracking.
-
-You can start and continuously restart apps using \predref{app_up}{1}, and subsequently
-shut them down with \predref{app_down}{1}.
-
-\subsection{Apps testing}
-
-On a Windows system, try the following for example. It launches Microsoft Paint.
-Exit the Paint app after \predref{app_up}{1} below and it will relaunch automatically.
-
-\begin{code}
-?- [library(os/apps), library(os/apps_testing)].
-true.
-
-?- app_up(mspaint).
-true.
-
-?- app_down(mspaint).
-true.
-\end{code}
-
-\section{SWI-Prolog extensions}
-
-This includes the following.
-
-\subsection{Non-deterministic `dict_member(?Dict, ?Member)`}
-
-This predicate offers an alternative approach to dictionary iteration in
-Prolog. It makes a dictionary expose its leaves as a list exposes its
-elements, one by one non-deterministically. It does not unify with
-non-leaves, as for empty dictionaries.
-
-\begin{code}
-?- dict_member(a{b:c{d:e{f:g{h:i{j:999}}}}}, Key-Value).
-Key = a^b/c^d/e^f/g^h/i^j,
-Value = 999.
-
-?- dict_member(Dict, a^b/c^d/e^f/g^h/i^j-999).
-Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
-\end{code}
-
-\chapter{Change Log}
-
-Uses \href{https://semver.org/}{Semantic Versioning}. Always \href{https://keepachangelog.com/en/1.0.0/}{keep a change
-log}.
-
-\section{[0.23.6] - 2023-09-16}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Predicate \dcgref{bit_shift}{3}, module \verb$canny_shifter$
-\end{shortlist}
-
-\section{[0.23.5] - 2023-08-29}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Predicate \dcgref{endian}{3}, module \verb$dcg_endian$
-\end{shortlist}
-
-\section{[0.23.4] - 2023-08-28}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Predicates \const{crc}/\{2, 3\} and \predref{crc_property}{2}
-    \item Predicates \verb$crc_16_mcrf4xx$/\{2, 3\}
-    \item Predicate \predref{rbit}{3}
-    \item Table of contents to manual
-\end{shortlist}
-
-\section{[0.23.3] - 2022-10-04}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Option \predref{key}{1} and \predref{id}{1} for \verb$xread_call$/\{5, 6\}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Cut choice for \predref{threshold}{1} option
-\end{shortlist}
-
-\section{[0.23.2] - 2022-10-02}
-
-\subsection{Changed}
-
-\begin{shortlist}
-    \item Bumped pack version to patch level 2
-    \item Skipping release for patch level 1
-\end{shortlist}
-
-\section{[0.23.0] - 2022-10-02}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Half-duplex hdx/\{4, 3, 2\} predicates
-\end{shortlist}
-
-\section{[0.22.0] - 2022-10-02}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Canny predicates for Redis and Redis streams
-\end{shortlist}
-
-\section{[0.21.1] - 2022-08-15}
-
-\subsection{Changed}
-
-\begin{shortlist}
-    \item Refactored \predref{bit_fields}{3} and \predref{bit_fields}{4}
-\end{shortlist}
-
-\section{[0.21.0] - 2022-08-13}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_octet$ module
-\end{shortlist}
-
-\section{[0.20.0] - 2022-08-12}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_z$ module
-\end{shortlist}
-
-\section{[0.19.1] - 2022-08-12}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Link to PDF on main branch after switch to simpler GitHub Flow
-    \item Also switch to \href{https://www.overleaf.com/learn/latex/Font_typefaces}{Bookman-oriented \const{tgbonum} font pack}
-\end{itemize}
-
-\section{[0.19.0] - 2022-08-03}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$swi_memfilesio$ module
-\end{shortlist}
-
-\section{[0.18.0] - 2021-08-04}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$swi_settings$ module
-    \item \verb$swi_zip$ module
-\end{shortlist}
-
-\section{[0.17.0] - 2021-06-15}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$paxos_udp_broadcast$ module for Paxos over UDP broadcast
-\end{shortlist}
-
-\section{[0.16.0] - 2021-06-07}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_a$ module for \predref{a_star}{3}
-\end{shortlist}
-
-\section{[0.15.0] - 2021-06-06}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_exe$ module
-\end{shortlist}
-
-\section{[0.14.0] - 2021-05-05}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Continuous Integration using GitHub Actions
-    \item Test coverage shields
-    \item Prototype for GitHub API
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Patches for test coverage
-\end{shortlist}
-
-\section{[0.13.0] - 2021-04-12}
-
-\subsection{Added}
-
-\begin{itemize}
-    \item \dcgref{loadavg}{5} and \predref{loadavg}{5} predicates
-    \item \predref{current_arch}{1}, \predref{current_arch_os}{2} and \predref{current_os}{1} predicates
-\end{itemize}
-
-\section{[0.12.0] - 2021-03-13}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{pop_lsbs}{2} predicate
-\end{shortlist}
-
-\section{[0.11.0] - 2021-02-18}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{columns_to_rows}{2} predicate
-\end{shortlist}
-
-\section{[0.10.0] - 2021-02-15}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{select_options}{4} predicate
-    \item \predref{comb2}{2} predicate
-\end{shortlist}
-
-\section{[0.9.0] - 2020-12-30}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{pairs}{2} predicate
-\end{shortlist}
-
-\subsection{Changed}
-
-\begin{shortlist}
-    \item \predref{indexed_pairs}{2} renamed to \predref{indexed}{2}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item \predref{pengine_collect}{4} filters using \verb$pengine_property(Id, self(Id))$
-\end{shortlist}
-
-\section{[0.8.3] - 2020-10-17}
-
-\subsection{Added}
-
-\begin{itemize}
-    \item \verb$canny_files$ module
-    \item Refactored \predref{latex_for_pack}{3}
-    \item \predref{pengine_collect}{2}, \predref{pengine_collect}{4} and \predref{pengine_wait}{1} (swi_pengines module)
-    \item \verb$os_file_searches$ refactored to \verb$os_windows$
-    \item \predref{prefix_atom_suffix}{4}
-\end{itemize}
-
-\section{[0.8.2] - 2020-09-09}
-
-\subsection{Added}
-
-\begin{itemize}
-    \item \verb$canny_arity$ module
-    \item \predref{payload}{1}, \predref{apply_to}{1} and \predref{property_of}{1} for canny_payloads
-\end{itemize}
-
-\section{[0.8.1] - 2020-09-04}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Maths predicate \predref{remainder}{3} to \predref{frem}{3}; avoids clash with \dcgref{remainder}{1}
-    \item LaTeX manual; omits undocumented modules
-\end{itemize}
-
-\section{[0.8.0] - 2020-08-29}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$canny_payloads$ module
-    \item \verb$canny_endian$ module
-    \item \verb$canny_bits$ module
-    \item \verb$ieee_754$ module
-    \item LaTeX generator for PDF manual
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Situations now permit non-variable Now terms. This allows for dictionaries
-with unbound tags.
-    \item Situations also now support time-differential calculations with \verb$for(Seconds)$
-in place of When. Current and previous situations compute the time delay
-between historic situation samples: the difference in time between the current
-and now, or the time delay between the previous and the current.
-\end{itemize}
-
-\section{[0.7.2] - 2020-07-25}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{append_path}{3}
-    \item \predref{dict_pair}{2}
-    \item \predref{take_at_most}{3}
-    \item \predref{select1}{3}, \predref{select_apply1}{3}
-\end{shortlist}
-
-\section{[0.7.1] - 2020-06-14}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \verb$indexed_pairs/{2,3}$
-    \item \predref{list_dict}{3}
-    \item \predref{dict_leaf}{2}
-    \item \predref{split_lines}{2}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item \predref{make}{0} warnings
-    \item Situation debugging reports WAS, NOW
-    \item Clean up test side effects
-\end{shortlist}
-
-\section{[0.7.0] - 2020-04-10}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Key restyling for \predref{dict_compound}{2}
-\end{shortlist}
-
-\section{[0.6.1] - 2020-04-09}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{restyle_identifier_ex}{3}
-    \item \predref{is_key}{1}
-    \item \predref{dict_compound}{2}
-\end{shortlist}
-
-\section{[0.6.0] - 2020-04-06}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{permute_sum_of_int}{2}
-    \item \predref{permute_list_to_grid}{2}
-    \item \predref{dict_tag}{2}
-    \item \predref{print_situation_history_lengths}{0}
-    \item \predref{create_dict}{3}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Code stylings
-\end{shortlist}
-
-\section{[0.5.2] - 2020-01-11}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item \predref{close_streams}{2}
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Do not independently broadcast \predref{was}{2} and \predref{now}{2} for situation transitions
-\end{itemize}
-
-\section{[0.5.1] - 2019-12-03}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Situation mutator renamed \predref{situation_apply}{2}
-\end{shortlist}
-
-\section{[0.5.0] - 2019-12-03}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Linear algebra
-    \item Canny maths
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Canny situations
-\end{shortlist}
-
-\section{[0.4.0] - 2019-10-19}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Canny situations
-    \item \predref{random_temporary_module}{1} predicate
-    \item \predref{zip}{3} predicate (swi_lists)
-    \item \predref{print_table}{1} predicate
-\end{shortlist}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item \predref{with_output_to}{3} uses \predref{random_name_chk}{1}
-\end{shortlist}
-
-\section{[0.3.0] - 2019-09-06}
-
-\subsection{Added}
-
-\begin{itemize}
-    \item \predref{random_name_chk}{1} versus non-deterministic \predref{random_name}{1}
-\end{itemize}
-
-\section{[0.2.1] - 2019-09-03}
-
-\subsection{Fixed}
-
-\begin{itemize}
-    \item Fix the fix; \predref{dict_member}{2} unifies with empty dictionary leaf nodes
-\end{itemize}
-
-\section{[0.2.0] - 2019-09-02}
-
-\subsection{Fixed}
-
-\begin{shortlist}
-    \item Allow dictionary leaf values for \predref{dict_member}{2}
-\end{shortlist}
-
-\section{[0.1.1] - 2019-08-02}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Missing pack maintainer, home and download links
-\end{shortlist}
-
-\section{[0.1.0] - 2019-08-02}
-
-\subsection{Added}
-
-\begin{shortlist}
-    \item Initial spike
-\end{shortlist}
-
-\chapter{library(canny/a)}\label{sec:a}
+Work in progress!\chapter{library(canny/a)}\label{sec:a}
 
 \begin{description}
     \predicate[det]{a_star}{3}{+Heuristics0, -Heuristics, +Options}
@@ -675,6 +170,45 @@ residual and the predicate discards them. The order of the sub-terms
 is not very important, except for failures. Placing \const{succ} first
 ensures that recursive shifting fails if \arg{Shift} is not a positive
 integer; it triggers an exception if not actually an integer.
+
+    \predicate[semidet]{xdigit_weights_and_bytes}{2}{?Weights:list(integer), ?Bytes:list(integer)}
+Convert a list of hexadecimal digit weights to a list of bytes, or
+vice versa. Uses CLP(FD) constraints to ensure valid two-way
+conversions.
+
+Examples:
+
+\begin{code}
+?- xdigit_weights_and_bytes([10, 11, 12, 13], Bytes).
+Bytes = [171, 205].
+
+?- xdigit_weights_and_bytes(Weights, [171, 205]).
+Weights = [10, 11, 12, 13].
+\end{code}
+
+This predicate is semidet, meaning it can succeed or fail depending
+on the input. The elements of the \arg{Weights} list must be in the range
+0..15, and the elements of the \arg{Bytes} list must be in the range
+0..255. The length of the \arg{Weights} and \arg{Bytes} lists must differ by a
+factor of two for the conversion to succeed. Two hexadecimal digit
+weights correspond to one byte.
+
+\begin{arguments}
+\arg{Weights} & A list of hexadecimal digit weights (0-15). \\
+\arg{Bytes} & A list of bytes (0-255). \\
+\end{arguments}
+
+    \dcg[semidet]{xbytes}{1}{?Bytes:list(integer)}
+Converts a list of \arg{Bytes} to a list of hexadecimal digits, or vice
+versa.
+
+This predicate is semidet, meaning it can succeed or fail depending
+on the input. The elements of the \arg{Bytes} list must be in the range
+0..255.
+
+\begin{arguments}
+\arg{Bytes} & A list of bytes (0-255). \\
+\end{arguments}
 \end{description}
 
 \chapter{library(canny/cover)}\label{sec:cover}
@@ -733,6 +267,541 @@ Initialises CRC-16/MCRF4XX checksum.
     \predicate[det]{crc_16_mcrf4xx}{3}{+Check0, +Data, -Check}
 Accumulates CRC-16/MCRF4XX checksum using optimal shifting and
 exclusive-OR operations.
+\end{description}
+
+\chapter{library(canny/docker): Canny Docker}\label{sec:docker}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+    \tag{version}
+0.1.0
+\end{tags}
+
+This module provides an interface to the Docker API, allowing Prolog
+programs to interact with Docker services through HTTP requests. It
+defines configurable settings for the Docker daemon URL and API version,
+and provides predicates to perform Docker operations programmatically.
+
+The module supports comprehensive Docker operations including container
+management (list, create, start, stop), image operations, network
+management, and system monitoring. It uses Prolog dictionaries to
+represent JSON data structures from the Docker API, with automatic key
+transformation between Prolog naming conventions and Docker's CamelCase
+format.
+
+Key features:
+
+\begin{itemize}
+    \item Dynamic URL construction based on operation type and parameters
+    \item Automatic placeholder substitution in API paths
+    \item JSON request/response handling with dictionary mapping
+    \item Configurable daemon connection settings
+    \item Support for query parameters and request bodies
+    \item Comprehensive coverage of Docker API v1.49 operations
+\end{itemize}
+
+\section{Docker API Operations}
+
+The module supports various Docker API operations organised by resource
+type:
+
+\textbf{System Operations:}
+
+\begin{shortlist}
+    \item \verb$system_ping$: Check if the Docker daemon is reachable
+    \item \verb$system_info$: Get system information
+    \item \verb$system_version$: Get Docker version information
+    \item \verb$system_events$: Stream real-time events
+    \item \verb$system_data_usage$: Get data usage information
+\end{shortlist}
+
+\textbf{Container Operations:}
+
+\begin{shortlist}
+    \item \verb$container_list$: List all containers
+    \item \verb$container_create$: Create a new container
+    \item \verb$container_start$: Start a container
+    \item \verb$container_stop$: Stop a container
+    \item \verb$container_inspect$: Get detailed container information
+    \item \verb$container_delete$: Remove a container
+    \item \verb$container_logs$: Get container logs
+\end{shortlist}
+
+\textbf{Image Operations:}
+
+\begin{shortlist}
+    \item \verb$image_list$: List available images
+    \item \verb$image_create$: Pull or import an image
+    \item \verb$image_build$: Build an image from Dockerfile
+    \item \verb$image_delete$: Remove an image
+    \item \verb$image_inspect$: Get detailed image information
+\end{shortlist}
+
+\textbf{Network Operations:}
+
+\begin{shortlist}
+    \item \verb$network_list$: List networks
+    \item \verb$network_create$: Create a new network
+    \item \verb$network_delete$: Delete a network
+    \item \verb$network_inspect$: Get network details
+\end{shortlist}
+
+\textbf{Volume Operations:}
+
+\begin{shortlist}
+    \item \verb$volume_list$: List volumes
+    \item \verb$volume_create$: Create a new volume
+    \item \verb$volume_delete$: Remove a volume
+\end{shortlist}
+
+The complete set of 80+ operations is dynamically loaded from the Docker
+API v1.49 specification and accessible through the \predref{docker}{2} and
+\predref{docker}{3} predicates. The two-arity predicate \predref{docker}{2} is a
+high-level interface for operations using Prolog dictionaries with
+automatic key restyling, while the three-arity predicate \predref{docker}{3}
+allows for more detailed control.
+
+\subsection{Example container operations}
+
+The following examples demonstrate how to list and create Docker
+containers using the \predref{docker}{3} predicate. The first example lists all
+containers, and the second example creates a new container with a
+specified image and labels.
+
+\begin{code}
+?- docker(container_list, Reply, []).
+Reply = [json(['Id'='abc123', 'Image'='ubuntu:latest', ...|...])].
+?- docker(container_create, Reply, [post(json(json(['Image'=ubuntu,
+   'Labels'=json(['Hello'=world)])))])).
+Reply = _{Id:"abc123", Warnings:[]}.
+\end{code}
+
+The \verb$container_list/0$ ask term retrieves a list of all containers,
+returning a list of dictionaries representing each container. Each
+dictionary contains information such as the container ID, image, and
+other metadata.
+
+The \verb$container_create/3$ ask term creates a new container with the
+specified image and labels. The labels are specified as a JSON object,
+allowing for flexible tagging of containers with metadata. The reply
+contains the ID of the created container and any warnings that may have
+occurred during the creation process. The labels can be used to organise
+and manage containers based on specific criteria, such as purpose or
+owner.
+
+\subsection{Example network operations}
+
+The following examples demonstrate how to create and delete a Docker network
+using the \predref{docker}{2} predicate. The network is created with a name and labels,
+and then deleted by its name.
+
+\begin{code}
+?- docker(network_create(_{name:my_network, labels:_{'my.label':'my-value'}}), A).
+A = _{id:"1be0f5d2337ff6a6db79a59707049c199268591f49e3c9054fc698fe7916f9c3", warning:""}.
+
+?- docker(network_delete(my_network), A).
+A = ''.
+\end{code}
+
+Note that the \verb$network_create/2$ ask term constructs a network with
+the specified name and labels, and returns a reply containing the
+network ID and any warnings. The \verb$network_delete/2$ ask term deletes
+the network by its name, returning an empty reply if successful.
+
+Labels can be used to tag networks with metadata, which can be useful
+for organising and managing Docker resources. The labels are specified
+as a dictionary with key-value pairs, where the keys and values are
+strings. The labels are included in the network configuration when
+creating a network, allowing for flexible and dynamic tagging of Docker
+resources.
+
+Labels can be used to filter and query networks, making it easier to
+manage Docker resources based on specific criteria. For example, you can
+create a network with a label indicating its purpose or owner, and then
+use that label to find networks that match certain criteria. This allows
+for more organised and efficient management of Docker resources,
+especially in larger deployments with many networks and containers.
+
+\subsection{Restyling Keys}
+
+The \predref{docker}{2} predicate transforms the keys in the input dictionary to
+CamelCase format using the \predref{restyle_key}{3} predicate, which applies the
+Docker-specific CamelCase naming convention to the keys. This
+transformation is useful for ensuring that the keys in the input
+dictionary match the expected format for the Docker API, making it
+easier to work with the API and ensuring compatibility with the expected
+request format.
+
+The transformation is applied recursively to all key-value pairs in the
+input dictionary, ensuring that all keys are transformed to the correct
+format before making the request to the Docker API. The reverse
+transformation is applied to the reply dictionary, which does not retain
+the original key names as returned by the Docker API. Label keys are
+also transformed to CamelCase format, ensuring consistency in the naming
+convention used for labels in the Docker API requests and responses.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{docker}{2}{+Ask, -Reply}
+Issues a request to the Docker API using the specified \arg{Ask} term and
+returns the \arg{Reply}. The \arg{Ask} term may be a compound specifying the
+operation to perform together with any required arguments.
+
+The Docker API request comprises:
+
+\begin{itemize}
+    \item a path with zero or more placeholders,
+    \item a method,
+    \item zero or more required or optional search parameters,
+    \item a JSON body for POST requests.
+\end{itemize}
+
+This implies that, for the least amount of additional information, a
+request is just a path with a method, e.g., a GET, HEAD or DELETE
+request. From that point onward, requests grow in complexity
+involving or more of the following: path placeholders, query
+parameters, a request body.
+
+The complexity of the request can vary significantly based on the
+operation being performed and the specific requirements of the
+Docker API. The \predref{docker}{2} predicate is designed to handle these
+variations and provide a consistent interface for interacting with
+the Docker API. It abstracts away the details of constructing the
+request and processing the response, allowing users to focus on the
+high-level operation they want to perform. Path placeholders appear
+in the first \arg{Ask} term argument as atomic values. URL query
+parameters are specified as a list of key-value pairs in the \arg{Ask}
+term argument. POST request payloads are specified as a Prolog
+dictionary as the \arg{Ask} term.
+
+The \arg{Ask} term is a compound term that specifies the operation to
+perform, such as \verb$container_list$ or \verb$system_ping$. The \arg{Reply} is a
+Prolog term that represents the response from the Docker API, which
+is typically a Prolog dictionary or list, depending on the
+operation.
+
+The predicate constructs the URL and options based on the operation
+and the settings defined in this module. It uses the \predref{ask}{4}
+predicate to determine the path, method, and any additional options
+required for the request. The URL is constructed by appending the
+path to the \verb$daemon_url$ setting, and the HTTP request is made using
+the \predref{http_get}{3} predicate from the HTTP client library.
+
+The \arg{Reply} is then processed to ensure that the keys in the response
+are transformed to CamelCase format using the \predref{restyle_value}{3}
+predicate. This transformation is useful for ensuring that the keys
+in the response match the expected format for the Docker API, making
+it easier to work with the API and ensuring compatibility with the
+expected response format.
+
+\begin{arguments}
+\arg{Ask} & The \arg{Ask} term specifies the operation to perform, which
+may include path placeholders, query parameters, and a request body.
+The \arg{Ask} term is a compound term that identifies the operation and
+provides any necessary arguments or parameters for the request. The
+\arg{Ask} term can be a simple atom for operations with no arguments, or
+it can be a more complex term that includes arguments. The \arg{Ask} term
+is used to construct the URL and options for the request, allowing
+for flexible and dynamic construction of API requests based on the
+specified operation and options. \\
+\arg{Reply} & The \arg{Reply} is the response from the Docker API, which is
+typically a Prolog dictionary or list, depending on the operation.
+It can also be an atom. The \arg{Reply} is a Prolog term that represents
+the data returned by the Docker API after processing the request. It
+contains the results of the operation, such as a list of containers,
+the status of a container, or the result of a command. \\
+\end{arguments}
+
+    \predicate[det]{docker}{3}{+Operation, -Reply, +Options}
+Makes a request to the Docker API using the specified operation and
+options. The operation is a string that identifies the Docker API
+operation to perform, such as \verb$container_list$ or \verb$system_ping$. The
+predicate constructs the URL and options based on the operation and
+the settings defined in this module.
+
+Builds HTTP request options for the Docker API using the base URL from
+the \verb$daemon_url$ setting. The path and HTTP method are determined by
+\predref{path_and_method}{4}, and the resulting options are suitable for making
+requests to the Docker API.
+
+The predicate constructs the URL by concatenating the base URL with
+the path and method. The \verb$daemon_url$ setting provides the base URL,
+and the \verb$api_version$ setting specifies the version of the Docker
+API.
+
+\begin{arguments}
+\arg{Operation} & The operation to perform, which determines the path
+and method, as well as any additional options. \\
+\arg{Reply} & The response from the Docker API, which is typically a
+Prolog dictionary or list, depending on the operation. \\
+\arg{Options} & This is a list of options that control both how the
+path is formatted and how the HTTP request is made. For path
+formatting, options are terms like \verb$id(Value)$ that provide values
+for placeholders in the path template. For the HTTP request, options
+can include settings such as headers, authentication, or other
+parameters supported by the HTTP client. \\
+\end{arguments}
+
+    \predicate[semidet]{docker_path_options}{3}{?Operation, -Path, -Options}
+Constructs the \arg{Path} and \arg{Options} for a Docker API operation. The
+predicate retrieves the operation details from the Docker API
+specification and formats the path according to the default version
+and operation. The resulting path and options can be used with the
+HTTP client to make requests to the Docker API.
+
+The predicate uses the \predref{docker_path_options}{4} predicate to
+construct the path and options for the specified operation. It
+retrieves the operation details from the Docker API specification
+and formats the path according to the specified version and
+operation. The resulting path and options can be used with the HTTP
+client to make requests to the Docker API.
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+build_prune & '/v1.49/build/prune' & post \\
+config_create & '/v1.49/configs/create' & post \\
+config_delete & '/v1.49/configs/\{id\}' & delete \\
+config_inspect & '/v1.49/configs/\{id\}' & get \\
+config_list & '/v1.49/configs' & get \\
+config_update & '/v1.49/configs/\{id\}/update' & post \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For container operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+container_archive & '/v1.49/containers/\{id\}/archive' & get \\
+container_archive_info & '/v1.49/containers/\{id\}/archive' & head \\
+container_attach & '/v1.49/containers/\{id\}/attach' & post \\
+container_attach_websocket & '/v1.49/containers/\{id\}/attach/ws' & get \\
+container_changes & '/v1.49/containers/\{id\}/changes' & get \\
+container_create & '/v1.49/containers/create' & post \\
+container_delete & '/v1.49/containers/\{id\}' & delete \\
+container_exec & '/v1.49/containers/\{id\}/exec' & post \\
+container_export & '/v1.49/containers/\{id\}/export' & get \\
+container_inspect & '/v1.49/containers/\{id\}/json' & get \\
+container_kill & '/v1.49/containers/\{id\}/kill' & post \\
+container_list & '/v1.49/containers/json' & get \\
+container_logs & '/v1.49/containers/\{id\}/logs' & get \\
+container_pause & '/v1.49/containers/\{id\}/pause' & post \\
+container_prune & '/v1.49/containers/prune' & post \\
+container_rename & '/v1.49/containers/\{id\}/rename' & post \\
+container_resize & '/v1.49/containers/\{id\}/resize' & post \\
+container_restart & '/v1.49/containers/\{id\}/restart' & post \\
+container_start & '/v1.49/containers/\{id\}/start' & post \\
+container_stats & '/v1.49/containers/\{id\}/stats' & get \\
+container_stop & '/v1.49/containers/\{id\}/stop' & post \\
+container_top & '/v1.49/containers/\{id\}/top' & get \\
+container_unpause & '/v1.49/containers/\{id\}/unpause' & post \\
+container_update & '/v1.49/containers/\{id\}/update' & post \\
+container_wait & '/v1.49/containers/\{id\}/wait' & post \\
+put_container_archive & '/v1.49/containers/\{id\}/archive' & put \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For distribution operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+distribution_inspect & '/v1.49/distribution/\{name\}/json' & get \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For exec operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+exec_inspect & '/v1.49/exec/\{id\}/json' & get \\
+exec_resize & '/v1.49/exec/\{id\}/resize' & post \\
+exec_start & '/v1.49/exec/\{id\}/start' & post \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For image operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+image_build & '/v1.49/build' & post \\
+image_commit & '/v1.49/commit' & post \\
+image_create & '/v1.49/images/create' & post \\
+image_delete & '/v1.49/images/\{name\}' & delete \\
+image_get & '/v1.49/images/\{name\}/get' & get \\
+image_get_all & '/v1.49/images/get' & get \\
+image_history & '/v1.49/images/\{name\}/history' & get \\
+image_inspect & '/v1.49/images/\{name\}/json' & get \\
+image_list & '/v1.49/images/json' & get \\
+image_load & '/v1.49/images/load' & post \\
+image_prune & '/v1.49/images/prune' & post \\
+image_push & '/v1.49/images/\{name\}/push' & post \\
+image_search & '/v1.49/images/search' & get \\
+image_tag & '/v1.49/images/\{name\}/tag' & post \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For network operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+network_connect & '/v1.49/networks/\{id\}/connect' & post \\
+network_create & '/v1.49/networks/create' & post \\
+network_delete & '/v1.49/networks/\{id\}' & delete \\
+network_disconnect & '/v1.49/networks/\{id\}/disconnect' & post \\
+network_inspect & '/v1.49/networks/\{id\}' & get \\
+network_list & '/v1.49/networks' & get \\
+network_prune & '/v1.49/networks/prune' & post \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For node operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+node_delete & '/v1.49/nodes/\{id\}' & delete \\
+node_inspect & '/v1.49/nodes/\{id\}' & get \\
+node_list & '/v1.49/nodes' & get \\
+node_update & '/v1.49/nodes/\{id\}/update' & post \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For plugin operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+plugin_create & '/v1.49/plugins/create' & post \\
+plugin_delete & '/v1.49/plugins/\{name\}' & delete \\
+plugin_disable & '/v1.49/plugins/\{name\}/disable' & post \\
+plugin_enable & '/v1.49/plugins/\{name\}/enable' & post \\
+plugin_inspect & '/v1.49/plugins/\{name\}/json' & get \\
+plugin_list & '/v1.49/plugins' & get \\
+plugin_pull & '/v1.49/plugins/pull' & post \\
+plugin_push & '/v1.49/plugins/\{name\}/push' & post \\
+plugin_set & '/v1.49/plugins/\{name\}/set' & post \\
+plugin_upgrade & '/v1.49/plugins/\{name\}/upgrade' & post \\
+get_plugin_privileges & '/v1.49/plugins/privileges' & get \\
+\hline
+\end{tabulary}
+\end{quote}
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+secret_create & '/v1.49/secrets/create' & post \\
+secret_delete & '/v1.49/secrets/\{id\}' & delete \\
+secret_inspect & '/v1.49/secrets/\{id\}' & get \\
+secret_list & '/v1.49/secrets' & get \\
+secret_update & '/v1.49/secrets/\{id\}/update' & post \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For service operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+service_create & '/v1.49/services/create' & post \\
+service_delete & '/v1.49/services/\{id\}' & delete \\
+service_inspect & '/v1.49/services/\{id\}' & get \\
+service_list & '/v1.49/services' & get \\
+service_logs & '/v1.49/services/\{id\}/logs' & get \\
+service_update & '/v1.49/services/\{id\}/update' & post \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For session operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+session & '/v1.49/session' & post \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For swarm operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+swarm_init & '/v1.49/swarm/init' & post \\
+swarm_inspect & '/v1.49/swarm' & get \\
+swarm_join & '/v1.49/swarm/join' & post \\
+swarm_leave & '/v1.49/swarm/leave' & post \\
+swarm_unlock & '/v1.49/swarm/unlock' & post \\
+swarm_unlockkey & '/v1.49/swarm/unlockkey' & get \\
+swarm_update & '/v1.49/swarm/update' & post \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For system operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+system_auth & '/v1.49/auth' & post \\
+system_data_usage & '/v1.49/system/df' & get \\
+system_events & '/v1.49/events' & get \\
+system_info & '/v1.49/info' & get \\
+system_ping & '/v1.49/_ping' & get \\
+system_ping_head & '/v1.49/_ping' & head \\
+system_version & '/v1.49/version' & get \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For task operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+task_inspect & '/v1.49/tasks/\{id\}' & get \\
+task_list & '/v1.49/tasks' & get \\
+task_logs & '/v1.49/tasks/\{id\}/logs' & get \\
+\hline
+\end{tabulary}
+\end{quote}
+
+For volume operations, the following paths and options are defined:
+
+\begin{quote}
+\begin{tabulary}{0.9\textwidth}{|l|L|l|}
+\hline
+volume_create & '/v1.49/volumes/create' & post \\
+volume_delete & '/v1.49/volumes/\{name\}' & delete \\
+volume_inspect & '/v1.49/volumes/\{name\}' & get \\
+volume_list & '/v1.49/volumes' & get \\
+volume_prune & '/v1.49/volumes/prune' & post \\
+volume_update & '/v1.49/volumes/\{name\}' & put \\
+\hline
+\end{tabulary}
+\end{quote}
+
+\begin{arguments}
+\arg{Operation} & The operation to perform, which determines the path
+and method, as well as any additional options. \\
+\arg{Path} & The path for the operation, which is derived from the
+Docker API specification. \\
+\arg{Options} & List of options for the HTTP request, such as
+\const{method} and \const{accept}. \\
+\end{arguments}
 \end{description}
 
 \chapter{library(canny/endian): Big- and little-endian grammars}\label{sec:endian}
@@ -1050,6 +1119,95 @@ single columns \const{a}, \const{b}, \const{c}; then \const{a} in the first row 
 the second; finally permutes \const{a}, \const{b}, \const{c} on a single row.
 Permutations always preserve the order of elements from first to
 last.
+\end{description}
+
+\chapter{library(canny/placeholders): Formatting Placeholders}\label{sec:placeholders}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+    \tag{version}
+0.1.0
+\end{tags}
+
+This module provides predicates for formatting strings with placeholders.
+Placeholders are specified in the form of \verb${name}$ within a format string.
+The placeholders are replaced with corresponding values from a list of
+options, where each option is specified as \verb$name(Value)$.
+The result is an atom containing the formatted string.
+The module uses DCG rules to parse the format string and replace the
+placeholders with the corresponding values.
+
+The main predicate is \predref{format_placeholders}{3}, which takes a format
+string, an atom to hold the result, and a list of options. It processes
+the format string, replacing placeholders with their corresponding values
+from the options list. If a placeholder does not have a corresponding value,
+it will fail.
+
+The \predref{format_placeholders}{3} predicate formats a string with placeholders, while
+\predref{format_placeholders}{4} allows for additional options to be returned; namely,
+the remaining options after processing the placeholders.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{format_placeholders}{3}{+Format, -Atom, +Options}
+\nodescription
+    \predicate[det]{format_placeholders}{4}{+Format, -Atom, +Options, -RestOptions}
+Formats a string with placeholders in the form of \verb${name}$. The
+placeholders are replaced with corresponding values from the options
+list. The result is an atom with the formatted string.
+
+The \arg{Format} string can be any atom or string containing placeholders.
+The \arg{Options} list should contain terms of the form \verb$name(Value)$, where
+\const{name} is the placeholder name and \arg{Value} is the value to replace it
+with. If a placeholder does not have a corresponding value in the
+\arg{Options} list, it will not be replaced, and the placeholder will remain
+in the resulting atom.
+
+\begin{arguments}
+\arg{Format} & The format string containing placeholders. \\
+\arg{Atom} & The resulting atom with placeholders replaced. \\
+\arg{Options} & The list of options containing values for placeholders. \\
+\arg{RestOptions} & The remaining options after processing the placeholders. \\
+\end{arguments}
+
+    \dcg[det]{placeholders}{2}{-Terms, ?Options}
+Formats a list of terms by replacing placeholders in the form of \verb${name}$
+with corresponding values from the options list. The placeholders are
+replaced with the values associated with the names in the options list.
+
+The result is a list of atoms and values, and a completed options list.
+
+\begin{arguments}
+\arg{Terms} & The list of terms to be formatted. \\
+\arg{Options} & The list of options containing values for placeholders. \\
+\end{arguments}
+
+    \dcg[det]{placeholders}{4}{+Terms0, -Terms, +Options0, -Options}
+Processes a format string with placeholders using a list of terms
+and options. The format string is the difference list of codes,
+where placeholders are replaced with values from the options list.
+The result is a list of atomics and an updated options list.
+
+Scans the input, replacing placeholders of the form \verb${name}$ with
+values from the options list. The result is a list of atoms and
+values, and an updated options list. Uses DCG rules for flexible
+parsing and substitution.
+
+The resulting list of terms contains atoms and values, where each
+placeholder is replaced with the corresponding value from the
+options list. The options list is updated to include any new options
+found in the format string.
+
+Unifies the same placeholder with the same value in the options list if it
+appears more than once. Placeholders can appear in the format string
+multiple times, and each occurrence will be replaced with the same value.
+
+\begin{arguments}
+\arg{Terms0} & The initial list of terms to be processed. \\
+\arg{Terms} & The resulting list of terms after processing. \\
+\arg{Options0} & The initial list of options to be processed. \\
+\arg{Options} & The resulting list of options after processing. \\
+\end{arguments}
 \end{description}
 
 \chapter{library(canny/pop)}\label{sec:pop}
@@ -1459,6 +1617,39 @@ little: recurse first or recurse last. Apart from that subtle but
 essential difference, the inner computation behaves identically.
 \end{description}
 
+\chapter{library(dcg/files)}\label{sec:files}
+
+\begin{description}
+    \dcg[nondet]{directory_entry}{2}{+Directory, ?Entry}
+Neatly traverses a file system using a grammar.
+
+Finds files and skips the special dot entries. Here, \arg{Entry} refers
+to a file. The grammar recursively traverses sub-directories beneath
+the given \arg{Directory} and yields every existing file path at
+\arg{Entry}. The directory acts as the root of the scan; it joins with
+the entry to yield the full path of the file, but \textbf{not} with the
+difference list. The second \arg{List} argument of \predref{phrase}{2} unifies
+with a list of the corresponding sub-path components \textbf{without} the
+root. The caller sees the full path \textbf{and} the relative
+sub-components.
+
+Note that the second clause appears in the DCG expanded form with the
+two hidden arguments: the pre-parsed input list \arg{S0} and the
+post-parsed output list \arg{S}. For non-directory entries, the input list
+unifies with nil \verb$[]$ because it represents a terminal node in the
+directory tree, and the post-parsed terms amount to the accumulated
+\arg{Entries} spanning the sub-directory entries in-between the original
+root directory and the file itself.
+
+    \predicate[nondet]{directory_entry}{2}{+Directory, ?Entry}
+Finds files and directories in the \arg{Directory} except special files: dot,
+the current directory; and double dot, the parent directory.
+
+No need to check if the \arg{Entry} exists. It does exist at the time of
+directory iteration. That could easily change by deleting, moving or
+renaming the entry.
+\end{description}
+
 \chapter{library(doc/latex)}\label{sec:latex}
 
 \begin{description}
@@ -1734,6 +1925,83 @@ than second argument. This allows you to curry the predicate by
 fixing the first exponent argument. In other words, \verb$scalar_power(2, A, B)$ squares A to B.
 \end{description}
 
+\chapter{library(ollama/chat): Ollama Chat}\label{sec:chat}
+
+Idiomatic SWI-Prolog HTTP client module for interacting with an Ollama
+chat API.
+
+\section{Usage}
+
+How to use and abuse the interface? Take some examples. The following
+queries run with HTTP debugging enabled. Notice the headers.
+
+For streaming:
+
+\begin{code}
+?- ollama_chat([_{role:user, content:"Hello"}], Message, [stream(true)]).
+% http_open: Connecting to localhost:11434 ...
+%       ok <stream>(000001a4454d2630) ---> <stream>(000001a4454d2740)
+% HTTP/1.1 200 OK
+% Content-Type: application/x-ndjson
+% Date: Sat, 31 May 2025 10:48:49 GMT
+% Connection: close
+% Transfer-Encoding: chunked
+Message = _{content:" Hello", role:"assistant"} ;
+Message = _{content:"!", role:"assistant"} ;
+Message = _{content:" How", role:"assistant"} ;
+Message = _{content:" can", role:"assistant"} ;
+Message = _{content:" I", role:"assistant"} ;
+Message = _{content:" assist", role:"assistant"} ;
+Message = _{content:" you", role:"assistant"} ;
+Message = _{content:" today", role:"assistant"} ;
+Message = _{content:"?", role:"assistant"} ;
+Message = _{content:"", role:"assistant"}.
+\end{code}
+
+The streaming content type is \textbf{not} "application/json" but rather
+newline-delimited JSON. This is correct. Our addition to the JSON type
+multifile predicate catches this.
+
+For non-streaming:
+
+\begin{code}
+?- ollama_chat([_{role:user, content:"Hello"}], Message, [stream(false)]).
+% http_open: Connecting to localhost:11434 ...
+%       ok <stream>(000001a4454d3ea0) ---> <stream>(000001a4454d4e90)
+% HTTP/1.1 200 OK
+% Content-Type: application/json; charset=utf-8
+% Date: Sat, 31 May 2025 10:50:04 GMT
+% Content-Length: 347
+% Connection: close
+Message = _{content:" Sure, I'm here to help! How can I assist you today?", role:"assistant"}.
+\end{code}
+
+\vspace{0.7cm}
+
+\begin{description}
+    \predicate[nondet]{ollama_chat}{3}{+Messages:list(dict), -Message:dict, +Options:list}
+Leverages SWI-Prolog's HTTP libraries for Ollama chat API
+interaction. To stream or not to stream? That becomes an option,
+specify either \verb$stream(true)$ or \verb$stream(false)$, defaulting to
+streaming. This option selects the predicate's determinism.
+Predicate \predref{ollama_chat}{3} becomes non-deterministic \textbf{when}
+streaming, but falls back to deterministic when not.
+
+Pulls out the message from the reply; it becomes the result of the
+chat interaction: many messages in, one message out. Taking only the
+message assumes that the other keys within the reply dictionary have
+less value. Callers can usually ignore them. The predicate unifies
+with \verb$reply(Reply)$ in the \arg{Options} argument if the caller wants to
+view the detailed response information.
+
+Assumes that the reply is always a dictionary type without first
+checking. The implementation relies on the lower-level HTTP layers
+for parsing and rendering the correct term type. It also assumes
+that the dictionary always contains a "message" pair. Throws an
+exception when this presumption fails; this is a design feature
+because all responses must have a message.
+\end{description}
+
 \chapter{library(os/apps): Operation system apps}\label{sec:apps}
 
 What is an app? In this operating-system \verb$os_apps$ module context,
@@ -1803,7 +2071,51 @@ Sends three broadcast messages for any given App, as follows:
 Running apps send zero or more os:\verb$app_decoded(App, Term)$ messages,
 one for every line appearing in their standard output and standard
 error streams. Removes line terminators. App termination broadcasts
-an \verb$exit(Code)$ term for its final Status.\vspace{0.7cm}
+an \verb$exit(Code)$ term for its final Status.
+
+\section{Usage}
+
+You can start or stop an app.
+
+\begin{code}
+app_start(App)
+app_stop(App)
+\end{code}
+
+App is some compound that identifies which app to start and stop. You define an
+App using \qpredref{os}{property_for_app}{2} multi-file predicate. You must at least define
+an app's path using, as an example:
+
+\begin{code}
+os:property_for_app(path(path(mspaint)), mspaint) :- !.
+\end{code}
+
+Note that the Path is a path Spec used by \predref{process_create}{3}, so can include a
+path-relative term as above. This is enough to launch the Microsoft Paint app on
+Windows. No need for arguments and options for this example. Starting a \textit{running}
+app does not start a new instance. Rather, it succeeds for the existing
+instance. The green cut prevents unnecessary backtracking.
+
+You can start and continuously restart apps using \predref{app_up}{1}, and subsequently
+shut them down with \predref{app_down}{1}.
+
+\subsection{Apps testing}
+
+On a Windows system, try the following for example. It launches Microsoft Paint.
+Exit the Paint app after \predref{app_up}{1} below and it will relaunch automatically.
+
+\begin{code}
+?- [library(os/apps), library(os/apps_testing)].
+true.
+
+?- app_up(mspaint).
+true.
+
+?- app_down(mspaint).
+true.
+\end{code}
+
+\vspace{0.7cm}
 
 \begin{description}
     \predicate[nondet]{app_property}{2}{?App:compound, ?Property}
@@ -2044,7 +2356,69 @@ services:
       - 8080:8080/tcp
 \end{code}
 
-\vspace{0.7cm}\chapter{library(print/(table))}\label{sec:table}
+\vspace{0.7cm}\chapter{library(prefix/sum): Prefix Sums}\label{sec:sum}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+\end{tags}
+
+This module provides functionality to compute the prefix sum of an
+array and to calculate the sum of elements in a specified range using
+the prefix sum array. It is useful for efficiently answering
+range-sum queries after a preprocessing step. The prefix sum at each
+index is the sum of all previous elements including the current one.
+It allows for quick calculation of sums over subarrays and is a
+common technique in algorithm design.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{prefix_sum}{2}{+Numbers:list(number), -PrefixSum:list(number)}
+Calculates the inclusive prefix sum of the given array. The prefix
+sum at each index is the sum of all previous elements including the
+current one. This is useful for efficiently computing cumulative
+sums. The function is deterministic and will always produce the same
+output for the same input.
+
+The \arg{Numbers} array must be ground numerical values. The resulting
+\arg{PrefixSum} array will have the same length as the input \arg{Numbers}
+array.
+
+Why is this useful?
+
+\begin{itemize}
+    \item It allows for quick calculation of sums over subarrays.
+    \item It can be used in various algorithms that require cumulative
+sums.
+\end{itemize}
+
+It answers range-sum queries in constant time O(1) after a linear
+time O(n) preprocessing step. This is particularly useful in
+scenarios where multiple range-sum queries are performed on the same
+array. The sum of A[i..j] can be computed as \arg{PrefixSum}[j] -
+\arg{PrefixSum}[i-1].
+
+\begin{arguments}
+\arg{Numbers} & A list of numerical values for which the prefix sum is
+to be calculated. \\
+\arg{PrefixSum} & The resulting array containing the prefix sums. \\
+\end{arguments}
+
+    \predicate[det]{range_sum}{4}{+PrefixSum:list(number), +Index0:integer, +Index:integer, -Sum:number}
+Computes the sum of elements in the original array from \arg{Index0} to
+\arg{Index} using the provided \arg{PrefixSum} array.
+
+This function assumes that the \arg{PrefixSum} array has been computed
+using the \predref{prefix_sum}{2} predicate.
+
+\begin{arguments}
+\arg{PrefixSum} & The prefix sum array. \\
+\arg{Index0} & The starting index of the range (inclusive). \\
+\arg{Index} & The ending index of the range (inclusive). \\
+\arg{Sum} & The resulting sum of elements from \arg{Index0} to \arg{Index}. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(print/(table))}\label{sec:table}
 
 \begin{description}
     \predicate[det]{print_table}{1}{:Goal}
@@ -2136,6 +2510,98 @@ clauses testing for an existing module and its creation. Succeeds
 only for mode (-).
 \end{description}
 
+\chapter{library(read/until)}\label{sec:until}
+
+\begin{description}
+    \predicate[nondet]{read_stream_to_codes_until_end_of_file}{2}{+In, -Codes}
+\nodescription
+    \predicate[nondet]{read_stream_to_codes_until}{3}{+In, -Codes, +Until}
+Reads \arg{Codes} from a stream until it finds a specific code term, such
+as \verb$end_of_file$. The predicate reads the stream until it encounters
+the \arg{Until} code term, which defaults to \verb$end_of_file$. It succeeds
+non-deterministically for each chunk read before reaching the
+\arg{Until} code term. Use this predicate to process multiple messages
+or data chunks from a stream, handling each chunk separately. The
+\arg{Codes} variable contains the codes read from the stream, and the
+predicate succeeds until it reaches the \arg{Until} condition.
+
+\begin{arguments}
+\arg{In} & The input stream to read from. \\
+\arg{Codes} & The codes read from the stream. \\
+\arg{Until} & The code term that terminates the reading. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(scasp/just_dot)}\label{sec:justdot}
+
+\begin{description}
+    \predicate[det]{scasp_just_dot_print}{3}{+Stream, +Src, +Options}
+Reads a JSON file from \arg{Src}, which is expected to be in the format
+produced by the \verb$s(CASP)$ solver, and prints a DOT representation of the
+justification graph to the specified \arg{Stream}. The \arg{Options} parameter
+allows customisation of the output, such as indentation size, graph
+direction, background colour, node attributes, edge attributes, and
+nodes to elide.
+
+The JSON source should contain a dictionary with the following structure,
+simplified for clarity:
+
+\begin{code}
+{
+    "solver": {...},
+    "query": {...},
+    "answers": [
+        {
+            "bindings": {...},
+            "model": [{"truth": ..., "value": {...}}],
+            "tree": {
+                "node": {"value": {...}},
+                "children": [
+                    {
+                        "node": {"value": {...}},
+                        "children": [...]
+                    },
+                    ...
+                ]
+            }
+        },
+        ...
+    ]
+}
+\end{code}
+
+The \const{answers} field is a list of answers, each containing bindings, a
+model, and a tree structure. The \const{tree} field represents the
+justification tree, where each node has a value and may have children,
+forming a hierarchical structure of implications.
+
+The output is a DOT graph representation of the justification tree,
+where each node corresponds to a term in the justification, and edges
+represent implications between nodes. The graph is directed, with arrows
+indicating the direction of implications from one node to another.
+
+The output is formatted as a DOT graph, which can be visualised using
+graph visualisation tools like Graphviz. The output can be customised
+using the \arg{Options} parameter, which allows for setting various attributes
+of the graph, such as:
+
+\begin{itemize}
+    \item \verb$tab(Width)$: Specifies the indentation width for the output.
+    \item \verb$rankdir(Direction)$: Sets the direction of the graph layout, e.g.
+'LR' for left-to-right.
+    \item \verb$bgcolor(Color)$: Sets the background colour of the graph.
+    \item \verb$node(Attributes)$: Specifies attributes for the nodes in the graph.
+    \item \verb$edge(Attributes)$: Specifies attributes for the edges in the graph.
+    \item \verb$elides(Nodes)$: A list of nodes to elide in the graph, meaning they
+will not be displayed.
+\end{itemize}
+
+This predicate is useful for visualising the justification structure of
+\verb$s(CASP)$ queries, making it easier to understand the relationships
+between different terms and their implications in the context of logic
+programming and answer set programming.
+\end{description}
+
 \chapter{library(swi/atoms)}\label{sec:atoms}
 
 \begin{description}
@@ -2211,7 +2677,32 @@ the argument is really a compound, not just unifies with a slash
 compound since Path/Component unifies with any unbound variable.
 \end{description}
 
-\chapter{library(swi/dicts)}\label{sec:dicts}
+\chapter{library(swi/dicts): SWI-Prolog dictionary extensions}\label{sec:dicts}
+
+This module provides extensions to the SWI-Prolog dictionary
+implementation. It includes predicates for merging dictionaries,
+putting values into dictionaries with custom merge behavior,
+and handling dictionary members and leaves in a more flexible way.
+It also includes predicates for creating dictionaries from lists
+and converting dictionaries to compounds.
+
+\subsection{Non-deterministic `dict_member(?Dict, ?Member)`}
+
+This predicate offers an alternative approach to dictionary iteration in
+Prolog. It makes a dictionary expose its leaves as a list exposes its
+elements, one by one non-deterministically. It does not unify with
+non-leaves, as for empty dictionaries.
+
+\begin{code}
+?- dict_member(a{b:c{d:e{f:g{h:i{j:999}}}}}, Key-Value).
+Key = a^b/c^d/e^f/g^h/i^j,
+Value = 999.
+
+?- dict_member(Dict, a^b/c^d/e^f/g^h/i^j-999).
+Dict = a{b:c{d:e{f:g{h:i{j:999}}}}}.
+\end{code}
+
+\vspace{0.7cm}
 
 \begin{description}
     \predicate[det]{put_dict}{5}{+Key, +Dict0:dict, +OnNotEmpty:callable, +Value, -Dict:dict}
@@ -2511,6 +3002,26 @@ select. This clashes with \predref{select_option}{4}'s naming convention since
 \arg{Options} is the argument name for \arg{RestOptions0}'s role in the
 option-selection process. Nevertheless, this version follows this
 renamed argument convention.
+
+The predicate is useful for selecting options from a list of
+options, especially when the options are not known in advance or
+when they need to be filtered based on certain criteria.
+
+Example:
+
+\begin{code}
+?- select_options([a(A), b(B)], [a(1), b(2), c(3)], Rest, [a(0), b(0)]).
+Rest = [c(3)],
+A = 1,
+B = 2.
+\end{code}
+
+\begin{arguments}
+\arg{Options} & The list of options to select from. \\
+\arg{RestOptions0} & The initial list of remaining options. \\
+\arg{RestOptions} & The remaining options after selection. \\
+\arg{Defaults} & The list of default values for options. \\
+\end{arguments}
 \end{description}
 
 \chapter{library(swi/paxos)}\label{sec:paxos}
