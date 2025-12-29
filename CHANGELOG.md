@@ -63,7 +63,7 @@ log](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.23.6] - 2023-09-16
 ### Added
-- Predicate `bit_shift//3`, module `canny_shifter`
+- Predicate `bit_shift/3`, module `canny_shifter`
 
 ## [0.23.5] - 2023-08-29
 ### Added
