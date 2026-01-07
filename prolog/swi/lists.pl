@@ -35,7 +35,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                        select_apply1/3, % +Indices, :Goal, +Extra
                        comb2/2          % ?List1, ?List2
                      ]).
-:- autoload(library(apply), [maplist/3, apply/2]).
+:- autoload(library(apply), [maplist/3]).
 :- autoload(library(lists), [nth1/3]).
 
 :- meta_predicate select_apply1(+, :, +).
