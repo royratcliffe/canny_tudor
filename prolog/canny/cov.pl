@@ -1,15 +1,13 @@
-:- use_module(library(aggregate)).
-:- use_module(library(apply)).
-:- use_module(library(lists)).
-:- use_module(library(sort)).
-:- use_module(library(yall)).
-:- use_module(library(json)).
-:- use_module(library(canny/pack)).
-:- use_module(library(canny/cover)).
-:- use_module(library(print/table)).
-:- use_module(library(gh/api)).
-
-:- initialization(cov).
+:- autoload(library(aggregate)).
+:- autoload(library(apply)).
+:- autoload(library(lists)).
+:- autoload(library(sort)).
+:- autoload(library(yall)).
+:- autoload(library(json)).
+:- autoload(library(canny/pack)).
+:- autoload(library(canny/cover)).
+:- autoload(library(print/table)).
+:- autoload(library(gh/api)).
 
 cov :-
     module_coverages(ModuleCoverages),
