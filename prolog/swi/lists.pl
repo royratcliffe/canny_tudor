@@ -30,6 +30,9 @@ zip([H1|T1], [H2|T2], [[H1, H2]|T]) :- zip(T1, T2, T).
 %   There needs to be an even number  of list elements. This requirement
 %   proceeds from the definition of pairing;   it  pairs the entire list
 %   including the last. The predicate fails otherwise.
+%
+%   @arg Items A list of interleaved First, Second pairs
+%   @arg Pairs A list of First-Second pairs
 
 pairs([], []).
 pairs([H1, H2|T0], [H1-H2|T]) :- pairs(T0, T).
