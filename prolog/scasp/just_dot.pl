@@ -35,7 +35,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           ]).
 :- autoload(library(json), [json_read_dict/2]).
 :- autoload(library(apply), [maplist/3]).
-:- autoload(library(option), [select_option/4, option/3]).
+:- autoload(library(option), [select_option/4, option/3, option/2]).
 :- autoload(library(dcg/high_order), [sequence//2]).
 :- use_module(library(settings), [setting/4, setting/2]).
 
