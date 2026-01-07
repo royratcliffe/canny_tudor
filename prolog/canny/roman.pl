@@ -37,6 +37,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   Wrap the Roman numerals grammar using a cut. The predicate concludes
 %   the search for a solution upon finding   the first, which is the sum
 %   with the largest factors.
+%
+%  @arg Roman  A list of character codes representing the Roman numeral.
+%  @arg Number An integer corresponding to the Roman numeral.
 
 roman_number(Roman, Number) :-
     phrase(roman_numerals(Number), Roman),
@@ -50,6 +53,11 @@ roman_number(Roman, Number) :-
 %   Number1 denotes the sum of   subsequent Roman numerals. Importantly,
 %   no Roman numeral corresponds to 0.   The  initial clause establishes
 %   arithmetic constraints.
+%
+%  The base case handles the situation where   Number is 0, resulting in
+%  an empty list.
+%
+%  @arg Number An integer corresponding to the Roman numeral.
 
 roman_numerals(Number) -->
     { Number #> 0,
