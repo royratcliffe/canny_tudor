@@ -97,7 +97,7 @@ practical value; Romans were pragmatic people after all.
 
 The backtracking logic has an interesting  side effect. It finds **all**
 the possible Roman representations of a   number. Using the simple Roman
-combinatorial logic, one number has  multiple alternative representation
+combinatorial logic, one number has multiple alternative representations
 in Roman numerals.
 
 Take `5` for example.
