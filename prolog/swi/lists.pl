@@ -123,12 +123,10 @@ select1_(List, Index, Elem) :- nth1(Index, List, Elem).
 %
 %   Selects one-based index  arguments  from   Extra  and  applies these
 %   extras to Goal.
-%
-%   @see apply/2
 
 select_apply1(Indices, Goal, Extra) :-
     select1(Indices, Extra, Extra1),
-    apply(Goal, Extra1).
+    call(Goal, Extra1).
 
 %!  comb2(?List1, ?List2) is nondet.
 %
