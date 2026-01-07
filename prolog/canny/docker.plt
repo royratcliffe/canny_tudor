@@ -6,7 +6,7 @@
 % system_ping is used to check Docker's availability.
 :- begin_tests(canny_docker, [condition(docker(system_ping, 'OK', []))]).
 :- use_module(docker).
-:- use_module(library(http/json)).
+:- use_module(library(json)).
 
 test(container_list) :-
     docker(container_list, JSON, []),

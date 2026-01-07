@@ -3,7 +3,7 @@
 :- use_module(library(lists)).
 :- use_module(library(sort)).
 :- use_module(library(yall)).
-:- use_module(library(http/json)).
+:- use_module(library(json)).
 :- use_module(library(canny/pack)).
 :- use_module(library(canny/cover)).
 :- use_module(library(print/table)).
