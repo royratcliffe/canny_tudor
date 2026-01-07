@@ -28,9 +28,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- module(swi_lists, [ zip/3,
                        pairs/2,         % ?Items, ?Pairs
-                       indexed/2,
-                       indexed/3,
-                       take_at_most/3,
+                       indexed/2,       % ?Items, ?Pairs
+                       indexed/3,       % ?List1, ?Index, ?List2
+                       take_at_most/3,  % +Length, +List0, -List
                        select1/3,       % +Indices, +List0, -List
                        select_apply1/3, % +Indices, :Goal, +Extra
                        comb2/2          % ?List1, ?List2
