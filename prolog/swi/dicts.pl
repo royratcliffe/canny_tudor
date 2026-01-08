@@ -19,6 +19,8 @@
               dict_compound/2,          % +Dict, -Compound
               list_dict/3               % ?List, ?Tag, ?Dict
           ]).
+:- use_module(library(apply)).
+:- use_module(library(lists)).
 
 :- use_module(compounds).
 :- use_module(atoms).
