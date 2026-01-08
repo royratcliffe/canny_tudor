@@ -33,7 +33,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- module(scasp_just_dot,
           [ scasp_just_dot_print/3              % Stream, Src, Options
           ]).
-:- autoload(library(json), [json_read_dict/2]).
+:- autoload(library(http/json), [json_read_dict/2]).
 :- autoload(library(apply), [maplist/3]).
 :- autoload(library(option), [select_option/4, option/3, option/2]).
 :- autoload(library(dcg/high_order), [sequence//2]).
