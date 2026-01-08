@@ -3,7 +3,7 @@
 :- autoload(library(lists)).
 :- autoload(library(sort)).
 :- autoload(library(yall)).
-:- autoload(library(json)).
+:- autoload(library(http/json)).
 :- autoload(library(canny/pack)).
 :- autoload(library(canny/cover)).
 :- autoload(library(print/table)).
