@@ -267,7 +267,7 @@ dict_pair(Dict, Path-Value) :-
     dict_pairs(Dict, _, Pairs),
     member(Key-Value0, Pairs),
     dict_pair_(Key-Value0, Path-Value).
-dict_pair(_{}.put(Path, Value), Path-Value).
+dict_pair(#{}.put(Path, Value), Path-Value).
 
 dict_pair_(Key-Value0, Path-Value) :-
     is_dict(Value0),
