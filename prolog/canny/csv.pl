@@ -34,6 +34,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- autoload(library(csv), [csv_read_file_row/3]).
 :- autoload(library(option), [option/3]).
 
+/** <module> Canny CSV
+
+This module provides predicates for reading CSV files in a memory-efficient
+manner using Prolog engines. The main predicate, `csv_read_file_by_row/3`,
+allows for non-deterministic reading of CSV rows, yielding one row at a time.
+
+@author Roy Ratcliffe
+*/
+
 %!  csv_read_file_by_row(+Spec, -Row:list, +Options) is nondet.
 %
 %   Extracts records from a CSV file, using  the given read Options. The
