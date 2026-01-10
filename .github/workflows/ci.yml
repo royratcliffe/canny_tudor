@@ -16,6 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # https://launchpad.net/~swi-prolog/+archive/ubuntu/devel
+      # Assume that SWI-Prolog is not available by default on GitHub-hosted runners.
+      # Also assume that the runner comes with the software-properties-common package pre-installed.
       - name: Install SWI-Prolog
         run: |
           sudo apt-add-repository ppa:swi-prolog/devel
