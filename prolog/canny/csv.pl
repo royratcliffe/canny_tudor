@@ -27,7 +27,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 :- module(canny_csv,
-          []).
+          [ csv_read_file_by_row/3              % +Spec, -Row:list, +Options
+          ]).
 :- autoload(library(apply), [maplist/3, maplist/4]).
 :- autoload(library(atom), [restyle_identifier/3]).
 :- autoload(library(csv), [csv_read_file_row/3]).
