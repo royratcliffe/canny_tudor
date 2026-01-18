@@ -433,13 +433,21 @@ mapdict(Goal, Dict0, Dict) :-
 %   unchanged or recursively transformed if it is a dictionary.
 
 restyle_key(Style, Key0-Value0, Key-Value) :-
+    % Restyle the key using the specified style. However, if the restyling
+    % fails for some reason, fall back to the original key. This ensures that
+    % the key is always valid, even if the restyling cannot be performed.
+    % This can happen because Docker uses some unusual key names that do not
+    % conform to standard naming conventions.
+    (   restyle_identifier(Style, Key0, Key)
+    ->  true
+    ;   Key0 = Key
+    ),
     % What if the value is a list? And what if the list contains dictionaries?
     % Should we apply the restyling to each element? What if the list contains
     % sub-lists? Should we apply the restyling to each element of the sub-lists?
     %
     % If the value is a list, apply restyle_value recursively to each element.
     % This handles lists of dictionaries and nested lists.
-    restyle_identifier(Style, Key0, Key),
     restyle_value(Style, Value0, Value).
 
 restyle_value(Style, Value0, Value) :-
