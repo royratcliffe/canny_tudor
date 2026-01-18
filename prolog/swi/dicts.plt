@@ -54,7 +54,7 @@ test(dict_leaf, [true(A-B=@=_-(a(b)-ab))]) :-
 
 test(dict_pair, [fail]) :-
     dict_pair(_{a:_{}}, _).
-test(dict_pair, [true(A=@= #{a:_{b:_{c:123}}})]) :-
+test(dict_pair, [true(A=@=_{a:_{b:_{c:123}}})]) :-
     dict_pair(A, a/b/c-123).
 test(dict_pair, [all(A-B=@=[_-(1-a), _-(2-b), _-(3-c)])]) :-
     dict_pair(A{1:a, 2:b, 3:c}, B).
