@@ -7,6 +7,9 @@ log](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Introduced new `roman_numerals//1` grammar for converting integers to Roman
   numeral representations, and back again.
+### Fixed
+- Minor fix for Docker restyling. Make it optional to restyle keys, falling back
+  to original keys if restyling fails.
 
 ## [0.24.2] - 2025-12-23
 ### Added
