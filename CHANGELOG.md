@@ -3,12 +3,10 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
-## [0.24.3] - 2026-01-07
+## [0.24.3] - 2026-01-18
 ### Added
 - Introduced new `roman_numerals//1` grammar for converting integers to Roman
   numeral representations, and back again.
-### Changed
-- Updated documentation for existing modules to improve clarity and usage examples.
 
 ## [0.24.2] - 2025-12-23
 ### Added
