@@ -2,3 +2,4 @@
 * text=auto
 *.pl text
 *.plt text
+*.pdf binary
