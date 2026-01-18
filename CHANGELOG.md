@@ -3,6 +3,14 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.24.3] - 2026-01-18
+### Added
+- Introduced new `roman_numerals//1` grammar for converting integers to Roman
+  numeral representations, and back again.
+### Fixed
+- Minor fix for Docker restyling. Make it optional to restyle keys, falling back
+  to original keys if restyling fails.
+
 ## [0.24.2] - 2025-12-23
 ### Added
 - Add `ollama_tools` setting to configure tools for Ollama chat interactions.

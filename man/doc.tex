@@ -269,6 +269,35 @@ Accumulates CRC-16/MCRF4XX checksum using optimal shifting and
 exclusive-OR operations.
 \end{description}
 
+\chapter{library(canny/csv): Canny CSV}\label{sec:csv}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+\end{tags}
+
+This module provides predicates for reading CSV files in a memory-efficient
+manner using Prolog engines. The main predicate, \predref{csv_read_file_by_row}{3},
+allows for non-deterministic reading of CSV rows, yielding one row at a time.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[nondet]{csv_read_file_by_row}{3}{+Spec, -Row:list, +Options}
+Extracts records from a CSV file, using the given read \arg{Options}. The
+resulting \arg{Row} terms have fields named after the CSV header columns
+like an options list.
+
+This predicate uses a Prolog engine to read the CSV file
+non-deterministically, yielding one \arg{Row} term at a time. This is
+useful for processing large CSV files without loading the entire
+file into memory.
+
+\begin{arguments}
+\arg{Spec} & specifies the CSV file. \\
+\arg{Row} & is unified with each row. \\
+\arg{Options} & are passed to \predref{csv_read_file_row}{3}. \\
+\end{arguments}
+\end{description}
+
 \chapter{library(canny/docker): Canny Docker}\label{sec:docker}
 
 \begin{tags}
@@ -1361,6 +1390,172 @@ supports a \arg{Redis} time limit option so that blocking, if used, does
 not continue indefinately even on a very busy stream set. The limit
 applies to any of the given streams; it acts as a time threshold
 for continuous blocking failures.
+\end{description}
+
+\chapter{library(canny/roman): Roman Numerals}\label{sec:roman}
+
+Fundamentally, the Roman "number" represents a numerical sum using 9, 5,
+4 and 1 as the principal factors. \verb$I=1$, \verb$V=5$ and \verb$X=10$. Prefix \arg{V}
+and \arg{X} with \arg{I} to represent \verb$4$ and \verb$9$, respectively. The same
+pattern recurs for \verb$L=50$, \verb$C=100$, \verb$D=500$ and \verb$M=1000$.
+
+In \href{https://www.metalevel.at/prolog/dcg}{definite-clause grammar} terms
+this formula becomes the following logical phrase.
+
+\begin{code}
+roman_numeral(1000) --> "M".
+roman_numeral(900)  --> "CM".
+roman_numeral(500)  --> "D".
+roman_numeral(400)  --> "CD".
+roman_numeral(100)  --> "C".
+roman_numeral(90)   --> "XC".
+roman_numeral(50)   --> "L".
+roman_numeral(40)   --> "XL".
+roman_numeral(10)   --> "X".
+roman_numeral(9)    --> "IX".
+roman_numeral(5)    --> "V".
+roman_numeral(4)    --> "IV".
+roman_numeral(1)    --> "I".
+\end{code}
+
+Here, I ignore the upper-lower-case issue. Roman numerals have upper
+case only, although frequently the numerals can have either case, albeit
+consistently all upper or all lower.
+
+These are the factors. Composite numerals comprise a sequence of these
+sub-phrases. They need to add up to some numerical value. Enter
+constraint-logic programming for finite domains or CLP(FD) for
+symbolically representing logical relations between numbers.
+
+\begin{code}
+roman_numerals(Number) -->
+    { Number #> 0,
+      Number #= Number0 + Number1
+    },
+    roman_numeral(Number0),
+    roman_numerals(Number1).
+roman_numerals(0) --> [].
+\end{code}
+
+This is a recursive phrase. For every \verb$Number>0$, there is a sum
+\verb$Number=Number0+Number1$ where \arg{Number0} is a Roman numeral, \textbf{and}
+\arg{Number1} is the sum of subsequent Roman numerals. Finally, no Roman
+numeral \verb$[]$ corresponds to \verb$0$. The initial clause applies \href{https://www.swi-prolog.org/man/clpfd.html}{arithmetic
+constraints}. The terms do
+not need to bind to integers initially. Hence, the constraints appear
+first at the head of the predicate.
+
+"Quod erat demonstrandum!"
+
+\subsection{How does it work?}
+
+Prolog searches the problem space using the given constraints. The sum
+of numbers must always sum to a positive result. The sum can never be
+zero or below. Romans did not grasp zero or negatives, apparently.
+Perhaps they did grasp the abstractions but found in them little
+practical value; Romans were pragmatic people after all.
+
+The backtracking logic has an interesting side effect. It finds \textbf{all}
+the possible Roman representations of a number. Using the simple Roman
+combinatorial logic, one number has multiple alternative representations
+in Roman numerals.
+
+Take \verb$5$ for example.
+
+\begin{code}
+?- phrase(roman_numerals(5), A), string_codes(B, A).
+A = [86],
+B = "V" ;
+A = `IVI`,
+B = "IVI" ;
+A = `IIV`,
+B = "IIV" ;
+A = `IIIII`,
+B = "IIIII".
+\end{code}
+
+There are four alternative representations:
+
+\begin{enumerate}
+    \item \arg{V}
+    \item \verb$IV+I=V$
+    \item \verb$I+IV=V$
+    \item \verb$I+I+I+I+I=V$
+\end{enumerate}
+
+Clause order matters for the \dcgref{roman_numeral}{1} predicate; big numbers
+must come first so that the solution finds larger factors before smaller
+ones. Romans being Roman, the "correct" representation is the shortest
+possible representation, or put another way: the form with the largest
+possible factors. Hence big factors take priority over smaller ones.
+
+It helps, therefore, to wrap the grammar using a cut (\verb$!$). The
+following terminates the search for a solution when it finds the first
+one; the first solution being the sum with the largest factors.
+
+\begin{code}
+roman_number(Roman, Number) :-
+    phrase(roman_numerals(Number), Roman),
+    !.
+\end{code}
+
+What's Roman for \verb$9999$?
+
+\begin{code}
+?- roman_number(A, 9999).
+A = `MMMMMMMMMCMXCIX`.
+
+?- roman_number(`MMMMMMMMMCMXCIX`, B).
+B = 9999.
+\end{code}
+
+The Roman term, \arg{A} in the previous query, unifies with a list of
+character codes hence the backticks.
+
+\section{Strengths and Weaknesses}
+
+The logical implementation has a somewhat surprising outcome: Roman
+numerals have alternative renderings.
+
+The representation for 0 is \textbf{logically} blank. That makes total sense,
+come to think about it. Subtly, the unification does not \textbf{fail}. It
+succeeds with nothing instead. This implies that the Romans could
+represent zero by writing nothing.
+
+\begin{code}
+?- phrase(roman_numerals(0), A).
+A = [].
+\end{code}
+
+Prolog makes the implementation pretty simple, but there are some
+subtleties: clause order has semantic significance; green cutting
+likewise.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[semidet]{roman_number}{2}{?Roman:codes, ?Number:integer}
+Wrap the \arg{Roman} numerals grammar using a cut. The predicate concludes
+the search for a solution upon finding the first, which is the sum
+with the largest factors.
+
+\begin{arguments}
+\arg{Roman} & A list of character codes representing the \arg{Roman} numeral. \\
+\arg{Number} & An integer corresponding to the \arg{Roman} numeral. \\
+\end{arguments}
+
+    \dcg[nondet]{roman_numerals}{1}{?Number:integer}
+Tail-recursively unifies with a Roman numeral phrase. For every
+number greater than 0, there is a sum where \arg{Number} = Number0 +
+Number1. In this equation, Number0 represents a Roman numeral, while
+Number1 denotes the sum of subsequent Roman numerals. Importantly,
+no Roman numeral corresponds to 0. The initial clause establishes
+arithmetic constraints.
+
+The base case handles the situation where \arg{Number} is 0, resulting in
+an empty list.
+
+\begin{arguments}
+\arg{Number} & An integer corresponding to the Roman numeral. \\
+\end{arguments}
 \end{description}
 
 \chapter{library(canny/shifter)}\label{sec:shifter}
@@ -2900,7 +3095,18 @@ starting at 1. Finds only the first solution, even if multiple
 solutions exist.
 \end{description}
 
-\chapter{library(swi/lists)}\label{sec:lists}
+\chapter{library(swi/lists): Extensions for SWI-Prolog Lists}\label{sec:lists}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+    \tag{version}
+2026-02-10
+\end{tags}
+
+This module provides various list manipulation predicates not found
+in the standard library. Each predicate works in multiple modes where
+possible.\vspace{0.7cm}
 
 \begin{description}
     \predicate[semidet]{zip}{3}{?List1:list, ?List2:list, ?ListOfLists:list(list)}
@@ -2918,6 +3124,11 @@ First-Second terms where First and Second match two consecutive
 There needs to be an even number of list elements. This requirement
 proceeds from the definition of pairing; it pairs the entire list
 including the last. The predicate fails otherwise.
+
+\begin{arguments}
+\arg{Items} & A list of interleaved First, Second pairs \\
+\arg{Pairs} & A list of First-Second pairs \\
+\end{arguments}
 
     \predicate[semidet]{indexed}{2}{?Items:list, ?Pairs:list(pair)}
 \nodescription
@@ -2948,11 +3159,6 @@ element removal.
     \predicate[nondet]{select_apply1}{3}{+Indices, :Goal, +Extra}
 Selects one-based index arguments from \arg{Extra} and applies these
 extras to \arg{Goal}.
-
-\begin{tags}
-    \tag{See also}
-\predref{apply}{2}
-\end{tags}
 
     \predicate[nondet]{comb2}{2}{?List1, ?List2}
 Unifies \arg{List2} with all combinations of \arg{List1}. The length of \arg{List2}
