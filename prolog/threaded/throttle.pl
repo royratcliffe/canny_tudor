@@ -1,6 +1,6 @@
 /*  File:    threaded/throttle.pl
     Author:  Roy Ratcliffe
-    Created: Jun  7 2026
+    Created: Jul  7 2026
     Purpose: Threaded throttle mechanism for Redis streams
 
 Copyright (c) 2026, Roy Ratcliffe, Northumberland, United Kingdom
