@@ -30,6 +30,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           [ xgroup_create/3, % +Redis:atom, +Key:atom, +Group:atom
             xgroup_create/4  % +Redis:atom, +Key:atom, +Group:atom, +Options:list
           ]).
+:- autoload(library(option), [option/2, option/3]).
+:- autoload(library(redis), [redis/3]).
 
 /** <module> Redis XGROUP CREATE command wrapper
 
