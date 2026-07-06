@@ -37,6 +37,30 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 :- setting(window, number, env('REDIS_XTRIM_DEFAULT_WINDOW', 5),
     'Default window for trimming Redis stream entries (in seconds)').
 
+/** <module> Redis XTRIM command wrapper
+ *
+ * This module provides predicates for interacting with Redis streams
+ * using the XTRIM command. The `xtrim_using_entry_id/4` predicate trims
+ * a Redis stream based on a specified entry ID and a window of time,
+ * while the `xtrim_window_minid/3` predicate calculates the minimum ID
+ * for trimming based on the provided entry ID and window size.
+ *
+ * The default window size for trimming can be configured using the
+ * `window` setting. By default, it is set to 5 seconds, but it can be
+ * changed to any valid number of seconds.
+ *
+ * ## Example Usage
+ *
+ * Trim a Redis stream using a specific entry ID and window size:
+ * ```prolog
+ * ?- xtrim_using_entry_id(Redis, Key, Id, [window(10)]).
+ * ```
+ *
+ * @author Roy Ratcliffe
+ * @version 1.0
+ * @license MIT
+ */
+
 %!  xtrim_using_entry_id(+Redis, +Key, +Id, +Options) is det.
 %
 %   Trim the Redis stream identified by Key to remove entries older than
