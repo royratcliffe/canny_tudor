@@ -48,6 +48,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * the `server` setting. By default, it is  set to `default`, but it can
  * be changed to any valid Redis server identifier.
  *
+ * ## Example Usage
+ *
+ * Read the current time from the Redis server and convert it to seconds:
+ * ```prolog
+ * ?- [library(redis/tilde)].
+ * ?- time ~> [S, US], Time is S + (US / 1e6).
+ * ```
+ *
+ * @author Roy Ratcliffe
+ * @version 1.0
+ * @license MIT
  */
 
 :- op(440, xfx, ~>).
