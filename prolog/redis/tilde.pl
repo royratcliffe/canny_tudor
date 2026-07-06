@@ -55,6 +55,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ?- [library(redis/tilde)].
  * ?- time ~> [S, US], Time is S + (US / 1e6).
  * ```
+ * The Redis TIME command returns the current server time as a two-element list,
+ * where the first element is the number of seconds since the epoch and the
+ * second element is the number of microseconds. The above example retrieves
+ * this information and calculates the total time in seconds.
  *
  * @author Roy Ratcliffe
  * @version 1.0
