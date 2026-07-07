@@ -51,13 +51,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ## Example Usage
  *
  * Read the current time from the Redis server and convert it to seconds:
+ *
  * ```prolog
  * ?- [library(redis/tilde)].
  * ?- time ~> [S, US], Time is S + (US / 1e6).
  * ```
- * The Redis TIME command returns the current server time as a two-element list,
- * where the first element is the number of seconds since the epoch and the
- * second element is the number of microseconds. The above example retrieves
+ *
+ * The Redis [TIME](https://redis.io/docs/latest/commands/time)  command
+ * returns the current server time  as   a  two-element  list, where the
+ * first element is the number of seconds since the epoch and the second
+ * element is the number of microseconds.   The  above example retrieves
  * this information and calculates the total time in seconds.
  *
  * @author Roy Ratcliffe
@@ -65,7 +68,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @license MIT
  */
 
-:- op(440, xfx, ~>).
+:- op(440, xfx, ~>), op(550, fx, ~).
 
 %!  ~>(+Request, -Reply) is semidet.
 %
@@ -76,11 +79,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %
 %   @arg Reply The reply received from the Redis server.
 
-~>(Request, Reply) :-
-    setting(server, Redis),
-    redis(Redis, Request, Reply).
-
-:- op(550, fx, ~).
+~>(Request, Reply) :- setting(server, Redis), redis(Redis, Request, Reply).
 
 %!  ~(+PipeLine) is det.
 %
@@ -88,6 +87,4 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %
 %   @arg PipeLine The pipeline of requests to send to the Redis server.
 
-~(PipeLine) :-
-    setting(server, Redis),
-    redis(Redis, PipeLine).
+~(PipeLine) :- setting(server, Redis), redis(Redis, PipeLine).
