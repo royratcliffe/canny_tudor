@@ -2783,6 +2783,15 @@ predicate succeeds until it reaches the \arg{Until} condition.
 
 \chapter{library(redis/tilde): Redis Tilde Operations}\label{sec:tilde}
 
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+    \tag{version}
+1.0
+    \tag{license}
+MIT
+\end{tags}
+
 This module provides operators for interacting with a Redis server
 using the tilde syntax. The \verb$~>$ operator is used to send a request
 to the Redis server and retrieve a reply, while the \verb$~$ operator is
@@ -2790,7 +2799,22 @@ used to send a pipeline of requests.
 
 The Redis server to use for these operations can be configured using
 the \const{server} setting. By default, it is set to \const{default}, but it can
-be changed to any valid Redis server identifier.\vspace{0.7cm}
+be changed to any valid Redis server identifier.
+
+\section{Example Usage}
+
+Read the current time from the Redis server and convert it to seconds:
+
+\begin{code}
+?- [library(redis/tilde)].
+?- time ~> [S, US], Time is S + (US / 1e6).
+\end{code}
+
+The Redis \href{https://redis.io/docs/latest/commands/time}{TIME} command
+returns the current server time as a two-element list, where the
+first element is the number of seconds since the epoch and the second
+element is the number of microseconds. The above example retrieves
+this information and calculates the total time in seconds.\vspace{0.7cm}
 
 \begin{description}
     \predicate[semidet]{\Stilde{}$>$}{2}{+Request, -Reply}
@@ -2871,7 +2895,36 @@ If not provided, the reply is ignored.
 \end{arguments}
 \end{description}
 
-\chapter{library(redis/xtrim)}\label{sec:xtrim}
+\chapter{library(redis/xtrim): Redis XTRIM command wrapper}\label{sec:xtrim}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+    \tag{version}
+1.0
+    \tag{license}
+MIT
+\end{tags}
+
+This module provides predicates for interacting with Redis streams
+using the XTRIM command. The \predref{xtrim_using_entry_id}{4} predicate trims
+a Redis stream based on a specified entry ID and a window of time,
+while the \predref{xtrim_window_minid}{3} predicate calculates the minimum ID
+for trimming based on the provided entry ID and window size.
+
+The default window size for trimming can be configured using the
+\const{window} setting. By default, it is set to 5 seconds, but it can be
+changed to any valid number of seconds.
+
+\section{Example Usage}
+
+Trim a Redis stream using a specific entry ID and window size:
+
+\begin{code}
+?- xtrim_using_entry_id(Redis, Key, Id, [window(10)]).
+\end{code}
+
+\vspace{0.7cm}
 
 \begin{description}
     \predicate[det]{xtrim_using_entry_id}{4}{+Redis, +Key, +Id, +Options}
