@@ -55,10 +55,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 :- setting(idle_timeout, number, env('THREADED_THROTTLE_IDLE_TIMEOUT', 5),
-    'Timeout in seconds for idling').
+           'Timeout in seconds for idling').
 
 :- setting(wait_timeout, number, env('THREADED_THROTTLE_WAIT_TIMEOUT', 5),
-    'Timeout in seconds for waiting').
+           'Timeout in seconds for waiting').
 
 %!  consume_threaded_throttle(+Key:atom, +Field:atom) is det.
 %
