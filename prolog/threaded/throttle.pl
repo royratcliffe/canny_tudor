@@ -44,6 +44,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * timeouts. The module also provides predicates to set and retrieve
  * timeout values for specific keys and fields.
  *
+ * ---+++ Broadcast Events
+ *
+ * The module broadcasts the following events:
+ *
+ * - threaded_throttle(up, Key, Field) : A throttle event has been received for the specified Key and Field.
+ * - threaded_throttle(adjust, Key, Field, Value) : The throttle value has been adjusted for the specified Key and Field.
+ * - threaded_throttle(down, Key, Field) : The throttle event has completed for the specified Key and Field.
+ *
  */
 
 :- setting(idle_timeout, number, env('THREADED_THROTTLE_IDLE_TIMEOUT', 5),
