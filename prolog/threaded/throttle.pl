@@ -48,9 +48,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * The module broadcasts the following events:
  *
- * - threaded_throttle(up, Key, Field) : A throttle event has been received for the specified Key and Field.
- * - threaded_throttle(adjust, Key, Field, Value) : The throttle value has been adjusted for the specified Key and Field.
- * - threaded_throttle(down, Key, Field) : The throttle event has completed for the specified Key and Field.
+ * - threaded_throttle(up, Key, Field) : A throttle event has been
+ * received for the specified Key and Field.
+ *
+ * - threaded_throttle(adjust, Key, Field, Value) : The throttle value
+ * has been adjusted for the specified Key and Field.
+ *
+ * - threaded_throttle(down, Key, Field) : The throttle event has
+ * completed for the specified Key and Field.
  *
  */
 
