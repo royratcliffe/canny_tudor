@@ -31,6 +31,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           , unconsume_threaded_throttle/2 % +Key, +Field
           , current_threaded_throttle_timeout/4 % +When, +Key, +Field, -Timeout
           , set_threaded_throttle_timeout/4 % +When, +Key, +Field, +Timeout
+          , exit_threaded_throttle/2 % +Key, +Field
           ]).
 :- autoload(library(broadcast), [listen/3, unlisten/1, broadcast/1]).
 :- autoload(library(redis), [redis/3]).
@@ -111,7 +112,7 @@ create_thread(Key, Field, Thread) :-
     key_field_alias(Key, Field, Alias),
     (   thread_property(Thread, alias(Alias))
     ->  true
-    ;   thread_create(throttle(Key, Field), Thread,
+    ;   thread_create(catch(throttle(Key, Field), quit, true), Thread,
                       [ alias(Alias),
                         detached(true)
                       ])
@@ -211,3 +212,17 @@ set_threaded_throttle_timeout(When, Key, Field, Timeout) :-
 
 when(idle, idle_timeout).
 when(wait, wait_timeout).
+
+%!  exit_threaded_throttle(+Key:atom, +Field:atom) is det.
+%
+%   Exits the threaded throttle for the specified Key and Field by
+%   signaling the associated thread to terminate. If a thread exists for
+%   the Key and Field, it will be signaled to throw an exit_thread
+%   exception, allowing for graceful termination of the thread.
+
+exit_threaded_throttle(Key, Field) :-
+    key_field_alias(Key, Field, Alias),
+    (   thread_property(Thread, alias(Alias))
+    ->  thread_signal(Thread, throw(quit))
+    ;   true
+    ).
