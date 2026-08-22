@@ -37,7 +37,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Wraps Redis's `XGROUP CREATE` command with `xgroup_create/3` and
 `xgroup_create/4`. Translates Prolog options into Redis command arguments,
-extracts stream `id/1` (default `$`), handles `mk_stream(true)` and
+extracts stream `id/1` (default `$`), handles `make_stream(true)` and
 `entries_read/1`, and captures optional reply. Behaves idempotently by
 catching `BUSYGROUP` errors.
 
