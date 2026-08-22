@@ -105,6 +105,9 @@ consume(Key, Field, Entry) :-
     thread_send_message(Thread, Value).
 consume(_, _, _).
 
+% TODO: make the alias construction injective so that it is unique for
+% each Key and Field combination. This will prevent potential conflicts
+% if different Key and Field combinations produce the same alias.
 key_field_alias(Key, Field, Alias) :-
     atomic_list_concat([threaded, Key, Field, throttle], '_', Alias).
 
