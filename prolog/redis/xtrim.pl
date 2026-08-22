@@ -99,5 +99,8 @@ xtrim_window_minid(Id, MinId, Options) :-
     atom_number(Stamp0, Stamp1),
     setting(window, DefaultWindow),
     option(window(Window), Options, DefaultWindow),
+    % Assume that the Stamp is always a big number: the epoch in
+    % milliseconds. The window is in seconds, so multiply by 1000 to
+    % convert to milliseconds.
     Stamp is ceiling(Stamp1 - (Window * 1000)),
     format(atom(MinId), '~w-0', [Stamp]).
