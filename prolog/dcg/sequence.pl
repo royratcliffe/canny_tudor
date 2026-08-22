@@ -50,6 +50,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   the sequence fails. This behaviour is useful for parsing sequences
 %   where a trailing separator is not allowed.
 %
+%   Also fails for empty lists. An empty list has no elements to match, and
+%   the sequence consequently fails.
+%
 %   @arg List        The list of elements to match or generate.
 %   @arg OnElement   The DCG rule to apply to each element.
 %   @arg OnSeparator The DCG rule to apply between elements.
