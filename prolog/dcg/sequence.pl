@@ -30,6 +30,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           [ sequence_as//3 % +List, :OnElement, :OnSeparator
           ]).
 
+:- meta_predicate sequence_as(+, :, :, ?, ?).
+
 %!  sequence_as(+List, :OnElement, :OnSeparator)// is semidet.
 %
 %   Matches or generates a sequence of elements from List, applying
@@ -42,6 +44,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %   variation looks for a separator with a subsequent element but ignores a
 %   separator without a subsequent element that may be present at the end of the
 %   sequence, allowing for more flexible parsing and generation of sequences.
+%
+%   Fails for trailing separators without a subsequent element. A
+%   separator requires something to follow it, and if nothing follows,
+%   the sequence fails. This behaviour is useful for parsing sequences
+%   where a trailing separator is not allowed.
 %
 %   @arg List        The list of elements to match or generate.
 %   @arg OnElement   The DCG rule to apply to each element.
