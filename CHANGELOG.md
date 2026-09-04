@@ -3,6 +3,20 @@
 Uses [Semantic Versioning](https://semver.org/). Always [keep a change
 log](https://keepachangelog.com/en/1.0.0/).
 
+## [0.24.4] - 2026-09-04
+### Added
+- Introduced a threaded throttle module for handling Redis stream events,
+  including configurable timeouts and graceful thread termination.
+- Added Redis wrappers for `XGROUP CREATE` and `XTRIM`, plus Redis tilde
+  operations for requests and pipelines.
+- Added `redis_entry_id/3` for converting Redis stream entry IDs to and from
+  timestamp and sequence components.
+- Added the `clamp` predicate and the `sequence_as//3` grammar for bounded
+  values and flexible element-separator sequences.
+### Fixed
+- Corrected the `make_stream` option name for the Redis `XGROUP CREATE`
+  wrapper and clarified related documentation.
+
 ## [0.24.3] - 2026-01-18
 ### Added
 - Introduced new `roman_numerals//1` grammar for converting integers to Roman
