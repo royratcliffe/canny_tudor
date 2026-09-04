@@ -16,6 +16,8 @@ log](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Corrected the `make_stream` option name for the Redis `XGROUP CREATE`
   wrapper and clarified related documentation.
+- Imported the `http_json` library into the Docker interface for JSON request
+  handling.
 
 ## [0.24.3] - 2026-01-18
 ### Added
