@@ -211,6 +211,27 @@ on the input. The elements of the \arg{Bytes} list must be in the range
 \end{arguments}
 \end{description}
 
+\chapter{library(canny/clamp)}\label{sec:clamp}
+
+\begin{description}
+    \predicate[det]{clamp}{4}{+Min, +Max, +Unclamped, -Clamped}
+Clamp a value between a minimum and maximum.
+
+This predicate takes an input value (\arg{Unclamped}) and ensures that it falls
+within the specified minimum (\arg{Min}) and maximum (\arg{Max}) bounds. If \arg{Unclamped} is
+less than \arg{Min}, \arg{Clamped} will be unified with \arg{Min}. If \arg{Unclamped} is greater
+than \arg{Max}, \arg{Clamped} will be unified with \arg{Max}. If \arg{Unclamped} is between \arg{Min} and
+\arg{Max}, \arg{Clamped} will be unified with \arg{Unclamped}. The predicate is deterministic
+and will always succeed with a single solution.
+
+\begin{arguments}
+\arg{Min} & The minimum value that the result can be. \\
+\arg{Max} & The maximum value that the result can be. \\
+\arg{Unclamped} & The value to be clamped. \\
+\arg{Clamped} & The result of clamping \arg{Unclamped} between \arg{Min} and \arg{Max}. \\
+\end{arguments}
+\end{description}
+
 \chapter{library(canny/cover)}\label{sec:cover}
 
 \begin{description}
@@ -2760,6 +2781,181 @@ predicate succeeds until it reaches the \arg{Until} condition.
 \end{arguments}
 \end{description}
 
+\chapter{library(redis/tilde): Redis Tilde Operations}\label{sec:tilde}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+    \tag{version}
+1.0
+    \tag{license}
+MIT
+\end{tags}
+
+This module provides operators for interacting with a Redis server
+using the tilde syntax. The \verb$~>$ operator is used to send a request
+to the Redis server and retrieve a reply, while the \verb$~$ operator is
+used to send a pipeline of requests.
+
+The Redis server to use for these operations can be configured using
+the \const{server} setting. By default, it is set to \const{default}, but it can
+be changed to any valid Redis server identifier.
+
+\section{Example Usage}
+
+Read the current time from the Redis server and convert it to seconds:
+
+\begin{code}
+?- [library(redis/tilde)].
+?- time ~> [S, US], Time is S + (US / 1e6).
+\end{code}
+
+The Redis \href{https://redis.io/docs/latest/commands/time}{TIME} command
+returns the current server time as a two-element list, where the
+first element is the number of seconds since the epoch and the second
+element is the number of microseconds. The above example retrieves
+this information and calculates the total time in seconds.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[semidet]{\Stilde{}$>$}{2}{+Request, -Reply}
+Sends a request to the Redis server and retrieves the reply. Uses
+the Redis server specified in the settings.
+
+\begin{arguments}
+\arg{Request} & The request to send to the Redis server. \\
+\arg{Reply} & The reply received from the Redis server. \\
+\end{arguments}
+
+    \predicate[det]{\Stilde}{1}{+PipeLine}
+Sends a pipeline of requests to the Redis server.
+
+\begin{arguments}
+\arg{PipeLine} & The pipeline of requests to send to the Redis server. \\
+\end{arguments}
+\end{description}
+
+\chapter{library(redis/xgroup): Redis XGROUP CREATE command wrapper}\label{sec:xgroup}
+
+Wraps Redis's `XGROUP CREATE` command with \predref{xgroup_create}{3} and
+\predref{xgroup_create}{4}. Translates Prolog options into Redis command arguments,
+extracts stream \predref{id}{1} (default \verb|$|), handles \verb$mk_stream(true)$ and
+\predref{entries_read}{1}, and captures optional reply. Behaves idempotently by
+catching \arg{BUSYGROUP} errors.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{xgroup_create}{3}{+Redis:atom, +Key:atom, +Group:atom}
+\nodescription
+    \predicate[det]{xgroup_create}{4}{+Redis:atom, +Key:atom, +Group:atom, +Options:list}
+Creates a consumer group for a \arg{Redis} stream if it does not already exist.
+This predicate attempts to create a consumer group named \arg{Group} for the
+stream identified by \arg{Key} in the \arg{Redis} instance specified by \arg{Redis}. If the
+consumer group already exists, the predicate succeeds without error.
+
+The predicate can be called with or without the \arg{Options} argument. If \arg{Options}
+is not provided, it defaults to an empty list. The \arg{Options} argument allows
+for additional customisation of the command execution, such as specifying
+the ID for the consumer group, whether to create the stream if it does not
+exist, and how many entries to read when the group is created.
+
+Example usage:
+
+\begin{code}
+% Create a consumer group named "mygroup" for the stream "mystream" in
+% the Redis instance "myredis".
+?- xgroup_create(myredis, mystream, mygroup).
+\end{code}
+
+Delete a consumer group named "mygroup" for the stream "mystream" in the
+\arg{Redis} instance "myredis" using:
+
+\begin{code}
+?- redis(myredis, xgroup(destroy, mystream, mygroup), _).
+\end{code}
+
+\begin{arguments}
+\arg{Redis} & The \arg{Redis} instance identifier. \\
+\arg{Key} & The \arg{Redis} stream key. \\
+\arg{Group} & The name of the consumer group to create. \\
+\arg{Options} & A list of options to customise the command execution.
+
+Supported options include:
+
+\begin{itemize}
+    \item \verb$id(Id)$ specifies the ID for the consumer group.
+Defaults to '\$' (the latest entry in the stream).
+    \item \verb$mk_stream(true)$ specifies that the stream should be created
+if it does not already exist.
+    \item \verb$entries_read(EntriesRead)$ specifies the number of entries to read
+when the group is created.
+    \item \verb$reply(Reply)$ specifies a variable to unify with the command's reply.
+If not provided, the reply is ignored.
+\end{itemize}
+
+ \\
+\end{arguments}
+\end{description}
+
+\chapter{library(redis/xtrim): Redis XTRIM command wrapper}\label{sec:xtrim}
+
+\begin{tags}
+    \tag{author}
+Roy Ratcliffe
+    \tag{version}
+1.0
+    \tag{license}
+MIT
+\end{tags}
+
+This module provides predicates for interacting with Redis streams
+using the XTRIM command. The \predref{xtrim_using_entry_id}{4} predicate trims
+a Redis stream based on a specified entry ID and a window of time,
+while the \predref{xtrim_window_minid}{3} predicate calculates the minimum ID
+for trimming based on the provided entry ID and window size.
+
+The default window size for trimming can be configured using the
+\const{window} setting. By default, it is set to 5 seconds, but it can be
+changed to any valid number of seconds.
+
+\section{Example Usage}
+
+Trim a Redis stream using a specific entry ID and window size:
+
+\begin{code}
+?- xtrim_using_entry_id(Redis, Key, Id, [window(10)]).
+\end{code}
+
+\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{xtrim_using_entry_id}{4}{+Redis, +Key, +Id, +Options}
+Trim the \arg{Redis} stream identified by \arg{Key} to remove entries older than
+the specified \arg{Id} as the upper bound and a window of time defined by
+the \predref{window}{1} option. The \arg{Id} is expected to be in the format
+"Millis-Sequence", where Millis is the timestamp in milliseconds.
+The window size can be specified in \arg{Options}, and if not provided,
+the default window size from the window setting will be used.
+
+\begin{arguments}
+\arg{Redis} & The \arg{Redis} connection. \\
+\arg{Key} & The \arg{Redis} stream key to trim. \\
+\arg{Id} & The ID of the entry to use as the minimum for trimming. \\
+\arg{Options} & A list of options for trimming, including the window size. \\
+\end{arguments}
+
+    \predicate[det]{xtrim_window_minid}{3}{+Id, -MinId, +Options}
+Calculate the minimum ID for trimming based on the provided entry ID
+and the \predref{window}{1} option. The \arg{MinId} is calculated by subtracting
+the window size (in seconds) from the timestamp part of the
+provided \arg{Id}. The resulting \arg{MinId} is formatted as "Millis-0" to be
+used for trimming the Redis stream.
+
+\begin{arguments}
+\arg{Id} & The ID of the entry to use as the minimum for trimming. \\
+\arg{MinId} & The calculated minimum ID for trimming, formatted as "Millis-0". \\
+\arg{Options} & A list of options for trimming, including the window size. \\
+\end{arguments}
+\end{description}
+
 \chapter{library(scasp/just_dot)}\label{sec:justdot}
 
 \begin{description}
@@ -3385,6 +3581,66 @@ Reads the current \arg{Zipper} file as \arg{Codes}. \arg{Options} may be:
     \item \verb$encoding(utf8)$ for UTF-8 encoded text, or
     \item \verb$type(binary)$ for binary octets, and so on.
 \end{shortlist}
+\end{description}
+
+\chapter{library(threaded/throttle): Threaded Throttle}\label{sec:throttle}
+
+This module provides functionality for consuming throttle events from
+a Redis stream in a threaded manner. It allows for the creation of
+threads to handle throttle events, with configurable idle and wait
+timeouts. The module also provides predicates to set and retrieve
+timeout values for specific keys and fields.\vspace{0.7cm}
+
+\begin{description}
+    \predicate[det]{consume_threaded_throttle}{2}{+Key:atom, +Field:atom}
+Listens to a Redis stream for throttle events on the specified \arg{Key}
+and \arg{Field}. When an event is received, it creates a thread to handle
+the event and sends the value to that thread.
+
+\begin{arguments}
+\arg{Key} & The Redis stream key to listen to. \\
+\arg{Field} & The field within the Redis stream to listen for events. \\
+\end{arguments}
+
+    \predicate[det]{unconsume_threaded_throttle}{2}{+Key:atom, +Field:atom}
+Stops listening to the Redis stream for throttle events on the
+specified \arg{Key} and \arg{Field}.
+
+\begin{arguments}
+\arg{Key} & The Redis stream key to stop listening to. \\
+\arg{Field} & The field within the Redis stream to stop listening for
+events. \\
+\end{arguments}
+
+    \predicate[det]{current_threaded_throttle_timeout}{4}{+When:atom, +Key:atom, +Field:atom, -Timeout:number}
+Retrieves the current timeout value for the specified \arg{Key} and \arg{Field}
+based on the \arg{When} condition (idle or wait). If a specific timeout
+has been set for the \arg{Key} and \arg{Field}, it will be used; otherwise, the
+default setting will be retrieved from the application settings.
+
+\begin{arguments}
+\arg{When} & The condition for which the timeout is being retrieved
+(idle or wait). \\
+\arg{Key} & The Redis stream key for which the timeout is being
+retrieved. \\
+\arg{Field} & The field within the Redis stream for which the timeout
+is being retrieved. \\
+\arg{Timeout} & The timeout value in seconds. \\
+\end{arguments}
+
+    \predicate[det]{set_threaded_throttle_timeout}{4}{+When:atom, +Key:atom, +Field:atom, +Timeout:number}
+Sets a specific timeout value for the specified \arg{Key} and \arg{Field} based
+on the \arg{When} condition (idle or wait). This allows for dynamic
+adjustment of timeout values for different throttle events.
+
+\begin{arguments}
+\arg{When} & The condition for which the timeout is being set (idle or
+wait). \\
+\arg{Key} & The Redis stream key for which the timeout is being set. \\
+\arg{Field} & The field within the Redis stream for which the timeout
+is being set. \\
+\arg{Timeout} & The timeout value in seconds. \\
+\end{arguments}
 \end{description}
 
 \chapter{library(with/output)}\label{sec:output}
