@@ -1,7 +1,7 @@
 /*  File:    canny/shifter.pl
     Author:  Roy Ratcliffe
     Created: Sep 16 2023
-    Purpose: Bit Shifter
+    Purpose: Canny Bit Shifter
 
 Copyright (c) 2023, Roy Ratcliffe, Northumberland, United Kingdom
 
