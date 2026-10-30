@@ -40,17 +40,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /** <module> Cyclic redundancy checks
 
-This module provides configurable CRC accumulators for predefined CRC
-variants, together with a specialised CRC-16/MCRF4XX implementation.
-The predefined variants include CRC-8, CRC-8/ITU, CRC-16/MCRF4XX, CRC-X25,
+This module provides configurable CRC   accumulators  for predefined CRC
+variants, together with a specialised CRC-16/MCRF4XX implementation. The
+predefined variants include CRC-8,   CRC-8/ITU, CRC-16/MCRF4XX, CRC-X25,
 CRC-32, CRC-32/BZIP2 and CRC-64/JONES.
 
-A CRC accumulator stores its polynomial, current checksum and options.
-The options control input/output bit reversal (`reverse`) and the final
-XOR value (`xor(Value)`). Create an accumulator with `crc/2`, then pass
-either a byte code or a list of byte codes to `crc/3`. Inspect its
-polynomial or checksum with `crc_property/2`. The specialised
-`crc_16_mcrf4xx/3` predicate provides a faster implementation for that
+A CRC accumulator stores its polynomial,   current checksum and options.
+The options control input/output bit reversal  (`reverse`) and the final
+XOR value (`xor(Value)`). Create an accumulator  with `crc/2`, then pass
+either a byte code or a  list  of   byte  codes  to `crc/3`. Inspect its
+polynomial  or  checksum   with    `crc_property/2`.   The   specialised
+`crc_16_mcrf4xx/3` predicate provides a faster   implementation for that
 variant.
 
 For example, the standard check string `123456789` produces CRC-8 value
