@@ -38,6 +38,46 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 :- use_module(bits, [rbit/3]).
 
+/** <module> Cyclic redundancy checks
+
+This module provides configurable CRC   accumulators  for predefined CRC
+variants, together with a specialised CRC-16/MCRF4XX implementation. The
+predefined variants include CRC-8,   CRC-8/ITU, CRC-16/MCRF4XX, CRC-X25,
+CRC-32, CRC-32/BZIP2 and CRC-64/JONES.
+
+A CRC accumulator stores its polynomial,   current checksum and options.
+The options control input/output bit reversal  (`reverse`) and the final
+XOR value (`xor(Value)`). Create an accumulator  with `crc/2`, then pass
+either a byte code or a  list  of   byte  codes  to `crc/3`. Inspect its
+polynomial  or  checksum   with    `crc_property/2`.   The   specialised
+`crc_16_mcrf4xx/3` predicate provides a faster   implementation for that
+variant.
+
+For example, the standard check string `123456789` produces CRC-8 value
+`16'F4`:
+
+```prolog
+?- crc(crc-8, CRC0),
+   atom_codes('123456789', Data),
+   crc(CRC0, Data, CRC),
+   crc_property(CRC, check(Check)).
+Check = 244.
+```
+
+The specialised CRC-16/MCRF4XX predicate computes the same check string
+as `16'6F91`:
+
+```prolog
+?- atom_codes('123456789', Data),
+   crc_16_mcrf4xx(Check0),
+   crc_16_mcrf4xx(Check0, Data, Check).
+Check = 28561.
+```
+
+@author Roy Ratcliffe
+@version 0.1.0
+*/
+
 %!  crc(+Predefined, -CRC) is semidet.
 %
 %   Builds a predefined CRC accumulator.
@@ -60,6 +100,10 @@ crc(crc-64-jones,   crc(16'1_AD93_D235_94C9_35A9, 16'FFFF_FFFF_FFFF_FFFF, [rever
 %
 %   Extracts the CRC's checksum for comparison, or unifies with other
 %   interesting values belonging to a CRC accumulator.
+%
+%   @arg CRC is the CRC accumulator.
+%   @arg Property is a property of the accumulator, such as `poly(Poly)`
+%   or `check(Check)`.
 
 crc_property(crc(Poly, _Check, _Options), poly(Poly)).
 crc_property(crc(_Poly, Check, _Options), check(Check)).
@@ -162,6 +206,32 @@ deg(24).
 deg(32).
 deg(64).
 
+%!  poly_deg(+Poly, -Deg) is semidet.
+%
+%   Determines the degree of  the  polynomial   Poly.  The  degree  of a
+%   polynomial is the highest power  of   the  variable  with a non-zero
+%   coefficient. For example, the polynomial x^3 +   x + 1 has degree 3.
+%   The  polynomial  is  represented  as  an   integer  where  each  bit
+%   corresponds to a  coefficient.  For   example,  the  integer  0b1011
+%   represents the polynomial x^3 + x + 1. The predicate succeeds if Deg
+%   is the degree of Poly.
+%
+%   Fails if Poly is zero or if Deg cannot be determined. Poly must be a
+%   non-negative integer. The degree Deg is   an integer such that 2^Deg
+%   <=  Poly  <  2^(Deg+1).  For  CRC  polynomials,  the  representation
+%   includes  the  highest-degree  coefficient.    For  example,  16'107
+%   represents x^8 + x^2 + x + 1, so   Deg  will be 8. This predicate is
+%   useful for determining the width of a CRC polynomial.
+%
+%   Example usage:
+%   ==
+%   ?- poly_deg(16'107, Deg).
+%   Deg = 8.
+%   ==
+%
+%   @arg Poly The polynomial represented as a non-negative integer.
+%   @arg Deg The degree of the polynomial Poly.
+
 poly_deg_(Poly, Deg) :-
     Low is 1 << Deg,
     Low =< Poly,
@@ -178,6 +248,10 @@ crc_16_mcrf4xx(16'FFFF).
 %
 %   Accumulates CRC-16/MCRF4XX checksum using optimal shifting and
 %   exclusive-OR operations.
+%
+%   @arg Check0 is the initial or thus-far accumulated checksum.
+%   @arg Data is a byte code or a list of byte codes.
+%   @arg Check is the updated checksum.
 
 crc_16_mcrf4xx(Check0, Data, Check) :-
     integer(Data),
